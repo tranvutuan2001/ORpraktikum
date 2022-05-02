@@ -5,7 +5,7 @@ import {Box} from '@chakra-ui/react';
 import {AddIcon} from '@chakra-ui/icons';
 import lodash from 'lodash';
 
-const AddContraint = () => {
+const AddConstraint = () => {
     const [buildingsList, setBuildingsList] = useState([]);
     const [buildingName, setBuildingName] = useState('');
     const [buildingSize, setBuildingSize] = useState();
@@ -88,4 +88,4 @@ const AddContraint = () => {
     );
 }
 
-export default AddContraint
+export default AddConstraint
