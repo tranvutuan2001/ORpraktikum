@@ -7,7 +7,7 @@ import math
 AVERAGE_PRICE_FOR_ELECTRICITY = 32.12
 
 
-def load_csv(path, delimiter=","):
+def load_csv(path, delimiter=",", dtype=str):
     """Loads a csv file from a path and returns a pandas dataframe
 
         Args:
@@ -17,12 +17,12 @@ def load_csv(path, delimiter=","):
             pandas.DataFrame: dataframe containing the data from the csv file
 
     """
-    df = pd.read_csv(path, delimiter=delimiter)
+    df = pd.read_csv(path, delimiter=delimiter, dtype=dtype)
     return df
 
 
 def get_when2heat_dataset():
-    """Loads the when2heat dataset from the local machine
+    """Loads the when2heat dataset from the local machine. Infor about this dataset can be found on https://data.open-power-system-data.org/when2heat/latest
 
     Returns:
         pandas.DataFrame: dataframe containing the when2heat dataset
@@ -44,8 +44,8 @@ def get_when2heat_dataset():
             # data set stores numbers with a comma instead of a dot so we need to replace them
             df_germany[column] = df_germany[column].astype(
                 "float64")  # transform into float values
-    print(df_germany.describe())
-    print()
+    # print(df_germany.describe())
+    # print()
 
     heat_demand = df_germany[["DE_heat_demand_space_MFH", "DE_heat_demand_space_SFH", "DE_heat_demand_water_MFH", "DE_heat_demand_water_SFH"]].mean(
     ).tolist()
@@ -56,8 +56,8 @@ def get_when2heat_dataset():
     energy_price = math.ceil(
         AVERAGE_PRICE_FOR_ELECTRICITY*energy_consumption/100)
     # TODO: check the units that we used in the dataset
-    print(
-        f"An average german household needs {get_mean(heat_demand)} of heating capacity.\nThe average heat pump has a COP of {get_mean(cop)}.\nThe price is thus {energy_price} Euros")
+    # print(
+    #     f"An average german household needs {get_mean(heat_demand)} of heating capacity.\nThe average heat pump has a COP of {get_mean(cop)}.\nThe price is thus {energy_price} Euros")
 
     return df_germany, energy_price
 

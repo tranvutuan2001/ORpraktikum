@@ -14,7 +14,7 @@ def solve():
     installation_cost = {heatpumps[i]: i+1 for i in range(len(heatpumps))}
     P = {}
     costs = {}
-    _, YEARLY_COSTS = yearly_electric_costs()
+    YEARLY_COSTS = yearly_electric_costs()
 
     model = Model("Heatpumps")
     for x in heatpumps:
