@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from gurobipy import *
-from datasetloader import get_when2heat_dataset
+from datasetloader import yearly_electric_costs
 
 
 def solve():
@@ -14,7 +14,7 @@ def solve():
     installation_cost = {heatpumps[i]: i+1 for i in range(len(heatpumps))}
     P = {}
     costs = {}
-    _, YEARLY_COSTS = get_when2heat_dataset()
+    _, YEARLY_COSTS = yearly_electric_costs()
 
     model = Model("Heatpumps")
     for x in heatpumps:

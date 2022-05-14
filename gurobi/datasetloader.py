@@ -67,5 +67,13 @@ def get_mean(lst):
 # Example
 
 
-get_when2heat_dataset()
+def yearly_electric_costs():
+    """Calculates the yearly costs of electricity
+
+    Returns:
+        float: yearly costs of electricity
+    """
+    _, costs = get_when2heat_dataset()
+    return costs
+
 # we assume heat demand = heat produced by a heatpump and thereby can calculate the energy consumption of a heat pump installation
