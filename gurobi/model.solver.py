@@ -105,3 +105,14 @@ def determine_possible_configurations(buildings, heatpumps, installation_provide
     #                 if heatpump in provider['heat_pumps']:
 
     return
+
+
+def preprocess():
+    """Preprocess the data TODO: figure out what input is needed for this function
+
+    Returns:
+        buildings (dict): a dictionary of buildings. each building should contain the following keys: 'location': its location (should be the name of a region) , 'emission_factor': the amount of emmissions produces by it, 'heat_demand': the amount of heat this building requires
+        heatpumps (dict): a dictionary of heatpumps representing our heatpump stock. each entry should contain  the following keys: 'cop': cop of the heat pump, 'produced heat': the amount of heat it can produce, 'count': number of heatpumps of this type in stock
+        installation_providers (dict): a dictionary of installation providers. each installation provider should contain the following keys: 'locations': locations in which this provider operates, 'installation_cost': fixed cost per installation, 'heat_pumps': types of heat pump they can install (maybe also supplementary installation costs)
+    """
+    return
