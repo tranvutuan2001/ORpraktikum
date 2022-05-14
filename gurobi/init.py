@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from gurobipy import *
+from datasetloader import get_when2heat_dataset
 
 
 def solve():
@@ -10,12 +11,14 @@ def solve():
     # {"B1:100, "B2":200,...,"B10":1000}
     benefits = {buildings[i]: i*100 for i in range(len(buildings))}
     # {"H1":1, "H2":2,...,"H5":5}
-    costs = {heatpumps[i]: i+1 for i in range(len(heatpumps))}
+    installation_cost = {heatpumps[i]: i+1 for i in range(len(heatpumps))}
     P = {}
+    costs = {}
+    _, YEARLY_COSTS = get_when2heat_dataset()
 
     model = Model("Heatpumps")
-    # for x in heatpumps:
-    #     costs[x] = installation_cost[x] + cost_of_electric[x]
+    for x in heatpumps:
+        costs[x] = installation_cost[x] + YEARLY_COSTS
 
     # Variables
     for b in buildings:
