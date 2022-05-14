@@ -1,3 +1,5 @@
 node_modules
 .idea
 data-sources/when2heat.csv
+gurobi/__pycache__/datasetloader.cpython-36.pyc
+model.lp
