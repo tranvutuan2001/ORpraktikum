@@ -27,8 +27,10 @@ def get_when2heat_dataset():
     Returns:
         pandas.DataFrame: dataframe containing the when2heat dataset
     """
-    file_path = "C:\Repositories\ORpraktikum\data-sources\when2heat.csv"
-    df = load_csv(file_path, delimiter=";")
+    print('Downloading dataset...')
+    df = load_csv(
+        "https://data.open-power-system-data.org/when2heat/latest/when2heat.csv", delimiter=";")
+    print('Download done.')
     desired_column_names = ["utc_timestamp", "DE_COP_ASHP_floor",
                             "DE_COP_ASHP_radiator", "DE_COP_ASHP_water", "DE_heat_demand_space_MFH", "DE_heat_demand_space_SFH", "DE_heat_demand_water_MFH", "DE_heat_demand_water_SFH"]
 
@@ -42,8 +44,6 @@ def get_when2heat_dataset():
             # data set stores numbers with a comma instead of a dot so we need to replace them
             df_germany[column] = df_germany[column].astype(
                 "float64")  # transform into float values
-    df_germany.to_csv(
-        "C:\Repositories\ORpraktikum\data-sources\when2heat_germany.csv", index=False)
     print(df_germany.describe())
     print()
 
@@ -51,7 +51,7 @@ def get_when2heat_dataset():
     ).tolist()
     cop = df_germany[["DE_COP_ASHP_floor",
                       "DE_COP_ASHP_radiator", "DE_COP_ASHP_water"]].mean().tolist()
-
+    # we assume heat demand = heat produced by a heatpump and thereby can calculate the energy consumption of a heat pump installation
     energy_consumption = get_mean(heat_demand)/get_mean(cop)
     energy_price = math.ceil(
         AVERAGE_PRICE_FOR_ELECTRICITY*energy_consumption/100)
@@ -75,5 +75,3 @@ def yearly_electric_costs():
     """
     _, costs = get_when2heat_dataset()
     return costs
-
-# we assume heat demand = heat produced by a heatpump and thereby can calculate the energy consumption of a heat pump installation
