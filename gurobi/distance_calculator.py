@@ -20,7 +20,6 @@ def get_distance(origin, destination):
     origin_lat, origin_lng = origin_coords
     destination_lat, destination_lng = destination_coords
     coordinates = f'{origin_lng},{origin_lat};{destination_lng},{destination_lat}'
-    print(coordinates)
     r = requests.get(
         f"http://router.project-osrm.org/route/v1/car/{coordinates}?overview=false""")
 
