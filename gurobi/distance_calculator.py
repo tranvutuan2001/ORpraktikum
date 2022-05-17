@@ -49,7 +49,7 @@ def get_coordinates(location):
     return lat, lng
 
 
-source = "London"
+source = "Aachen"
 destination = "Luxembourg"
 distance = get_distance(source, destination)
 print(
