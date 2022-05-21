@@ -2,16 +2,39 @@
 # Template for our final model
 from gurobipy import *
 
+#
+# from https://www.haustechnikdialog.de/Forum/t/42992/Auslegung-Waermepumpe-auf-2200-Betriebsstunden-pro-Jahr-#:~:text=Hallo%2C-,ca.,die%20Betriebsdauer%20richtig%20hinzugenommen%20worden.
+CONSTANT_HOURS_OF_HEATING_PER_YEAR = 2000
 
-def solve(buildings, heatpumps, installation_providers, weights=(0.5, 0.5)):
+
+def solve(T, S, I, M, D):
     """Solves the heat pump problem.
 
-    Args:
-        buildings (dict): a dictionary of buildings. each building should contain the following keys: 'location': its location (should be the name of a region) , 'emission_factor': the amount of emmissions produces by it, 'heat_demand': the amount of heat this building requires
-        heatpumps (dict): a dictionary of heatpumps representing our heatpump stock. each entry should contain  the following keys: 'cop': cop of the heat pump, 'produced heat': the amount of heat it can produce, 'count': number of heatpumps of this type in stock
-        installation_providers (dict): a dictionary of installation providers. each installation provider should contain the following keys: 'locations': locations in which this provider operates, 'installation_cost': fixed cost per installation, 'heat_pumps': types of heat pump they can install (maybe also supplementary installation costs)
-        weights (tuple): weights for the two objectives (default: (0.5,0.5))
+    Args: 
+        T (set/or int): set of months from now on or range(T) if integer TODO: decide on what type to use
+        S (set): set of districts and workforce in that district
+        I (dict): clusters of house types. 
+            - 'buidling_type': type of building EFH, 
+            - 'surface_area': the surface area 
+            - 'modernazation_status': the modernization status of the building
+            - 'max_heat_demand': the amount of heat this building requires TODO: make sure if this is for a year
+            - 'district': the district in which the building is located
+            - 'count': the number of houses in a particular cluster
+        M (dict) set of heatpumps from https://www.topten.eu/private/products/heat_pumps
+            - 'cop': cop of the heat pump
+            - 'produced heat': the amount of heat it can produce TODO: find out what this means probably per hour
+        # D (dict) set of installation providers
+        #     - 'location': the location of the installation provider
+        #     - 'operating_radius': the radius in which the installation provider operates
+        #     - 'total_workforce': the work force of the installation provider
+        #     TODO find sources for this. Is this even possible??
+
     """
+    #     (1) Instead of calculating distances from heating installer to districts, we can
+
+    # calculate a matrix/dict Ad, s, which tells us if a district is within the operating
+    # radius of a distributor.
+    # Iff → | distributorlocationd − districtlocations | ≤ opradiusd → Ad, s = 1, else 0.
 
     model = Model("Heatpumps")
 
