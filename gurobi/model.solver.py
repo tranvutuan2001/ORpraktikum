@@ -23,7 +23,11 @@ def solve(T, S, I, M, D):
         M (dict) set of heatpumps from https://www.topten.eu/private/products/heat_pumps
             - 'cop': cop of the heat pump
             - 'produced heat': the amount of heat it can produce TODO: find out what this means probably per hour
-        # D (dict) set of installation providers
+        
+                            FOR LATER
+        __________________________________________________________________________________________________________
+
+        # D (dict) set of installation providers . 
         #     - 'location': the location of the installation provider
         #     - 'operating_radius': the radius in which the installation provider operates
         #     - 'total_workforce': the work force of the installation provider
