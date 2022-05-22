@@ -37,7 +37,7 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     """Solves the heat pump problem.
 
     Args: 
-        T (set/or int): set of months from now on or range(T) if integer TODO: decide on what type to use
+        T (int): number of months startting from January
         S (set): set of districts and workforce in that district
         I (dict): clusters of house types. 
             - 'buidling_type': type of building EFH, 
@@ -95,7 +95,7 @@ def prepare_data():
     """Prepares the parameters based on the data
 
     Args: 
-        T (set/or int): set of months from now on or range(T) if integer TODO: decide on what type to use
+        T (int): number of months startting from January
         S (set): set of districts and workforce in that district
         I (dict): clusters of house types. each entry is a representative of the cluster (take average values or median or majority). 
             Each entry has the following attributes:
