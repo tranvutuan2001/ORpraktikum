@@ -64,7 +64,7 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     storage, totalhouses, heatdemand, boilercosts, hpcosts, hpinvestment, workforce = prepare_data(
         T, S, I, M, D)
 
-    Fpow=dict()
+    Fpow = dict()
     for i in I:
         for m in M:
             produced_heat = M[m]['produced heat']
@@ -84,7 +84,7 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     # Constraints TODO: add constraints
 
     # Objective
-    obj = None # TODO
+    obj = None  # TODO
     model.setObjective(obj, GRB.MINIMIZE)
     model.update()
     model.optimize()
@@ -131,33 +131,5 @@ def prepare_data():
         sub[m]: fixed subsidies for heat pump models
         availablepower[renewable,t]: usable power from renewables
     """
-
-
-def determine_possible_configurations(buildings, heatpumps, installation_providers):
-    """Determine possible configurations of heatpumps. There are many configurations that are not possible because of certain conditions: 
-        - heatpumps need to be able to produce at least as much heat as the demand for the building in which they are installed
-        - the heatpump that needs to be installed is in stock (stock>0)
-        - the installation provider needs to be able to install the selected heatpump
-        - the installation provider needs to operate in the location that the building is in   
-
-    Args:
-        buildings (dict): a dictionary of buildings. each building should contain the following keys: 'location': its location (should be the name of a region) , 'emission_factor': the amount of emmissions produces by it, 'heat_demand': the amount of heat this building requires
-        heatpumps (dict): a dictionary of heatpumps representing our heatpump stock. each entry should contain  the following keys: 'cop': cop of the heat pump, 'produced heat': the amount of heat it can produce, 'count': number of heatpumps of this type in stock
-        installation_providers (dict): a dictionary of installation providers. each installation provider should contain the following keys: 'locations': locations in which this provider operates, 'installation_cost': fixed cost per installation, 'heat_pumps': types of heat pump they can install (maybe also supplementary installation costs)
-
-    Returns:
-        list: a list of possible configurations (h,b,i) where h is the heatpump type, b is the building type and i is the installation provider
-    """
-    # for provider in installation_providers:
-    #     for building in buildings:
-    #         # - the installation provider needs to operate in the location that the building is in
-    #         if building['location'] in installation_providers[provider]['locations']:
-    #             for heatpump in heatpumps:
-    #                 # - the heatpump that needs to be installed is in stock(stock > 0)
-    #                 if heatpump['stock'] > 0:
-    #                 # - heatpumps need to be able to produce at least as much heat as the demand for the building in which they are installed
-    #                 if heatpump['produced heat'] >= building['heat demand']:
-    #                 # - the installation provider needs to be able to install the selected heatpump
-    #                 if heatpump in provider['heat_pumps']:
 
     return
