@@ -13,7 +13,6 @@ def preprocess():
     Args: 
         Our data sets 
     Returns:
-        T (set/or int): set of months from now on or range(T) if integer TODO: decide on what type to use
         S (set): set of districts and workforce in that district
         I (dict): clusters of house types. 
             - 'buidling_type': type of building EFH, 
