@@ -62,7 +62,7 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
 
     """
 
-    storage, totalhouses, heatdemand, boilercosts, hpcosts, hpinvestment, workforce = prepare_data(
+    storage, totalhouses, heatdemand, boilercosts, hpcosts, hpinvestment, workforce = prepare_params(
         T, S, I, M, D)
 
     Fpow = dict()
@@ -92,7 +92,7 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     return model
 
 
-def prepare_data():
+def prepare_params(T, S, I, M, B, D):
     """Prepares the parameters based on the data
 
     Args: 
@@ -109,6 +109,11 @@ def prepare_data():
         M (dict) set of heatpumps from https://www.topten.eu/private/products/heat_pumps
             - 'cop': cop of the heat pump
             - 'produced heat': the amount of heat it can produce TODO: find out what this, means probably per hour
+            - 'investment': the investment cost of the heat pump
+        B (dict) set of boilers. Each entry is a representative of the cluster (take average values or median or majority).
+            Each entry has the following attributes:
+                - 'name': the name of the boiler
+                - 'cost': the costs per unit of heat
 
                             FOR LATER
         __________________________________________________________________________________________________________
@@ -132,6 +137,8 @@ def prepare_data():
         sub[m]: fixed subsidies for heat pump models
         availablepower[renewable,t]: usable power from renewables
     """
+    # from https://www.raponline.org/wp-content/uploads/2022/02/Heat-pump-running-costs-v271.pdf
+    AVERAGE_BOILER_COST_PER_UNIT = 0.07  # pounds per kWh
 
     storage = np.empty(shape=(T, len(M)))
     totalhouses = np.empty(shape=(len(I), len(S)))
@@ -153,9 +160,8 @@ def prepare_data():
             heatdemand[i, t] = I[i]['max_heat_demand'] / \
                 12  # to get the heat demand per month
 
-    for b in B:
-        for s in S:
-            boilercosts[b, s] = B[b]['cost']
+    for s in S:
+        boilercosts[s] = AVERAGE_BOILER_COST_PER_UNIT
 
     for m in M:
         for s in S:
