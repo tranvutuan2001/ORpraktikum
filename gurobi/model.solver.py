@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # Template for our final model
 from gurobipy import *
+import numpy as np
 
 #
 # from https://www.haustechnikdialog.de/Forum/t/42992/Auslegung-Waermepumpe-auf-2200-Betriebsstunden-pro-Jahr-#:~:text=Hallo%2C-,ca.,die%20Betriebsdauer%20richtig%20hinzugenommen%20worden.
