@@ -132,4 +132,37 @@ def prepare_data():
         availablepower[renewable,t]: usable power from renewables
     """
 
-    return
+    storage = np.empty(shape=(T, len(M)))
+    totalhouses = np.empty(shape=(len(I), len(S)))
+    heatdemand = np.empty(shape=(len(I), T))
+    boilercosts = np.empty(shape=(len(B), len(S)))
+    hpcosts = np.empty(shape=(len(M), len(S)))
+    hpinvestment = np.empty(shape=(len(M), len(S)))
+    workforce = np.empty(shape=(len(D), T))
+    # sub = np.empty(shape=(len(M)))
+    # availablepower = np.empty(shape=(len(renawable), T))
+    for t in range(T):
+        for m in M:
+            storage[t, m] = 1000
+
+    for i in I:
+        for s in S:
+            totalhouses[i, s] = I[i]['count']
+        for t in range(T):
+            heatdemand[i, t] = I[i]['max_heat_demand'] / \
+                12  # to get the heat demand per month
+
+    for b in B:
+        for s in S:
+            boilercosts[b, s] = B[b]['cost']
+
+    for m in M:
+        for s in S:
+            hpcosts[m, s] = M[m]['produced heat'] / M[m]['cop']
+            hpinvestment[m, s] = M[m]['investment']
+
+    for d in D:
+        for t in range(T):
+            workforce[d, t] = D[d]['total_workforce']
+
+    return storage, totalhouses, heatdemand, boilercosts, hpcosts, hpinvestment, workforce
