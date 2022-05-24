@@ -74,6 +74,13 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
                 Fpow[(i, m)] = 1
             else:
                 Fpow[(i, m)] = 0
+    A = dict()
+    for d in D:
+        for s in S:
+            if s == d:
+                A[(d, s)] = 1
+            else:
+                A[(d, s)] = 0
 
     model = Model("Heatpumps")
 
