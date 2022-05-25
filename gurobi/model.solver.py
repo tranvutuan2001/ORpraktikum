@@ -74,6 +74,13 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
                 Fpow[(i, m)] = 1
             else:
                 Fpow[(i, m)] = 0
+    A = dict()
+    for d in D:
+        for s in S:
+            if s == d:
+                A[(d, s)] = 1
+            else:
+                A[(d, s)] = 0
 
     model = Model("Heatpumps")
 
@@ -96,7 +103,49 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
 
 
     # Constraints TODO: add constraints
+    # Constraint 1:
+    for i in I:
+        for m in M:
+            for s in S:
+                model.addConstr(
+                    quicksum(x[m, i, s, t] <= totalhouses[i, s]*Fpow[(i, m)] for t in range(T)))
+    # Constraint 2:
+    for i in I:
+        for s in S:
+            for t in range(T):
+                model.addConstr(quicksum(x[m, i, s, t] for m in M) <= totalhouses[i, s]-quicksum(
+                    x[m, i, s, ti] for m in M for ti in range(0, t)))
+    # Constraint 3:
+    for i in I:
+        for s in S:
+            model.addConstr(
+                quicksum(x[m, i, s, t] for m in M for t in range(T)) == totalhouses[i, s])
 
+    # Constraint 4:
+    for t in range(T):
+        for m in M:
+            model.addConstr(quicksum(x[m, i, s, t]
+                            for i in I for s in S) <= storage[m, t])
+    # Constraint 5:
+    for s in S:
+        for d in D:
+            model.addConstr(
+                quicksum(w[d, s, t] <= A[d, s] * quicksum(totalhouses[i, s] for i in I)))
+    # Constraint 6:
+    for s in S:
+        for t in range(T):
+            model.addConstr(quicksum(w[d, s, t] for d in D) <= quicksum(
+                x[m, i, s, t] for m in M for i in I))
+    # Constraint 7:
+    for d in D:
+        for t in range(T):
+            model.addConstr(quicksum(w[d, s, t]
+                            for s in S if A[d, s] == 1) <= workforce[d, t])
+    # Constraint 8:
+    model.addConstrs(
+        x[m, i, s, t] >= 0 for m in M for i in I for s in S for t in range(T))
+    # Constraint 9:
+    model.addConstrs(w[d, s, t] >= 0 for d in D for s in S for t in range(T))
     # Objective
     obj = quicksum( x[m,i,s,t]*hpinvestment[m] +  quicksum( x[m,i,s,t]* hpcosts[s,m]*heatdemand[i,t] for t in T) +  
                     (totalhouses[i,s] - quicksum( x[m,i,s,t]* hpcosts[s,m]*heatdemand[i,t] for t in T) ) * boilercosts[i,s] *heatdemand[i,t]
