@@ -5,8 +5,8 @@ import seaborn as sns
 import random
 
 def data_preprocess():
-    df = pd.read_excel("ACoolHeadAppendix.xlsx")
-    df_hp = pd.read_csv("heat_pumps.csv")
+    df = pd.read_excel("../data-sources/ACoolHeadAppendix.xlsx")
+    df_hp = pd.read_csv("../data-sources/heat_pumps.csv")
     district = df['Administrative district'].unique()
     workforce = []
     for i in range(0,399):
