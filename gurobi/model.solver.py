@@ -85,8 +85,22 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     model = Model("Heatpumps")
 
     # Variables
-    x  # Quantity of installed heat pumps with given conditions
-    w  # Quantity of installed heat pumps by distributor d
+    # Quantity of installed heat pumps with given conditions
+    x = {}
+    for m in M:
+        for i in I:
+            for s in S:
+                for t in range(T):
+                    x[m,i,s,t] = model.addVar(vtype=GRB.INTEGER, name="x# hp " + m + "of house " + i + "in"+ s + "until" + t)
+    
+    # Quantity of installed heat pumps by distributor d (at moment 'd' is assumed to be the same as 's')
+    w = {}
+    for s in S:
+        for t in range(T):
+            for d in D:
+                w [s,t,d] = model.addVar(vtype=GRB.INTEGER, name="w# distributor" + d + "in"+ s + "until" + t)
+
+
 
     # Constraints TODO: add constraints
     # Constraint 1:
@@ -133,7 +147,9 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     # Constraint 9:
     model.addConstrs(w[d, s, t] >= 0 for d in D for s in S for t in range(T))
     # Objective
-    obj = None  # TODO
+    obj = quicksum( x[m,i,s,t]*hpinvestment[m] +  quicksum( x[m,i,s,t_1]* hpcosts[s,m]*heatdemand[i,t_1] for t_1 in range(t+1)) +  
+                    (totalhouses[i,s] - quicksum( x[m,i,s,t_1] for t_1 in range(t+1)) ) * boilercosts[i,s] *heatdemand[i,t]
+                    for m in M for i in I for s in S for t in range(T) )
     model.setObjective(obj, GRB.MINIMIZE)
     model.update()
     model.optimize()
