@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # Template for our final model
 from gurobipy import *
+import numpy as np
 
 #
 # from https://www.haustechnikdialog.de/Forum/t/42992/Auslegung-Waermepumpe-auf-2200-Betriebsstunden-pro-Jahr-#:~:text=Hallo%2C-,ca.,die%20Betriebsdauer%20richtig%20hinzugenommen%20worden.
@@ -61,7 +62,7 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
 
     """
 
-    storage, totalhouses, heatdemand, boilercosts, hpcosts, hpinvestment, workforce = prepare_data(
+    storage, totalhouses, heatdemand, boilercosts, hpcosts, hpinvestment, workforce = prepare_params(
         T, S, I, M, D)
 
     Fpow = dict()
@@ -156,7 +157,7 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     return model
 
 
-def prepare_data():
+def prepare_params(T, S, I, M, B, D):
     """Prepares the parameters based on the data
 
     Args: 
@@ -173,6 +174,11 @@ def prepare_data():
         M (dict) set of heatpumps from https://www.topten.eu/private/products/heat_pumps
             - 'cop': cop of the heat pump
             - 'produced heat': the amount of heat it can produce TODO: find out what this, means probably per hour
+            - 'investment': the investment cost of the heat pump
+        B (dict) set of boilers. Each entry is a representative of the cluster (take average values or median or majority).
+            Each entry has the following attributes:
+                - 'name': the name of the boiler
+                - 'cost': the costs per unit of heat
 
                             FOR LATER
         __________________________________________________________________________________________________________
@@ -196,5 +202,39 @@ def prepare_data():
         sub[m]: fixed subsidies for heat pump models
         availablepower[renewable,t]: usable power from renewables
     """
+    # from https://www.raponline.org/wp-content/uploads/2022/02/Heat-pump-running-costs-v271.pdf
+    AVERAGE_BOILER_COST_PER_UNIT = 0.07  # pounds per kWh
 
-    return
+    storage = np.empty(shape=(T, len(M)))
+    totalhouses = np.empty(shape=(len(I), len(S)))
+    heatdemand = np.empty(shape=(len(I), T))
+    boilercosts = np.empty(shape=(len(B), len(S)))
+    hpcosts = np.empty(shape=(len(M), len(S)))
+    hpinvestment = np.empty(shape=(len(M), len(S)))
+    workforce = np.empty(shape=(len(D), T))
+    # sub = np.empty(shape=(len(M)))
+    # availablepower = np.empty(shape=(len(renawable), T))
+    for t in range(T):
+        for m in M:
+            storage[t, m] = 1000
+
+    for i in I:
+        for s in S:
+            totalhouses[i, s] = I[i]['count']
+        for t in range(T):
+            heatdemand[i, t] = I[i]['max_heat_demand'] / \
+                12  # to get the heat demand per month
+
+    for s in S:
+        boilercosts[s] = AVERAGE_BOILER_COST_PER_UNIT
+
+    for m in M:
+        for s in S:
+            hpcosts[m, s] = M[m]['produced heat'] / M[m]['cop']
+            hpinvestment[m, s] = M[m]['investment']
+
+    for d in D:
+        for t in range(T):
+            workforce[d, t] = D[d]['total_workforce']
+
+    return storage, totalhouses, heatdemand, boilercosts, hpcosts, hpinvestment, workforce
