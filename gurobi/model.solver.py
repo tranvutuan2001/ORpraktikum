@@ -2,36 +2,11 @@
 # Template for our final model
 from gurobipy import *
 import numpy as np
-
-#
+from dataprp import data_preprocess
+import timeit
 # from https://www.haustechnikdialog.de/Forum/t/42992/Auslegung-Waermepumpe-auf-2200-Betriebsstunden-pro-Jahr-#:~:text=Hallo%2C-,ca.,die%20Betriebsdauer%20richtig%20hinzugenommen%20worden.
 CONSTANT_HOURS_OF_HEATING_PER_YEAR = 2000
 NUMBER_OF_MONTHS = 12  # number of months
-
-
-def preprocess():
-    """Preprocess the data TODO: figure out what input is needed for this function
-    Args: 
-        Our data sets 
-    Returns:
-        S (set): set of districts and workforce in that district
-        I (dict): clusters of house types. 
-            - 'buidling_type': type of building EFH, 
-            - 'surface_area': the surface area 
-            - 'modernazation_status': the modernization status of the building
-            - 'max_heat_demand': the amount of heat this building requires TODO: make sure if this is for a year
-            - 'district': the district in which the building is located
-            - 'count': the number of houses in a particular cluster
-        M (dict) set of heatpumps from https://www.topten.eu/private/products/heat_pumps
-            - 'cop': cop of the heat pump
-            - 'produced heat': the amount of heat it can produce TODO: find out what this means probably per hour
-    """
-    raise NotImplementedError("preprocess")
-    S = set()
-    I = dict()
-    M = dict()
-    D = None  # for now just return None
-    return S, I, M, D
 
 
 def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
@@ -61,10 +36,20 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
         #     TODO find sources for this. Is this even possible??
 
     """
+    start = timeit.default_timer()
+    D_S, M, I = data_preprocess()
+    D = {i: D_S[i]['workforce'] for i in D_S.keys()}
+    S = {i: D_S[i]['district'] for i in D_S.keys()}
+    stop = timeit.default_timer()
+    print('Time in seconds to prepare the data: ', stop - start)
 
+    start = timeit.default_timer()
     storage, totalhouses, heatdemand, boilercosts, hpcosts, hpinvestment, workforce = prepare_params(
         T, S, I, M, D)
+    stop = timeit.default_timer()
+    print('Time in seconds to prepare the parameters ', stop - start)
 
+    start = timeit.default_timer()
     Fpow = dict()
     for i in I:
         for m in M:
@@ -82,7 +67,10 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
                 A[(d, s)] = 1
             else:
                 A[(d, s)] = 0
+    stop = timeit.default_timer()
+    print('Time in seconds to prepare A and Fpow: ', stop - start)
 
+    # Create a new model
     model = Model("Heatpumps")
 
     # Variables
@@ -92,16 +80,16 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
         for i in I:
             for s in S:
                 for t in range(T):
-                    x[m,i,s,t] = model.addVar(vtype=GRB.INTEGER, name="x# hp " + m + "of house " + i + "in"+ s + "until" + t)
-    
+                    x[m, i, s, t] = model.addVar(
+                        vtype=GRB.INTEGER, name="x# hp " + m + "of house " + i + "in" + s + "until" + t)
+
     # Quantity of installed heat pumps by distributor d (at moment 'd' is assumed to be the same as 's')
     w = {}
     for s in S:
         for t in range(T):
             for d in D:
-                w [s,t,d] = model.addVar(vtype=GRB.INTEGER, name="w# distributor" + d + "in"+ s + "until" + t)
-
-
+                w[s, t, d] = model.addVar(
+                    vtype=GRB.INTEGER, name="w# distributor" + d + "in" + s + "until" + t)
 
     # Constraints TODO: add constraints
     # Constraint 1:
@@ -148,16 +136,17 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     # Constraint 9:
     model.addConstrs(w[d, s, t] >= 0 for d in D for s in S for t in range(T))
     # Objective
-    obj = quicksum( x[m,i,s,t]*hpinvestment[m] +  quicksum( x[m,i,s,t_1]* hpcosts[s,m]*heatdemand[i,t_1] for t_1 in range(t+1)) +  
-                    (totalhouses[i,s] - quicksum( x[m,i,s,t_1] for t_1 in range(t+1)) ) * boilercosts[i,s] *heatdemand[i,t]
-                    for m in M for i in I for s in S for t in range(T) )
+    obj = quicksum(x[m, i, s, t]*hpinvestment[m] + quicksum(x[m, i, s, t_1] * hpcosts[s, m]*heatdemand[i, t_1] for t_1 in range(t+1)) +
+                   (totalhouses[i, s] - quicksum(x[m, i, s, t_1]
+                                                 for t_1 in range(t+1))) * boilercosts[i, s] * heatdemand[i, t]
+                   for m in M for i in I for s in S for t in range(T))
     model.setObjective(obj, GRB.MINIMIZE)
     model.update()
     model.optimize()
     return model
 
 
-def prepare_params(T, S, I, M, B, D):
+def prepare_params(T, S, I, M, D):
     """Prepares the parameters based on the data
 
     Args: 
@@ -208,7 +197,7 @@ def prepare_params(T, S, I, M, B, D):
     storage = np.empty(shape=(T, len(M)))
     totalhouses = np.empty(shape=(len(I), len(S)))
     heatdemand = np.empty(shape=(len(I), T))
-    boilercosts = np.empty(shape=(len(B), len(S)))
+    boilercosts = np.empty(shape=(len(S)))
     hpcosts = np.empty(shape=(len(M), len(S)))
     hpinvestment = np.empty(shape=(len(M), len(S)))
     workforce = np.empty(shape=(len(D), T))
@@ -231,10 +220,13 @@ def prepare_params(T, S, I, M, B, D):
     for m in M:
         for s in S:
             hpcosts[m, s] = M[m]['produced heat'] / M[m]['cop']
-            hpinvestment[m, s] = M[m]['investment']
+            hpinvestment[m, s] = 1000
 
     for d in D:
         for t in range(T):
-            workforce[d, t] = D[d]['total_workforce']
+            workforce[d, t] = D[d]
 
     return storage, totalhouses, heatdemand, boilercosts, hpcosts, hpinvestment, workforce
+
+
+solve()
