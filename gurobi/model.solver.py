@@ -40,6 +40,9 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     D_S, M, I = data_preprocess()
     D = {i: D_S[i]['workforce'] for i in D_S.keys()}
     S = {i: D_S[i]['district'] for i in D_S.keys()}
+
+    
+
     stop = timeit.default_timer()
     print('Time in seconds to prepare the data: ', stop - start)
 
@@ -81,22 +84,25 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
             for s in S:
                 for t in range(T):
                     x[m, i, s, t] = model.addVar(
-                        vtype=GRB.INTEGER, name="x# hp " + m + "of house " + i + "in" + s + "until" + t)
-
+                        vtype=GRB.INTEGER, name="x# hp " + str(m) + "of house " + str(i) + "in" + str(s) + "until" + str(t))   
+    #                   vtype=GRB.INTEGER, name="x") 
+                    
     # Quantity of installed heat pumps by distributor d (at moment 'd' is assumed to be the same as 's')
-    w = {}
-    for s in S:
-        for t in range(T):
-            for d in D:
-                w[s, t, d] = model.addVar(
-                    vtype=GRB.INTEGER, name="w# distributor" + d + "in" + s + "until" + t)
+        w = {}
+        for s in S:
+            for t in range(T):
+                for d in D:
+                    w[s, t, d] = model.addVar(
+                        vtype=GRB.INTEGER, name="w# distributor" + str(d) + "in" + str(s) + "until" + str(t))
+    #                   vtype=GRB.INTEGER, name="w")               
 
+    
     # Constraints TODO: add constraints
     # Constraint 1:
     for i in I:
         for m in M:
             for s in S:
-                model.addConstr(
+                model.addConstr( 
                     quicksum(x[m, i, s, t] <= totalhouses[i, s]*Fpow[(i, m)] for t in range(T)))
     # Constraint 2:
     for i in I:
