@@ -36,22 +36,22 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
         #     TODO find sources for this. Is this even possible??
 
     """
+    print("Preprocess the data")
     start = timeit.default_timer()
     D_S, M, I = data_preprocess()
     D = {i: D_S[i]['workforce'] for i in D_S.keys()}
     S = {i: D_S[i]['district'] for i in D_S.keys()}
-
-    
-
     stop = timeit.default_timer()
     print('Time in seconds to prepare the data: ', stop - start)
 
+    print("Prepare the parameters")
     start = timeit.default_timer()
     storage, totalhouses, heatdemand, boilercosts, hpcosts, hpinvestment, workforce = prepare_params(
         T, S, I, M, D)
     stop = timeit.default_timer()
     print('Time in seconds to prepare the parameters ', stop - start)
 
+    print("Preparing A and Fpow")
     start = timeit.default_timer()
     Fpow = dict()
     for i in I:
@@ -72,10 +72,12 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
                 A[(d, s)] = 0
     stop = timeit.default_timer()
     print('Time in seconds to prepare A and Fpow: ', stop - start)
-
+    print("Preparing the model\n")
     # Create a new model
     model = Model("Heatpumps")
-
+    print()
+    print("Adding variables")
+    start = timeit.default_timer()
     # Variables
     # Quantity of installed heat pumps with given conditions
     x = {}
@@ -84,20 +86,19 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
             for s in S:
                 for t in range(T):
                     x[m, i, s, t] = model.addVar(
-                        vtype=GRB.INTEGER, name="x# hp " + str(m) + "of house " + str(i) + "in" + str(s) + "until" + str(t))   
-    #                   vtype=GRB.INTEGER, name="x") 
-                    
+                        vtype=GRB.INTEGER, name="x# hp " + str(m) + "of house " + str(i) + "in" + str(s) + "until" + str(t))
     # Quantity of installed heat pumps by distributor d (at moment 'd' is assumed to be the same as 's')
         w = {}
         for s in S:
             for t in range(T):
                 for d in D:
                     w[s, t, d] = model.addVar(
-                        vtype=GRB.INTEGER, name="w# distributor" + str(d) + "in" + str(s) + "until" + str(t))
-    #                   vtype=GRB.INTEGER, name="w")               
-
+                        vtype=GRB.INTEGER, name="w# distributor" + str(d) + "in" + str(s) + "until" + str(t))             
+    stop = timeit.default_timer()
+    print('Time in seconds to add the variables: ', stop - start)
     
-    # Constraints TODO: add constraints
+    print("Adding the constraints")
+    start = timeit.default_timer()
     # Constraint 1:
     for i in I:
         for m in M:
@@ -141,14 +142,25 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
         x[m, i, s, t] >= 0 for m in M for i in I for s in S for t in range(T))
     # Constraint 9:
     model.addConstrs(w[d, s, t] >= 0 for d in D for s in S for t in range(T))
+    stop = timeit.default_timer()
+    print('Time in seconds to prepare A and Fpow: ', stop - start)
+
+    print("Adding objective function")
+    start = timeit.default_timer()
     # Objective
     obj = quicksum(x[m, i, s, t]*hpinvestment[m] + quicksum(x[m, i, s, t_1] * hpcosts[s, m]*heatdemand[i, t_1] for t_1 in range(t+1)) +
                    (totalhouses[i, s] - quicksum(x[m, i, s, t_1]
                                                  for t_1 in range(t+1))) * boilercosts[i, s] * heatdemand[i, t]
                    for m in M for i in I for s in S for t in range(T))
     model.setObjective(obj, GRB.MINIMIZE)
+    stop = timeit.default_timer()
+    print('Time in seconds to add the objective function: ', stop - start)
     model.update()
+    print("Solving the model")
+    start = timeit.default_timer()
     model.optimize()
+    stop = timeit.default_timer()
+    print('Time in seconds to solve the model: ', stop - start)
     return model
 
 
