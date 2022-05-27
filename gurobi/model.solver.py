@@ -81,7 +81,7 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     # Variables
     # Quantity of installed heat pumps with given conditions
     print("Adding variables for the heatpumps", len(
-        M)*len(I)*len(S), "variables will be added")
+        M)*len(I)*len(S)*T, "variables will be added")
     x = {}
     for m in M:
         for i in I:
