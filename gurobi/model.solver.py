@@ -232,8 +232,7 @@ def prepare_params(T, S, I, M, D):
         for s in S:
             totalhouses[i, s] = I[i]['count']
         for t in range(T):
-            heatdemand[i, t] = I[i]['max_heat_demand'] / \
-                12  # to get the heat demand per month
+            heatdemand[i, t] = I[i]['max_heat_demand'] * I[i]["surface_area"]
 
     for s in S:
         boilercosts[s] = AVERAGE_BOILER_COST_PER_UNIT
