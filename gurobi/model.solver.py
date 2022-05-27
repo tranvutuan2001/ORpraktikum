@@ -88,12 +88,14 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
                     x[m, i, s, t] = model.addVar(
                         vtype=GRB.INTEGER, name="x# hp " + str(m) + "of house " + str(i) + "in" + str(s) + "until" + str(t))
     # Quantity of installed heat pumps by distributor d (at moment 'd' is assumed to be the same as 's')
-        w = {}
-        for s in S:
-            for t in range(T):
-                for d in D:
-                    w[s, t, d] = model.addVar(
+    w = {}
+    for s in S:
+        for t in range(T):
+            for d in D:
+                w[s, t, d] = model.addVar(
+                    vtype=GRB.INTEGER, name="w# distributor" + str(d) + "in" + str(s) + "until" + str(t))
                         vtype=GRB.INTEGER, name="w# distributor" + str(d) + "in" + str(s) + "until" + str(t))             
+                    vtype=GRB.INTEGER, name="w# distributor" + str(d) + "in" + str(s) + "until" + str(t))
     stop = timeit.default_timer()
     print('Time in seconds to add the variables: ', stop - start)
     
