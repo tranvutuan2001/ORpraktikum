@@ -184,6 +184,7 @@ def prepare_params(T, S, I, M, D):
             "max_heat_demand" (int)  : maximum heat demand of the building (in kWh/m^2)
             "district" (str) : district of the building
             "count" (int) : number of buildings of the same type in the district  
+        D (dict) : dictionary of distributors 
     Returns:
         storage[t,m]: stock level of heat pumps
         totalhouses[i,s]: total count of similar houses in a district
