@@ -6,13 +6,13 @@ geolocator = geocoders.Nominatim(user_agent="ORLab")
 OPEN_WEATHERMAP_API_KEY = "665ae88c4680cd60d0dd1bb22b151a75"
 
 
-def get_weather_data(lat, lng):
+def get_weather_data(city):
     """
     Gets the weather data for a location using the OpenWeatherMap API.
-    :param lat: The latitude of the location
-    :param lng: The longitude of the location
-    :return: The weather data for the location
+    :param city: The location (e.g. "London, UK")
     """
+
+    lat, lng = get_coordinates(city)
 
     # Get the weather data for the location
     url = f"http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lng}&units=metric&appid={OPEN_WEATHERMAP_API_KEY}"
@@ -52,6 +52,12 @@ def get_distance(origin, destination):
     raise Exception(f"Error: {r.status_code}")
 
 
+def get_zipcode(location):
+    lat, lng = get_coordinates(location)
+    location = geolocator.reverse((lat, lng))
+    return location.raw['address']['postcode']
+
+
 def get_coordinates(location):
     """
     Gets the coordinates of a location using the OSMR API.
@@ -73,5 +79,6 @@ distance = get_distance(source, destination)
 print(
     f'By car, you need to travel {distance} km from {source} to {destination}.')
 
-lat, lng = get_coordinates("Luxembourg")
-print("Weather in Lux: ", get_weather_data(lat, lng)['main']['temp'], "°C")
+print("Weather in Lux: ", get_weather_data("Luxembourg")['main']['temp'], "°C")
+
+print("Zip code in Aachen: ", get_zipcode("Aachen"))
