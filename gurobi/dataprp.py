@@ -7,6 +7,22 @@ ACOOLHEAD = os.path.join(dirname, "../data-sources/ACoolHeadAppendix.xlsx")
 HEAT_PUMPS = os.path.join(dirname, "../data-sources/heat_pumps.csv")
 
 def data_preprocess():
+    """
+    This function preprocesses the data from the excel and csv file and returns S,M,I.
+    Returns:
+        S (dict) : dictionary of district names and workfoce in that district
+        M (dict) : dictionary of heat pumps, each containing the keys:
+            'brand_name' (str) : brand name of the heat pump
+            'cop' (float) : COP of the heat pump
+            'produced heat' (float) : heat produced by the heat pump
+        I (dict) : dictionary of buildings each containing the keys:
+            "building_type" (str) : building type
+            "surface_area" (int)  : surface area of the building (in m^2)
+            "modernization_status" (str) : status of the building (i.e. whether it is modernized or not)
+            "max_heat_demand" (int)  : maximum heat demand of the building (in kWh/m^2)
+            "district" (str) : district of the building
+            "count" (int) : number of buildings of the same type in the district       
+    """
     df = pd.read_excel(ACOOLHEAD, engine='openpyxl')
     df_hp = pd.read_csv(HEAT_PUMPS)
     district = df['Administrative district'].unique()

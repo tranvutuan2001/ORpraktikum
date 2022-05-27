@@ -14,18 +14,18 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
 
     Args: 
         T (int): number of months startting from January
-        S (set): set of districts and workforce in that district
-        I (dict): clusters of house types. 
-            - 'buidling_type': type of building EFH, 
-            - 'surface_area': the surface area 
-            - 'modernazation_status': the modernization status of the building
-            - 'max_heat_demand': the amount of heat this building requires TODO: make sure if this is for a year
-            - 'district': the district in which the building is located
-            - 'count': the number of houses in a particular cluster
-        M (dict) set of heatpumps from https://www.topten.eu/private/products/heat_pumps
-            - 'cop': cop of the heat pump
-            - 'produced heat': the amount of heat it can produce TODO: find out what this means probably per hour
-
+        S (dict) : dictionary of district names and workfoce in that district
+        M (dict) : dictionary of heat pumps, each containing the keys:
+            'brand_name' (str) : brand name of the heat pump
+            'cop' (float) : COP of the heat pump
+            'produced heat' (float) : heat produced by the heat pump
+        I (dict) : dictionary of buildings each containing the keys:
+            "building_type" (str) : building type
+            "surface_area" (int)  : surface area of the building (in m^2)
+            "modernization_status" (str) : status of the building (i.e. whether it is modernized or not)
+            "max_heat_demand" (int)  : maximum heat demand of the building (in kWh/m^2)
+            "district" (str) : district of the building
+            "count" (int) : number of buildings of the same type in the district  
                             FOR LATER
         __________________________________________________________________________________________________________
 
@@ -172,32 +172,18 @@ def prepare_params(T, S, I, M, D):
 
     Args: 
         T (int): number of months startting from January
-        S (set): set of districts and workforce in that district
-        I (dict): clusters of house types. each entry is a representative of the cluster (take average values or median or majority). 
-            Each entry has the following attributes:
-            - 'buidling_type': type of building EFH, 
-            - 'surface_area': the surface area 
-            - 'modernazation_status': the modernization status of the building
-            - 'max_heat_demand': the amount of heat this building requires TODO: make sure if this is for a year
-            - 'district': the district in which the building is located
-            - 'count': the number of houses in a particular cluster
-        M (dict) set of heatpumps from https://www.topten.eu/private/products/heat_pumps
-            - 'cop': cop of the heat pump
-            - 'produced heat': the amount of heat it can produce TODO: find out what this, means probably per hour
-            - 'investment': the investment cost of the heat pump
-        B (dict) set of boilers. Each entry is a representative of the cluster (take average values or median or majority).
-            Each entry has the following attributes:
-                - 'name': the name of the boiler
-                - 'cost': the costs per unit of heat
-
-                            FOR LATER
-        __________________________________________________________________________________________________________
-
-        # D (dict) set of installation providers . 
-        #     - 'location': the location of the installation provider
-        #     - 'operating_radius': the radius in which the installation provider operates
-        #     - 'total_workforce': the work force of the installation provider
-        #     TODO find sources for this. Is this even possible??
+        S (dict) : dictionary of district names and workfoce in that district
+        M (dict) : dictionary of heat pumps, each containing the keys:
+            'brand_name' (str) : brand name of the heat pump
+            'cop' (float) : COP of the heat pump
+            'produced heat' (float) : heat produced by the heat pump
+        I (dict) : dictionary of buildings each containing the keys:
+            "building_type" (str) : building type
+            "surface_area" (int)  : surface area of the building (in m^2)
+            "modernization_status" (str) : status of the building (i.e. whether it is modernized or not)
+            "max_heat_demand" (int)  : maximum heat demand of the building (in kWh/m^2)
+            "district" (str) : district of the building
+            "count" (int) : number of buildings of the same type in the district  
     Returns:
         storage[t,m]: stock level of heat pumps
         totalhouses[i,s]: total count of similar houses in a district
