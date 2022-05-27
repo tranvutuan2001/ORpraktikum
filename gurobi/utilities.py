@@ -75,10 +75,11 @@ def get_coordinates(location):
 
 source = "Aachen"
 destination = "Luxembourg"
+
 distance = get_distance(source, destination)
 print(
     f'By car, you need to travel {distance} km from {source} to {destination}.')
 
-print("Weather in Lux: ", get_weather_data("Luxembourg")['main']['temp'], "°C")
+print(f"Weather in {source}: ", get_weather_data(source)['main']['temp'], "°C")
 
-print("Zip code in Aachen: ", get_zipcode("Aachen"))
+print(f"Zip code for {source}: ", get_zipcode(source))
