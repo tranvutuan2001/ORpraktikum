@@ -3,6 +3,25 @@ from geopy import geocoders
 import json
 
 geolocator = geocoders.Nominatim(user_agent="ORLab")
+OPEN_WEATHERMAP_API_KEY = "665ae88c4680cd60d0dd1bb22b151a75"
+
+
+def get_weather_data(lat, lng):
+    """
+    Gets the weather data for a location using the OpenWeatherMap API.
+    :param lat: The latitude of the location
+    :param lng: The longitude of the location
+    :return: The weather data for the location
+    """
+
+    # Get the weather data for the location
+    url = f"http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lng}&units=metric&appid={OPEN_WEATHERMAP_API_KEY}"
+    r = requests.get(url)
+
+    if r.status_code == 200:
+        weather_data = json.loads(r.content)
+        return weather_data
+    raise Exception(f"Error: {r.status_code}")
 
 
 def get_distance(origin, destination):
@@ -53,3 +72,6 @@ destination = "Luxembourg"
 distance = get_distance(source, destination)
 print(
     f'By car, you need to travel {distance} km from {source} to {destination}.')
+
+lat, lng = get_coordinates("Luxembourg")
+print("Weather in Lux: ", get_weather_data(lat, lng)['main']['temp'], "°C")
