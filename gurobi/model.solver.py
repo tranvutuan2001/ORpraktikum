@@ -120,7 +120,7 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     for i in I:
         for s in S:
             model.addConstr(
-                quicksum(x[m, i, s, t] for m in M for t in range(T)) == totalhouses[i, s])
+                quicksum(x[m, i, s, t] for m in M for t in range(T)) <= totalhouses[i, s])
 
     # Constraint 4:
     for t in range(T):
