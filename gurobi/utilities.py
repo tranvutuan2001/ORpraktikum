@@ -1,4 +1,5 @@
 import requests
+import time
 from geopy import geocoders
 import json
 
@@ -17,7 +18,7 @@ def get_weather_data(city):
     # Get the weather data for the location
     url = f"http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lng}&units=metric&appid={OPEN_WEATHERMAP_API_KEY}"
     r = requests.get(url)
-
+    time.sleep(1)
     if r.status_code == 200:
         weather_data = json.loads(r.content)
         return weather_data
@@ -41,7 +42,7 @@ def get_distance(origin, destination):
     coordinates = f'{origin_lng},{origin_lat};{destination_lng},{destination_lat}'
     r = requests.get(
         f"http://router.project-osrm.org/route/v1/car/{coordinates}?overview=false""")
-
+    time.sleep(1)
     if r.status_code == 200:
         routes = json.loads(r.content)
         if len(routes.get('routes')) > 0:
@@ -54,9 +55,18 @@ def get_distance(origin, destination):
 
 def get_zipcode(location):
     lat, lng = get_coordinates(location)
+    if lat is None or lng is None:
+        return None
     location = geolocator.reverse((lat, lng))
     return location.raw['address']['postcode']
 
+
+def get_zipcode_by_coords(lat, lng):
+    location = geolocator.reverse((lat, lng))
+    time.sleep(1)
+    if location is None:
+        return None
+    return location.raw['address']['postcode']
 
 def get_coordinates(location):
     """
@@ -67,19 +77,20 @@ def get_coordinates(location):
 
     # Get the coordinates of the location
     location = geolocator.geocode(location)
+    time.sleep(1)
     lat = location.latitude
     lng = location.longitude
 
     return lat, lng
 
 
-source = "Aachen"
-destination = "Luxembourg"
+# source = "Aachen"
+# destination = "Luxembourg"
 
-distance = get_distance(source, destination)
-print(
-    f'By car, you need to travel {distance} km from {source} to {destination}.')
+# distance = get_distance(source, destination)
+# print(
+#     f'By car, you need to travel {distance} km from {source} to {destination}.')
 
-print(f"Weather in {source}: ", get_weather_data(source)['main']['temp'], "°C")
+# print(f"Weather in {source}: ", get_weather_data(source)['main']['temp'], "°C")
 
-print(f"Zip code for {source}: ", get_zipcode(source))
+# print(f"Zip code for {source}: ", get_zipcode(source))
