@@ -38,8 +38,10 @@ for i in range(len(weather_file_col)):
                   str(lat) + " " + str(lng))
             zipcode = get_zipcode_by_coords(lat, lng)
             knownzipcodes[(lat, lng)] = zipcode
-            df.to_excel(os.path.join(
-                dirname, "../data-sources/ACoolHeadZipCodes.xls"), index=False)
+
     df['zipcode'][i] = zipcode
+    if(i % 10 == 0):
+        df.to_excel(os.path.join(
+        dirname, "../data-sources/ACoolHeadZipCodes.xls"), index=False)
 df.to_excel(os.path.join(
             dirname, "../data-sources/ACoolHeadZipCodes.xls"), index=False)
