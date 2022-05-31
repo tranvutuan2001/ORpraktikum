@@ -4,7 +4,7 @@ import os
 import xlwt
 
 dirname = os.path.dirname(__file__)
-ACOOLHEAD = os.path.join(dirname, "../data-sources/ACoolHeadAppendix.xlsx")
+ACOOLHEAD = os.path.join(dirname, "../data-sources/ACoolHeadZipCodes.xls")
 
 # Check if the zipcode is already known
 
@@ -17,7 +17,7 @@ def get_zipcode_from_df(df, i):
     return df['zipcode'][i]
 
 
-df = pd.read_excel(ACOOLHEAD, engine='openpyxl')
+df = pd.read_excel(ACOOLHEAD)
 
 weather_file_col = df['weather file names']
 zipcodes = [None]*len(weather_file_col)
