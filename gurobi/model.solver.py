@@ -6,7 +6,7 @@ from dataprp import data_preprocess
 import timeit
 # from https://www.haustechnikdialog.de/Forum/t/42992/Auslegung-Waermepumpe-auf-2200-Betriebsstunden-pro-Jahr-#:~:text=Hallo%2C-,ca.,die%20Betriebsdauer%20richtig%20hinzugenommen%20worden.
 CONSTANT_HOURS_OF_HEATING_PER_YEAR = 2000
-NUMBER_OF_MONTHS = 12  # number of months
+NUMBER_OF_MONTHS = 24  # number of months
 
 
 def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
@@ -79,14 +79,16 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     print("Adding variables")
     start = timeit.default_timer()
     # Variables
-    # Quantity of installed heat pumps with given conditions
+    print()
     print("Adding variables for the heatpumps", len(
         M)*len(I)*len(S)*T, "variables will be added")
+    # Quantity of installed heat pumps with given conditions
     x = {}
     for m in M:
         for i in I:
             for s in S:
                 for t in range(T):
+                    # name = f"x: install hp_{str(m)} in house_{str(i)} in district_{str(s)} in month_{str(t)}"
                     x[m, i, s, t] = model.addVar(
                         vtype=GRB.INTEGER, name="x# hp " + str(m) + "of house " + str(i) + "in" + str(s) + "until" + str(t))
     # Quantity of installed heat pumps by distributor d (at moment 'd' is assumed to be the same as 's')
@@ -95,7 +97,7 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     for s in S:
         for t in range(T):
             for d in D:
-                w[s, t, d] = model.addVar(
+                w[s, d, t] = model.addVar(
                     vtype=GRB.INTEGER, name="w# distributor" + str(d) + "in" + str(s) + "until" + str(t))
     stop = timeit.default_timer()
     print('Time in seconds to add the variables: ', stop - start)
@@ -107,7 +109,7 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
         for m in M:
             for s in S:
                 model.addConstr( 
-                    quicksum(x[m, i, s, t] <= totalhouses[i, s]*Fpow[(i, m)] for t in range(T)))
+                    quicksum(x[m, i, s, t] for t in range(T)) <= totalhouses[i, s]*Fpow[(i, m)])
     # Constraint 2:
     for i in I:
         for s in S:
@@ -129,31 +131,32 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     for s in S:
         for d in D:
             model.addConstr(
-                quicksum(w[d, s, t] <= A[d, s] * quicksum(totalhouses[i, s] for i in I)))
+                quicksum(w[s, d, t] for t in range(T)) <= A[d, s] * quicksum(totalhouses[i, s] for i in I))
     # Constraint 6:
     for s in S:
         for t in range(T):
-            model.addConstr(quicksum(w[d, s, t] for d in D) <= quicksum(
+            model.addConstr(quicksum(w[s, d, t] for d in D) <= quicksum(
                 x[m, i, s, t] for m in M for i in I))
     # Constraint 7:
     for d in D:
         for t in range(T):
-            model.addConstr(quicksum(w[d, s, t]
+            model.addConstr(quicksum(w[s, d, t]
                             for s in S if A[d, s] == 1) <= workforce[d, t])
     # Constraint 8:
     model.addConstrs(
         x[m, i, s, t] >= 0 for m in M for i in I for s in S for t in range(T))
     # Constraint 9:
-    model.addConstrs(w[d, s, t] >= 0 for d in D for s in S for t in range(T))
+    model.addConstrs(w[s, d, t] >= 0 for d in D for s in S for t in range(T))
     stop = timeit.default_timer()
     print('Time in seconds to prepare A and Fpow: ', stop - start)
 
     print("Adding objective function")
     start = timeit.default_timer()
     # Objective
-    obj = quicksum(x[m, i, s, t]*hpinvestment[m] + quicksum(x[m, i, s, t_1] * hpcosts[s, m]*heatdemand[i, t_1] for t_1 in range(t+1)) +
-                   (totalhouses[i, s] - quicksum(x[m, i, s, t_1]
-                                                 for t_1 in range(t+1))) * boilercosts[i, s] * heatdemand[i, t]
+    obj = quicksum((x[m, i, s, t]*hpinvestment[m]
+                    + quicksum(x[m, i, s, t_1] * hpcosts[m, s] *
+                               heatdemand[i, t_1] for t_1 in range(t+1))
+                    + (totalhouses[i, s] - quicksum(x[m, i, s, t_1] for t_1 in range(t+1))) * boilercosts[i, s] * heatdemand[i, t])
                    for m in M for i in I for s in S for t in range(T))
     model.setObjective(obj, GRB.MINIMIZE)
     stop = timeit.default_timer()
@@ -162,7 +165,9 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     print("Solving the model")
     start = timeit.default_timer()
     model.optimize()
+    # model.computeIIS()
     stop = timeit.default_timer()
+    model.write("model.lp")
     print('Time in seconds to solve the model: ', stop - start)
     return model
 
@@ -202,18 +207,18 @@ def prepare_params(T, S, I, M, D):
     # from https://www.raponline.org/wp-content/uploads/2022/02/Heat-pump-running-costs-v271.pdf
     AVERAGE_BOILER_COST_PER_UNIT = 0.07  # pounds per kWh
 
-    storage = np.empty(shape=(T, len(M)))
+    storage = np.empty(shape=(len(M), T))
     totalhouses = np.empty(shape=(len(I), len(S)))
     heatdemand = np.empty(shape=(len(I), T))
-    boilercosts = np.empty(shape=(len(S)))
+    boilercosts = np.empty(shape=(len(I), len(S)))
     hpcosts = np.empty(shape=(len(M), len(S)))
-    hpinvestment = np.empty(shape=(len(M), len(S)))
+    hpinvestment = np.empty(shape=(len(M)))
     workforce = np.empty(shape=(len(D), T))
     # sub = np.empty(shape=(len(M)))
     # availablepower = np.empty(shape=(len(renawable), T))
     for t in range(T):
         for m in M:
-            storage[t, m] = 1000
+            storage[m, t] = 1000
 
     for i in I:
         for s in S:
@@ -222,12 +227,13 @@ def prepare_params(T, S, I, M, D):
             heatdemand[i, t] = I[i]['max_heat_demand'] * I[i]["surface_area"]
 
     for s in S:
-        boilercosts[s] = AVERAGE_BOILER_COST_PER_UNIT
+        for i in I:
+            boilercosts[i, s] = AVERAGE_BOILER_COST_PER_UNIT
 
     for m in M:
         for s in S:
             hpcosts[m, s] = M[m]['produced heat'] / M[m]['cop']
-            hpinvestment[m, s] = 1000
+        hpinvestment[m] = 1000
 
     for d in D:
         for t in range(T):
