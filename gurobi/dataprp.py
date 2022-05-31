@@ -24,13 +24,16 @@ def data_preprocess():
             "count" (int) : number of buildings of the same type in the district       
     """
     df = pd.read_excel(ACOOLHEAD, engine='openpyxl')
+    df = df.head(1000)
     df_hp = pd.read_csv(HEAT_PUMPS)
+
     district = df['Administrative district'].unique()
     workforce = []
-    for i in range(0, 399):
+    for i in range(0, len(district)):
         n = random.randint(1, 20)
         workforce.append(n)
     df_hp = df_hp[df_hp["Type"] == "air-water"]
+    df_hp = df_hp.head(5)
     df_hp = df_hp.reset_index(drop=True)
     df_hp['hp_name'] = df_hp["Provider"] + "-" + df_hp["Series"]
     df_i = df[['Administrative district', 'Type of building',
@@ -40,7 +43,7 @@ def data_preprocess():
                   "district": district[i],
                   "workforce": workforce[i]
               }
-              for i in range(len(workforce))}
+              for i in range(len(district))}
     dict_m = {i:
               {
                   "brand_name": df_hp['hp_name'][i],
