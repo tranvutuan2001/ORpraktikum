@@ -58,6 +58,7 @@ def get_zipcode(location):
     if lat is None or lng is None:
         return None
     location = geolocator.reverse((lat, lng))
+    time.sleep(1)
     return location.raw['address']['postcode']
 
 
@@ -65,7 +66,8 @@ def get_zipcode_by_coords(lat, lng):
     location = geolocator.reverse((lat, lng))
     time.sleep(1)
     if location is None:
-        return None
+        print("location not found")
+        return 0
     return location.raw['address']['postcode']
 
 def get_coordinates(location):

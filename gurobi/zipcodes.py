@@ -24,6 +24,7 @@ df = pd.read_excel(ACOOLHEAD)
 weather_file_col = df['weather file names']
 knownzipcodes = {}
 df.fillna(value=0, inplace=True)
+print(df['zipcode'].eq(0).sum(), "unknown zipcodes")
 for i in tqdm(range(len(weather_file_col))):
     if(i % 1000 == 0):
         df.to_excel(os.path.join(
@@ -40,12 +41,13 @@ for i in tqdm(range(len(weather_file_col))):
             zipcode = knownzipcodes[(lat, lng)]
         else:
             # Get the zipcode from the coordinates by calling the geolocator api. This is a slow process as we need to limit the number of requests to 1 per second.
-            # print("request for zipcode with coordinates: " +
-            #       str(lat) + " " + str(lng))
             zipcode = get_zipcode_by_coords(lat, lng)
+            print("\nrequest for zipcode with coordinates: " +
+                  str(lat) + " " + str(lng) + " " + str(zipcode))
+            df.to_excel(os.path.join(
+                dirname, "../data-sources/ACoolHeadZipCodes.xls"), index=False)
             knownzipcodes[(lat, lng)] = zipcode
 
     df.loc[df['zipcode'][i]] = zipcode
-
 df.to_excel(os.path.join(
             dirname, "../data-sources/ACoolHeadZipCodes.xls"), index=False)
