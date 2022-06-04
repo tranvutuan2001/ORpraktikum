@@ -90,7 +90,8 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
                 for t in range(T):
                     # name = f"x: install hp_{str(m)} in house_{str(i)} in district_{str(s)} in month_{str(t)}"
                     x[m, i, s, t] = model.addVar(
-                        vtype=GRB.INTEGER, name="x# hp " + str(m) + "of house " + str(i) + "in" + str(s) + "until" + str(t))
+                        vtype=GRB.INTEGER, name=f'x#install_hp_of_type_{str(m)}#at_house_type_{str(i)}#in_district_{str(s)}_in_month_{str(t)}'
+                    )
     # Quantity of installed heat pumps by distributor d (at moment 'd' is assumed to be the same as 's')
     print("Adding variables for the heatpumps by distributor", len(S)*len(D)*T, "variables will be added")
     w = {}
@@ -98,7 +99,8 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
         for t in range(T):
             for d in D:
                 w[s, d, t] = model.addVar(
-                    vtype=GRB.INTEGER, name="w# distributor" + str(d) + "in" + str(s) + "until" + str(t))
+                    vtype=GRB.INTEGER, name=f'w#distributor_{str(d)}#in_district_{str(s)}#in_month_{str(t)}'
+                )
     stop = timeit.default_timer()
     print('Time in seconds to add the variables: ', stop - start)
     
@@ -167,6 +169,7 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     model.optimize()
     # model.computeIIS()
     stop = timeit.default_timer()
+    model.write("optimization_result.sol")
     model.write("model.lp")
     print('Time in seconds to solve the model: ', stop - start)
     return model
