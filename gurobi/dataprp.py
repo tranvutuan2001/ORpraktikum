@@ -24,6 +24,7 @@ def data_preprocess():
             "count" (int) : number of buildings of the same type in the district       
     """
     df = pd.read_excel(ACOOLHEAD, engine='openpyxl')
+    df['grouped_building_count'] = df.groupby(["modernization status","Type of building"])["Number of buildings"].transform('sum')
     df = df.head(1000)
     df_hp = pd.read_csv(HEAT_PUMPS)
 
@@ -37,7 +38,7 @@ def data_preprocess():
     df_hp = df_hp.reset_index(drop=True)
     df_hp['hp_name'] = df_hp["Provider"] + "-" + df_hp["Series"]
     df_i = df[['Administrative district', 'Type of building',
-               'Surface area [m^2]', 'modernization status', 'max heat demand [kWh/m^2]']]
+               'Surface area [m^2]', 'modernization status', 'max heat demand [kWh/m^2]','grouped_building_count']]
     dict_s = {i:
               {
                   "district": district[i],
@@ -58,7 +59,7 @@ def data_preprocess():
                   "modernization_status": df_i['modernization status'][i],
                   "max_heat_demand": df_i['max heat demand [kWh/m^2]'][i] * df_i['Surface area [m^2]'][i] / 3600,
                   "district": df_i['Administrative district'][i],
-                  'count': 3990
+                  'count': df_i['grouped_building_count']
               }
               for i in range(len(df_i["Administrative district"]))}
     return dict_s, dict_m, dict_i
