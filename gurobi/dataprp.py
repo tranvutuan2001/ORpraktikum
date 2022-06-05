@@ -24,6 +24,7 @@ def data_preprocess():
             "count" (int) : number of buildings of the same type in the district       
     """
     df = pd.read_excel(ACOOLHEAD, engine='openpyxl')
+    df["Number of buildings"] = df["Number of buildings"].round(0).astype("int")
     df['grouped_building_count'] = df.groupby(["modernization status","Type of building"])["Number of buildings"].transform('sum')
     df = df.head(1000)
     df_hp = pd.read_csv(HEAT_PUMPS)
