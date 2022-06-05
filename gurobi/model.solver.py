@@ -59,7 +59,7 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
         for m in M:
             produced_heat = M[m]['produced heat']
             max_heat_demand = I[i]['max_heat_demand']
-            if max_heat_demand / produced_heat >= CONSTANT_HOURS_OF_HEATING_PER_YEAR:
+            if max_heat_demand <= produced_heat:
                 # this means the heatpump matches our heat demand
                 Fpow[(i, m)] = 1
             else:
