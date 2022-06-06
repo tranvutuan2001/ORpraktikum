@@ -3,11 +3,11 @@
 from gurobipy import *
 import numpy as np
 from dataprp import data_preprocess
-import timeit
+import timeit, json
 
 # from https://www.haustechnikdialog.de/Forum/t/42992/Auslegung-Waermepumpe-auf-2200-Betriebsstunden-pro-Jahr-#:~:text=Hallo%2C-,ca.,die%20Betriebsdauer%20richtig%20hinzugenommen%20worden.
 CONSTANT_HOURS_OF_HEATING_PER_YEAR = 2000
-NUMBER_OF_MONTHS = 24  # number of months
+NUMBER_OF_MONTHS = 1  # number of months
 
 
 def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
@@ -22,7 +22,6 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
             'produced heat' (float) : heat produced by the heat pump
         I (dict) : dictionary of buildings each containing the keys:
             "building_type" (str) : building type
-            "surface_area" (int)  : surface area of the building (in m^2)
             "modernization_status" (str) : status of the building (i.e. whether it is modernized or not)
             "max_heat_demand" (int)  : maximum heat demand of the building (in kWh/m^2)
             "district" (str) : district of the building
@@ -120,14 +119,14 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
         for s in S:
             for t in range(T):
                 model.addConstr(
-                    quicksum(x[m, i, s, t] for m in M) <= totalhouses[i, s]
-                    - quicksum(x[m, i, s, ti] for m in M for ti in range(0, t))
+                    quicksum(x[m, i, s, t] for m in M) <=
+                    (totalhouses[i, s] - quicksum(x[m, i, s, ti] for m in M for ti in range(0, t)))
                 )
     # Constraint 3:
     for i in I:
         for s in S:
             model.addConstr(
-                quicksum(x[m, i, s, t] for m in M for t in range(T)) <= totalhouses[i, s]
+                quicksum(x[m, i, s, t] for m in M for t in range(T)) == totalhouses[i, s]
             )
 
     # Constraint 4:
@@ -137,28 +136,28 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
                 quicksum(x[m, i, s, t] for i in I for s in S) <= storage[m, t]
             )
     # Constraint 5:
-    for s in S:
-        for d in D:
-            model.addConstr(
-                quicksum(w[s, d, t] for t in range(T)) <= A[d, s] * quicksum(totalhouses[i, s] for i in I)
-            )
+    # for s in S:
+    #     for d in D:
+    #         model.addConstr(
+    #             quicksum(w[s, d, t] for t in range(T)) <= A[d, s] * quicksum(totalhouses[i, s] for i in I)
+    #         )
     # Constraint 6:
-    for s in S:
-        for t in range(T):
-            model.addConstr(
-                quicksum(w[s, d, t] for d in D) <= quicksum(x[m, i, s, t] for m in M for i in I)
-            )
+    # for s in S:
+    #     for t in range(T):
+    #         model.addConstr(
+    #             quicksum(w[s, d, t] for d in D) <= quicksum(x[m, i, s, t] for m in M for i in I)
+    #         )
     # Constraint 7:
-    for d in D:
-        for t in range(T):
-            model.addConstr(
-                quicksum(w[s, d, t] for s in S if A[d, s] == 1) <= workforce[d, t]
-            )
+    # for d in D:
+    #     for t in range(T):
+    #         model.addConstr(
+    #             quicksum(w[s, d, t] for s in S if A[d, s] == 1) <= workforce[d, t]
+    #         )
     # Constraint 8:
     model.addConstrs(
         x[m, i, s, t] >= 0 for m in M for i in I for s in S for t in range(T))
     # Constraint 9:
-    model.addConstrs(w[s, d, t] >= 0 for d in D for s in S for t in range(T))
+    # model.addConstrs(w[s, d, t] >= 0 for d in D for s in S for t in range(T))
     stop = timeit.default_timer()
     print('Time in seconds to prepare A and Fpow: ', stop - start)
 
@@ -176,11 +175,11 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     model.update()
     print("Solving the model")
     start = timeit.default_timer()
+    model.write("model.lp")
     model.optimize()
     # model.computeIIS()
     stop = timeit.default_timer()
-    model.write("optimization_result.sol")
-    model.write("model.lp")
+    write_solution(model, D_S, M, I)
     print('Time in seconds to solve the model: ', stop - start)
     return model
 
@@ -197,7 +196,6 @@ def prepare_params(T, S, I, M, D):
             'produced heat' (float) : heat produced by the heat pump
         I (dict) : dictionary of buildings each containing the keys:
             "building_type" (str) : building type
-            "surface_area" (int)  : surface area of the building (in m^2)
             "modernization_status" (str) : status of the building (i.e. whether it is modernized or not)
             "max_heat_demand" (int)  : maximum heat demand of the building (in kWh/m^2)
             "district" (str) : district of the building
@@ -235,9 +233,9 @@ def prepare_params(T, S, I, M, D):
 
     for i in I:
         for s in S:
-            totalhouses[i, s] = I[i]['count']
+            totalhouses[i, s] = I[i]['quantity']
         for t in range(T):
-            heatdemand[i, t] = I[i]['max_heat_demand'] * I[i]["surface_area"]
+            heatdemand[i, t] = I[i]['max_heat_demand']
 
     for s in S:
         for i in I:
@@ -253,6 +251,29 @@ def prepare_params(T, S, I, M, D):
             workforce[d, t] = D[d]
 
     return storage, totalhouses, heatdemand, boilercosts, hpcosts, hpinvestment, workforce
+
+
+def write_solution(model, D_S, M, I):
+    with open('optimization_result.txt', 'w') as f:
+        f.write('Work force configuration:\n')
+        for index in D_S:
+            f.write(f'{index}: {D_S[index]}\n')
+
+        f.write('\n')
+        f.write('Heat pump models configuration:\n')
+        for index in M:
+            f.write(f'{index}: {M[index]}\n')
+
+        f.write('\n')
+        f.write('House type configuration:\n')
+        for index in I:
+            f.write(f'{index}: {I[index]}\n')
+
+        f.write('\n')
+        f.write('Optimal variable set:\n')
+        res = json.loads(model.getJSONSolution())['Vars']
+        for var in res:
+            f.write(f'{var}\n')
 
 
 solve()
