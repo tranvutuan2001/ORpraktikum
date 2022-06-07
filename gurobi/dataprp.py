@@ -3,8 +3,8 @@ import random
 import os
 
 dirname = os.path.dirname(__file__)
-ACOOLHEAD = os.path.join(dirname, "../data-sources/ACoolHeadAppendix.xlsx")
-HEAT_PUMPS = os.path.join(dirname, "../data-sources/heat_pumps.csv")
+ACOOLHEAD = os.path.join(dirname, "./data-sources/ACoolHeadAppendix.xlsx")
+HEAT_PUMPS = os.path.join(dirname, "./data-sources/heat_pumps.csv")
 
 def data_preprocess():
     """
@@ -56,7 +56,7 @@ def data_preprocess():
                   "building_type": df_i['Type of building'][i],
                   "surface_area": df_i['Surface area [m^2]'][i],
                   "modernization_status": df_i['modernization status'][i],
-                  "max_heat_demand": df_i['max heat demand [kWh/m^2]'][i],
+                  "max_heat_demand": df_i['max heat demand [kWh/m^2]'][i] * df_i['Surface area [m^2]'][i] / 3600,
                   "district": df_i['Administrative district'][i],
                   'count': 3990
               }

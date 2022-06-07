@@ -1,3 +1,5 @@
 node_modules
 .idea
 gurobi/__pycache__
+gurobi/model.lp
+gurobi/optimization_result.sol

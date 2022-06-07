@@ -4,6 +4,7 @@ from gurobipy import *
 import numpy as np
 from dataprp import data_preprocess
 import timeit
+
 # from https://www.haustechnikdialog.de/Forum/t/42992/Auslegung-Waermepumpe-auf-2200-Betriebsstunden-pro-Jahr-#:~:text=Hallo%2C-,ca.,die%20Betriebsdauer%20richtig%20hinzugenommen%20worden.
 CONSTANT_HOURS_OF_HEATING_PER_YEAR = 2000
 NUMBER_OF_MONTHS = 24  # number of months
@@ -58,7 +59,7 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
         for m in M:
             produced_heat = M[m]['produced heat']
             max_heat_demand = I[i]['max_heat_demand']
-            if max_heat_demand / produced_heat >= CONSTANT_HOURS_OF_HEATING_PER_YEAR:
+            if max_heat_demand <= produced_heat:
                 # this means the heatpump matches our heat demand
                 Fpow[(i, m)] = 1
             else:
@@ -80,8 +81,9 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     start = timeit.default_timer()
     # Variables
     print()
-    print("Adding variables", len(
-        M)*len(I)*len(S)*T, "variables will be added")
+
+    print("Adding variables for the heatpumps", len(
+        M) * len(I) * len(S) * T, "variables will be added")
     # Quantity of installed heat pumps with given conditions
     x = {}
     for m in M:
@@ -90,58 +92,69 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
                 for t in range(T):
                     # name = f"x: install hp_{str(m)} in house_{str(i)} in district_{str(s)} in month_{str(t)}"
                     x[m, i, s, t] = model.addVar(
-                        vtype=GRB.INTEGER, name="x# hp " + str(m) + "of house " + str(i) + "in" + str(s) + "until" + str(t))
+                        vtype=GRB.INTEGER,
+                        name=f'x#install_hp_of_type_{str(m)}#at_house_type_{str(i)}#in_district_{str(s)}_in_month_{str(t)}'
+                    )
     # Quantity of installed heat pumps by distributor d (at moment 'd' is assumed to be the same as 's')
-    print("Adding variables for the heatpumps by distributor", len(S)*len(D)*T, "variables will be added")
+    print("Adding variables for the heatpumps by distributor", len(S) * len(D) * T, "variables will be added")
     w = {}
     for s in S:
         for t in range(T):
             for d in D:
                 w[s, d, t] = model.addVar(
-                    vtype=GRB.INTEGER, name="w# distributor" + str(d) + "in" + str(s) + "until" + str(t))
+                    vtype=GRB.INTEGER, name=f'w#distributor_{str(d)}#in_district_{str(s)}#in_month_{str(t)}'
+                )
     stop = timeit.default_timer()
     print('Time in seconds to add the variables: ', stop - start)
-    
+
     print("Adding the constraints")
     start = timeit.default_timer()
     # Constraint 1:
     for i in I:
         for m in M:
             for s in S:
-                model.addConstr( 
-                    quicksum(x[m, i, s, t] for t in range(T)) <= totalhouses[i, s]*Fpow[(i, m)])
+                model.addConstr(
+                    quicksum(x[m, i, s, t] for t in range(T)) <= totalhouses[i, s] * Fpow[(i, m)]
+                )
     # Constraint 2:
     for i in I:
         for s in S:
             for t in range(T):
-                model.addConstr(quicksum(x[m, i, s, t] for m in M) <= totalhouses[i, s]-quicksum(
-                    x[m, i, s, ti] for m in M for ti in range(0, t)))
+                model.addConstr(
+                    quicksum(x[m, i, s, t] for m in M) <= totalhouses[i, s]
+                    - quicksum(x[m, i, s, ti] for m in M for ti in range(0, t))
+                )
     # Constraint 3:
     for i in I:
         for s in S:
             model.addConstr(
-                quicksum(x[m, i, s, t] for m in M for t in range(T)) <= totalhouses[i, s])
+                quicksum(x[m, i, s, t] for m in M for t in range(T)) <= totalhouses[i, s]
+            )
 
     # Constraint 4:
     for t in range(T):
         for m in M:
-            model.addConstr(quicksum(x[m, i, s, t]
-                            for i in I for s in S) <= storage[m, t])
+            model.addConstr(
+                quicksum(x[m, i, s, t] for i in I for s in S) <= storage[m, t]
+            )
     # Constraint 5:
     for s in S:
         for d in D:
             model.addConstr(
-                quicksum(w[s, d, t] for t in range(T)) <= A[d, s] * quicksum(totalhouses[i, s] for i in I))
+                quicksum(w[s, d, t] for t in range(T)) <= A[d, s] * quicksum(totalhouses[i, s] for i in I)
+            )
     # Constraint 6:
     for s in S:
         for t in range(T):
-            model.addConstr(quicksum(w[s, d, t] for d in D) <= quicksum(
-                x[m, i, s, t] for m in M for i in I))
+            model.addConstr(
+                quicksum(w[s, d, t] for d in D) <= quicksum(x[m, i, s, t] for m in M for i in I)
+            )
     # Constraint 7:
     for d in D:
         for t in range(T):
-            model.addConstr(quicksum(w[s, d, t]
-                            for s in S if A[d, s] == 1) <= workforce[d, t])
+            model.addConstr(
+                quicksum(w[s, d, t] for s in S if A[d, s] == 1) <= workforce[d, t]
+            )
     # Constraint 8:
     model.addConstrs(
         x[m, i, s, t] >= 0 for m in M for i in I for s in S for t in range(T))
@@ -153,10 +166,10 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     print("Adding objective function")
     start = timeit.default_timer()
     # Objective
-    obj = quicksum((x[m, i, s, t]*hpinvestment[m]
+    obj = quicksum((x[m, i, s, t] * hpinvestment[m]
                     + quicksum(x[m, i, s, t_1] * hpcosts[m, s] *
-                               heatdemand[i, t_1] for t_1 in range(t+1))
-                    + (totalhouses[i, s] - quicksum(x[m, i, s, t_1] for t_1 in range(t+1))) * boilercosts[i, s] * heatdemand[i, t])
+                               heatdemand[i, t_1] for t_1 in range(t + 1))
+                    + (totalhouses[i, s] - quicksum(x[m, i, s, t_1] for t_1 in range(t + 1))) * boilercosts[i, s] * heatdemand[i, t])
                    for m in M for i in I for s in S for t in range(T))
     model.setObjective(obj, GRB.MINIMIZE)
     stop = timeit.default_timer()
@@ -167,6 +180,7 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     model.optimize()
     # model.computeIIS()
     stop = timeit.default_timer()
+    model.write("optimization_result.sol")
     model.write("model.lp")
     print('Time in seconds to solve the model: ', stop - start)
     return model
