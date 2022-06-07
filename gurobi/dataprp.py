@@ -24,7 +24,7 @@ def data_preprocess():
             'count' (int) : number of buildings of the same type in the district
     """
     df = pd.read_excel(ACOOLHEAD, engine='openpyxl')
-    df = df.head(100)
+    df = df.head(40)
 
     df_hp = pd.read_csv(HEAT_PUMPS)
     df_hp = df_hp.head(5)
@@ -74,14 +74,11 @@ def prepare_workforce_data(df):
     workforce = []
 
     for i in range(0, len(district)):
-        n = random.randint(1, 20)
+        n = 1000
+        if i < len(district) / 2:
+            n = 2000
         workforce.append(n)
 
-    dict_s = {i:
-        {
-            'district': district[i],
-            'workforce': workforce[i]
-        }
-        for i in range(len(district))}
+    dict_s = {district[i]: workforce[i] for i in range(len(district))}
 
     return dict_s
