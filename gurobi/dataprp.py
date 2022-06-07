@@ -24,7 +24,7 @@ def data_preprocess():
             'count' (int) : number of buildings of the same type in the district
     """
     df = pd.read_excel(ACOOLHEAD, engine='openpyxl')
-    df = df.head(40)
+    df = df.head(100)
 
     df_hp = pd.read_csv(HEAT_PUMPS)
     df_hp = df_hp.head(5)
@@ -38,19 +38,21 @@ def data_preprocess():
 
 
 def prepare_housing_data(df):
-    df_i = df[['Administrative district', 'Type of building',
+    df_i = df[['Administrative district', 'Type of building', 'Number of buildings',
                'Surface area [m^2]', 'modernization status', 'max heat demand [kWh/m^2]']]
 
     df_i['max heat demand [kWh/m^2]'] = df_i['max heat demand [kWh/m^2]'] * df_i['Surface area [m^2]'] / 3600
 
     df_i = df_i.groupby(by=['Administrative district', 'Type of building', 'modernization status']).agg(
         max_heat_demand=pd.NamedAgg(column='max heat demand [kWh/m^2]', aggfunc=max),
-        quantity=pd.NamedAgg(column='Administrative district', aggfunc='count'),
+        quantity=pd.NamedAgg(column='Number of buildings', aggfunc='sum'),
         building_type=pd.NamedAgg(column='Type of building', aggfunc='first'),
         district=pd.NamedAgg(column='Administrative district', aggfunc='first'),
         modernization_status=pd.NamedAgg(column='modernization status', aggfunc='first')
     )
 
+    df_i = df_i[df_i['max_heat_demand'] < 30]
+    df_i['quantity'] = df_i['quantity'].round(0)
     df_i = df_i.reset_index(drop=True)
 
     return df_i.to_dict('index')
