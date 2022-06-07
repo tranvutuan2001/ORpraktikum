@@ -88,10 +88,10 @@ def add_zipcodes_to_csv():
     df.to_csv(os.path.join(
         dirname, "data-sources/data_from_Hannah_with_coordinates_and_zipcodes.csv"), index=False)  # save the csv
     # there might be some zipcodes that are still 0
-    missing_zipcodes = df[df['zipcode'].eq(0)].drop_duplicates()
-    print(str(missing_zipcodes.sum()) +
-          " zipcodes could not be found")
-    print(missing_zipcodes)
+    # missing_zipcodes = df[df['zipcode'].eq(0)].drop_duplicates()
+    # print(str(missing_zipcodes.sum()) +
+    #       " zipcodes could not be found")
+    # print(missing_zipcodes)
 
 
 def add_coordinates_to_csv():
