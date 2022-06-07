@@ -81,6 +81,7 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     start = timeit.default_timer()
     # Variables
     print()
+
     print("Adding variables for the heatpumps", len(
         M) * len(I) * len(S) * T, "variables will be added")
     # Quantity of installed heat pumps with given conditions
