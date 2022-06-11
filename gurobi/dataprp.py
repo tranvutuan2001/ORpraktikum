@@ -38,14 +38,15 @@ def data_preprocess():
 
 
 def prepare_housing_data(df):
-    df_i = df[['Administrative district', 'Type of building', 'Number of buildings',
+    df_i = df[['Year of construction','Administrative district', 'Type of building', 'Number of buildings',
                'Surface area [m^2]', 'modernization status', 'max heat demand [kWh/m^2]']]
 
     df_i['max heat demand [kWh/m^2]'] = df_i['max heat demand [kWh/m^2]'] * df_i['Surface area [m^2]'] / 3600
 
-    df_i = df_i.groupby(by=['Administrative district', 'Type of building', 'modernization status']).agg(
+    df_i = df_i.groupby(by=['Year of construction','Administrative district', 'Type of building', 'modernization status']).agg(
         max_heat_demand=pd.NamedAgg(column='max heat demand [kWh/m^2]', aggfunc=max),
         quantity=pd.NamedAgg(column='Number of buildings', aggfunc='sum'),
+        construction_year=pd.NamedAgg(column='Year of construction', aggfunc='first'), # Years in consideration in data : array([1918, 1948, 1957, 1968, 1978, 1983, 1994, 2001, 2009, 2015])
         building_type=pd.NamedAgg(column='Type of building', aggfunc='first'),
         district=pd.NamedAgg(column='Administrative district', aggfunc='first'),
         modernization_status=pd.NamedAgg(column='modernization status', aggfunc='first')
