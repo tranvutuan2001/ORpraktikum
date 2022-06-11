@@ -33,30 +33,52 @@ def data_preprocess():
     dict_i = prepare_housing_data(df)
     dict_s = prepare_workforce_data(df)
     dict_m = prepare_heatpump_data(df_hp)
-
+    
     return dict_s, dict_m, dict_i
 
 
 def prepare_housing_data(df):
-    df_i = df[['Year of construction','Administrative district', 'Type of building', 'Number of buildings',
-               'Surface area [m^2]', 'modernization status', 'max heat demand [kWh/m^2]']]
 
-    df_i['max heat demand [kWh/m^2]'] = df_i['max heat demand [kWh/m^2]'] * df_i['Surface area [m^2]'] / 3600
+    df["Number of buildings"] = df["Number of buildings"].round(0).astype("int")  #rounding of the no of buildings
+    df = df[df["Number of buildings"]>0]   #removing all the data with no of buildings as zero
+    df['max heat demand [kWh]'] = df['max heat demand [kWh/m^2]'] * df['Surface area [m^2]'] / 3600   #since heat demand was in [kWh/m^2]  
+    df = df[df['max heat demand [kWh]']<30]   #for now only considering the data with heat demand less than 30
+    
+    df1 = df[df['Year of construction']<1994] 
+    df2 = df[df['Year of construction']>1994] #data to group together for year 2001,2009 and 2015
+    df1 = df1.reset_index(drop=True)
+    df2 = df2.reset_index(drop=True)
 
-    df_i = df_i.groupby(by=['Year of construction','Administrative district', 'Type of building', 'modernization status']).agg(
-        max_heat_demand=pd.NamedAgg(column='max heat demand [kWh/m^2]', aggfunc=max),
+    df_i = df2[['Administrative district', 'Type of building', 'Number of buildings',
+               'Surface area [m^2]', 'modernization status', 'max heat demand [kWh]']] 
+
+    #grouping only data for yeae 2001, 2009 and 2015
+    df_i = df_i.groupby(by=['Administrative district', 'Type of building', 'modernization status']).agg(
+        max_heat_demand=pd.NamedAgg(column='max heat demand [kWh]', aggfunc=max),
         quantity=pd.NamedAgg(column='Number of buildings', aggfunc='sum'),
-        construction_year=pd.NamedAgg(column='Year of construction', aggfunc='first'), # Years in consideration in data : array([1918, 1948, 1957, 1968, 1978, 1983, 1994, 2001, 2009, 2015])
         building_type=pd.NamedAgg(column='Type of building', aggfunc='first'),
         district=pd.NamedAgg(column='Administrative district', aggfunc='first'),
         modernization_status=pd.NamedAgg(column='modernization status', aggfunc='first')
-    )
+    )  
 
-    df_i = df_i[df_i['max_heat_demand'] < 30]
-    df_i['quantity'] = df_i['quantity'].round(0)
     df_i = df_i.reset_index(drop=True)
+    #grouped data for the above years transformed into a dictionary
+    dict1 = df_i.to_dict('index')
+    index = len(dict1)
 
-    return df_i.to_dict('index')
+   #taking rest of the data for year before 2001 as it is without grouping
+    dict2 = {i:
+              {
+                  "max_heat_demand": df1['max heat demand [kWh]'][i-index],
+                  "quantity": df1['Number of buildings'][i-index],
+                  "building_type":df1['Type of building'][i-index],
+                  'district':df1['Administrative district'][i-index],
+                  "modernization_status": df1['modernization status'][i-index],
+              }
+              for i in range(index,index+len(df1["Administrative district"]))}
+    
+    #combining both the dictionaries together  , the length of combined dictionary is 17442
+    return dict1 | dict2
 
 
 def prepare_heatpump_data(df_hp):
