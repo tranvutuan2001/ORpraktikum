@@ -3,52 +3,44 @@
 from gurobipy import *
 import numpy as np
 from dataprp import data_preprocess
-import timeit
+import timeit, json
 
 # from https://www.haustechnikdialog.de/Forum/t/42992/Auslegung-Waermepumpe-auf-2200-Betriebsstunden-pro-Jahr-#:~:text=Hallo%2C-,ca.,die%20Betriebsdauer%20richtig%20hinzugenommen%20worden.
 CONSTANT_HOURS_OF_HEATING_PER_YEAR = 2000
-NUMBER_OF_MONTHS = 24  # number of months
+NUMBER_OF_MONTHS = 10  # number of months
 
 
-def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
+def solve():
     """Solves the heat pump problem.
 
-    Args: 
-        T (int): number of months startting from January
-        S (dict) : dictionary of district names and workfoce in that district
-        M (dict) : dictionary of heat pumps, each containing the keys:
-            'brand_name' (str) : brand name of the heat pump
-            'cop' (float) : COP of the heat pump
-            'produced heat' (float) : heat produced by the heat pump
-        I (dict) : dictionary of buildings each containing the keys:
-            "building_type" (str) : building type
-            "surface_area" (int)  : surface area of the building (in m^2)
-            "modernization_status" (str) : status of the building (i.e. whether it is modernized or not)
-            "max_heat_demand" (int)  : maximum heat demand of the building (in kWh/m^2)
-            "district" (str) : district of the building
-            "count" (int) : number of buildings of the same type in the district  
-                            FOR LATER
-        __________________________________________________________________________________________________________
-
-        # D (dict) set of installation providers . 
-        #     - 'location': the location of the installation provider
-        #     - 'operating_radius': the radius in which the installation provider operates
-        #     - 'total_workforce': the work force of the installation provider
-        #     TODO find sources for this. Is this even possible??
+    T (int): number of months startting from January
+    M (dict) : dictionary of heat pumps, each containing the keys:
+        'brand_name' (str) : brand name of the heat pump
+        'cop' (float) : COP of the heat pump
+        'produced heat' (float) : heat produced by the heat pump
+    I (dict) : dictionary of buildings each containing the keys:
+        "building_type" (str) : building type
+        "modernization_status" (str) : status of the building (i.e. whether it is modernized or not)
+        "max_heat_demand" (int)  : maximum heat demand of the building (in kWh/m^2)
+        "district" (str) : district of the building
+        "quantity" (int) : number of buildings of the same type in the district
+    D (dict) dictionary of working capacity of every district
+        D = {district: workforce}
+        (district: String, workforce: int)
+    __________________________________________________________________________________________________________
 
     """
     print("Preprocess the data")
     start = timeit.default_timer()
-    D_S, M, I = data_preprocess()
-    D = {i: D_S[i]['workforce'] for i in D_S.keys()}
-    S = {i: D_S[i]['district'] for i in D_S.keys()}
+    D, M, I = data_preprocess()
+    T = NUMBER_OF_MONTHS;
     stop = timeit.default_timer()
     print('Time in seconds to prepare the data: ', stop - start)
 
     print("Prepare the parameters")
     start = timeit.default_timer()
-    storage, totalhouses, heatdemand, boilercosts, hpcosts, hpinvestment, workforce = prepare_params(
-        T, S, I, M, D)
+    storage, heatdemand, boilercosts, hpcosts, hpinvestment = prepare_params(
+        T, I, M)
     stop = timeit.default_timer()
     print('Time in seconds to prepare the parameters ', stop - start)
 
@@ -64,13 +56,7 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
                 Fpow[(i, m)] = 1
             else:
                 Fpow[(i, m)] = 0
-    A = dict()
-    for d in D:
-        for s in S:
-            if s == d:
-                A[(d, s)] = 1
-            else:
-                A[(d, s)] = 0
+
     stop = timeit.default_timer()
     print('Time in seconds to prepare A and Fpow: ', stop - start)
     print("Preparing the model\n")
@@ -83,27 +69,18 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     print()
 
     print("Adding variables for the heatpumps", len(
-        M) * len(I) * len(S) * T, "variables will be added")
+        M) * len(I) * T, "variables will be added")
     # Quantity of installed heat pumps with given conditions
     x = {}
     for m in M:
         for i in I:
-            for s in S:
-                for t in range(T):
-                    # name = f"x: install hp_{str(m)} in house_{str(i)} in district_{str(s)} in month_{str(t)}"
-                    x[m, i, s, t] = model.addVar(
-                        vtype=GRB.INTEGER,
-                        name=f'x#install_hp_of_type_{str(m)}#at_house_type_{str(i)}#in_district_{str(s)}_in_month_{str(t)}'
-                    )
-    # Quantity of installed heat pumps by distributor d (at moment 'd' is assumed to be the same as 's')
-    print("Adding variables for the heatpumps by distributor", len(S) * len(D) * T, "variables will be added")
-    w = {}
-    for s in S:
-        for t in range(T):
-            for d in D:
-                w[s, d, t] = model.addVar(
-                    vtype=GRB.INTEGER, name=f'w#distributor_{str(d)}#in_district_{str(s)}#in_month_{str(t)}'
+            for t in range(T):
+                # name = f"x: install hp_{str(m)} in house_{str(i)} in district_{str(s)} in month_{str(t)}"
+                x[m, i, t] = model.addVar(
+                    vtype=GRB.INTEGER,
+                    name=f'x#install_hp_of_type_{str(m)}#at_house_type_{str(i)}#in_month_{str(t)}'
                 )
+
     stop = timeit.default_timer()
     print('Time in seconds to add the variables: ', stop - start)
 
@@ -112,106 +89,86 @@ def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
     # Constraint 1:
     for i in I:
         for m in M:
-            for s in S:
-                model.addConstr(
-                    quicksum(x[m, i, s, t] for t in range(T)) <= totalhouses[i, s] * Fpow[(i, m)]
-                )
-    # Constraint 2:
-    for i in I:
-        for s in S:
             for t in range(T):
-                model.addConstr(
-                    quicksum(x[m, i, s, t] for m in M) <= totalhouses[i, s]
-                    - quicksum(x[m, i, s, ti] for m in M for ti in range(0, t))
-                )
+                if Fpow[(i, m)] == 0:
+                    model.addConstr(x[m, i, t] == 0)
+
     # Constraint 3:
     for i in I:
-        for s in S:
-            model.addConstr(
-                quicksum(x[m, i, s, t] for m in M for t in range(T)) <= totalhouses[i, s]
-            )
+        model.addConstr(
+            quicksum(x[m, i, t] for m in M for t in range(T)) == I[i]['quantity']
+        )
 
     # Constraint 4:
     for t in range(T):
         for m in M:
-            model.addConstr(
-                quicksum(x[m, i, s, t] for i in I for s in S) <= storage[m, t]
-            )
-    # Constraint 5:
-    for s in S:
-        for d in D:
-            model.addConstr(
-                quicksum(w[s, d, t] for t in range(T)) <= A[d, s] * quicksum(totalhouses[i, s] for i in I)
-            )
-    # Constraint 6:
-    for s in S:
-        for t in range(T):
-            model.addConstr(
-                quicksum(w[s, d, t] for d in D) <= quicksum(x[m, i, s, t] for m in M for i in I)
-            )
-    # Constraint 7:
+            model.addConstr(quicksum(x[m, i, t] for i in I) <= storage[m, t])
+
+    # For every district in every month, the number of installed heatpump must be smaller or equal
+    # the maximum capacity (workforce)
     for d in D:
+        workforce = D[d]
         for t in range(T):
-            model.addConstr(
-                quicksum(w[s, d, t] for s in S if A[d, s] == 1) <= workforce[d, t]
-            )
+            l = []
+            for i in I:
+                if I[i]['district'] == d:
+                    for m in M:
+                            l.append(x[m, i, t])
+
+            model.addConstr(quicksum(l) <= workforce)
+
     # Constraint 8:
     model.addConstrs(
-        x[m, i, s, t] >= 0 for m in M for i in I for s in S for t in range(T))
-    # Constraint 9:
-    model.addConstrs(w[s, d, t] >= 0 for d in D for s in S for t in range(T))
+        x[m, i, t] >= 0 for m in M for i in I for t in range(T)
+    )
+
     stop = timeit.default_timer()
     print('Time in seconds to prepare A and Fpow: ', stop - start)
 
     print("Adding objective function")
     start = timeit.default_timer()
     # Objective
-    obj = quicksum((x[m, i, s, t] * hpinvestment[m]
-                    + quicksum(x[m, i, s, t_1] * hpcosts[m, s] *
+    obj = quicksum((x[m, i, t] * hpinvestment[m]
+                    + quicksum(x[m, i, t_1] * hpcosts[m] *
                                heatdemand[i, t_1] for t_1 in range(t + 1))
-                    + (totalhouses[i, s] - quicksum(x[m, i, s, t_1] for t_1 in range(t + 1))) * boilercosts[i, s] * heatdemand[i, t])
-                   for m in M for i in I for s in S for t in range(T))
+                    + (I[i]['quantity'] - quicksum(x[m, i, t_1] for t_1 in range(t + 1))) * boilercosts[i] * heatdemand[i, t])
+                   for m in M for i in I for t in range(T))
     model.setObjective(obj, GRB.MINIMIZE)
     stop = timeit.default_timer()
     print('Time in seconds to add the objective function: ', stop - start)
     model.update()
     print("Solving the model")
     start = timeit.default_timer()
+    model.write("model.lp")
     model.optimize()
     # model.computeIIS()
     stop = timeit.default_timer()
-    model.write("optimization_result.sol")
-    model.write("model.lp")
+    write_solution(model, D, M, I)
     print('Time in seconds to solve the model: ', stop - start)
     return model
 
 
-def prepare_params(T, S, I, M, D):
+def prepare_params(T, I, M):
     """Prepares the parameters based on the data
 
     Args: 
         T (int): number of months startting from January
-        S (dict) : dictionary of district names and workfoce in that district
         M (dict) : dictionary of heat pumps, each containing the keys:
             'brand_name' (str) : brand name of the heat pump
             'cop' (float) : COP of the heat pump
             'produced heat' (float) : heat produced by the heat pump
         I (dict) : dictionary of buildings each containing the keys:
             "building_type" (str) : building type
-            "surface_area" (int)  : surface area of the building (in m^2)
             "modernization_status" (str) : status of the building (i.e. whether it is modernized or not)
             "max_heat_demand" (int)  : maximum heat demand of the building (in kWh/m^2)
             "district" (str) : district of the building
-            "count" (int) : number of buildings of the same type in the district  
-        D (dict) : dictionary of distributors 
+            "count" (int) : number of buildings of the same type in the district
     Returns:
         storage[t,m]: stock level of heat pumps
-        totalhouses[i,s]: total count of similar houses in a district
         heatdemand[i,t]: requested heat demand of a house type in a month
-        boilercosts[b,s]: variable costs for gas boilers per unit of heat
-        hpcosts[m,s]: variable costs for heat pumps per unit of heat
-        hpinvestment[m,s]: fixed purchasing costs for heat pump
-        workforce[d,t]: workforce capacities of distributors per month
+        boilercosts[i]: variable costs for gas boilers per unit of heat
+        hpcosts[m]: variable costs for heat pumps per unit of heat
+        hpinvestment[m]: fixed purchasing costs for heat pump
 
                             FOR LATER
         __________________________________________________________________________________________________________
@@ -222,38 +179,49 @@ def prepare_params(T, S, I, M, D):
     AVERAGE_BOILER_COST_PER_UNIT = 0.07  # pounds per kWh
 
     storage = np.empty(shape=(len(M), T))
-    totalhouses = np.empty(shape=(len(I), len(S)))
     heatdemand = np.empty(shape=(len(I), T))
-    boilercosts = np.empty(shape=(len(I), len(S)))
-    hpcosts = np.empty(shape=(len(M), len(S)))
+    boilercosts = np.empty(shape=(len(I)))
+    hpcosts = np.empty(shape=(len(M)))
     hpinvestment = np.empty(shape=(len(M)))
-    workforce = np.empty(shape=(len(D), T))
-    # sub = np.empty(shape=(len(M)))
-    # availablepower = np.empty(shape=(len(renawable), T))
     for t in range(T):
         for m in M:
-            storage[m, t] = 1000
+            storage[m, t] = 100000
 
     for i in I:
-        for s in S:
-            totalhouses[i, s] = I[i]['count']
         for t in range(T):
-            heatdemand[i, t] = I[i]['max_heat_demand'] * I[i]["surface_area"]
+            heatdemand[i, t] = I[i]['max_heat_demand']
 
-    for s in S:
-        for i in I:
-            boilercosts[i, s] = AVERAGE_BOILER_COST_PER_UNIT
+    for i in I:
+        boilercosts[i] = AVERAGE_BOILER_COST_PER_UNIT
 
     for m in M:
-        for s in S:
-            hpcosts[m, s] = M[m]['produced heat'] / M[m]['cop']
+        hpcosts[m] = M[m]['produced heat'] / M[m]['cop']
         hpinvestment[m] = 1000
 
-    for d in D:
-        for t in range(T):
-            workforce[d, t] = D[d]
+    return storage, heatdemand, boilercosts, hpcosts, hpinvestment
 
-    return storage, totalhouses, heatdemand, boilercosts, hpcosts, hpinvestment, workforce
+
+def write_solution(model, D, M, I):
+    with open('optimization_result.txt', 'w') as f:
+        f.write('Work force configuration:\n')
+        for index in D:
+            f.write(f'{index}: {D[index]}\n')
+
+        f.write('\n')
+        f.write('Heat pump models configuration:\n')
+        for index in M:
+            f.write(f'{index}: {M[index]}\n')
+
+        f.write('\n')
+        f.write('House type configuration:\n')
+        for index in I:
+            f.write(f'{index}: {I[index]}\n')
+
+        f.write('\n')
+        f.write('Optimal variable set:\n')
+        res = json.loads(model.getJSONSolution())['Vars']
+        for var in res:
+            f.write(f'{var}\n')
 
 
 solve()
