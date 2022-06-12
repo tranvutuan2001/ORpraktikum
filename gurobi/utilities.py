@@ -39,15 +39,18 @@ def get_distance(origin, destination):
 
     origin_lat, origin_lng = origin_coords
     destination_lat, destination_lng = destination_coords
+
+    if origin_lat is None or origin_lng is None or destination_lat is None or destination_lng is None:
+        return None
     coordinates = f'{origin_lng},{origin_lat};{destination_lng},{destination_lat}'
     r = requests.get(
-        f"http://router.project-osrm.org/route/v1/car/{coordinates}?overview=false""")
-    time.sleep(1)
+        f"http://router.project-osrm.org/route/v1/driving/{coordinates}?overview=false""")
     if r.status_code == 200:
         routes = json.loads(r.content)
         if len(routes.get('routes')) > 0:
             distance = routes.get("routes")[
                 0]['distance']/1000  # convert to km
+            time.sleep(1)
             return distance
         raise Exception("No routes found")
     raise Exception(f"Error: {r.status_code}")
@@ -79,6 +82,9 @@ def get_coordinates(location):
     # Get the coordinates of the location
     location = geolocator.geocode(location)
     time.sleep(1)
+    if location is None:
+        return None, None
+
     lat = location.latitude
     lng = location.longitude
 
@@ -95,3 +101,6 @@ def get_coordinates(location):
 # print(f"Weather in {source}: ", get_weather_data(source)['main']['temp'], "°C")
 
 # print(f"Zip code for {source}: ", get_zipcode(source))
+
+# print(get_distance({'postalcode': '88279', 'country': 'Germany'}, {
+#     'postalcode': '01067', 'country': 'Germany'}))
