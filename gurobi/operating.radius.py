@@ -24,6 +24,7 @@ def add_operating_radius():
             dirname, "data-sources/Distributor_data.csv")
         df = pd.read_csv(DISTRIBUTERS_DATA)
         df['operating_regions'] = None
+        df['operating_regions'] = df['operating_regions'].astype(object)
         df.to_csv(os.path.join(
             dirname, "data-sources/Distributor_data_with_radius.csv"))
 
@@ -43,7 +44,7 @@ def add_operating_radius():
     for i in tqdm(missing_operating_regions.index):
         zipcode = missing_operating_regions.loc[i, 'zipcode']
         regions = get_operating_regions(districts, str(zipcode))
-        missing_operating_regions.loc[i, df.columns.get_loc(
+        missing_operating_regions.iat[i, df.columns.get_loc(
             'operating_regions')] = np.array([
                 key for key in regions.keys()], dtype=object)
         # missing_operating_regions['operating_regions'][i] = np.array([
@@ -83,7 +84,7 @@ def get_operating_regions(districts, zipcode):
             known_distances[zipcode_of_district, zipcode] = distance
 
         if not distance == None and distance < MAX_OPERATING_RADIUS:
-            regions[districts['Administrative district'][i]] = distance
+            regions[district] = distance
         # distances[district['zipcode'],zipcode] = distance
     return regions
 
