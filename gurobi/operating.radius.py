@@ -10,7 +10,6 @@ distances = {}
 
 
 def add_operating_radius():
-
     # if file exists, load it
     if os.path.isfile(os.path.join(
             dirname, "data-sources/Distributor_data_with_radius.csv")):
@@ -28,11 +27,9 @@ def add_operating_radius():
         df.to_csv(os.path.join(
             dirname, "data-sources/Distributor_data_with_radius.csv"))
 
-    # fill all null values with 0
+    df['operating_regions'] = df['operating_regions'].astype(object)
     # get missing operating regions
     missing_operating_regions = df[df['operating_regions'].isna()]
-    # df['operating_regions'] = df['operating_regions'].apply(
-    #     lambda x: [] if pd.isnull(x) else x)
 
     # get the districts from the ACOOLHEAD data
     ACOOLHEAD = os.path.join(
@@ -46,10 +43,11 @@ def add_operating_radius():
     for i in tqdm(missing_operating_regions.index):
         zipcode = missing_operating_regions.loc[i, 'zipcode']
         regions = get_operating_regions(districts, str(zipcode))
-        # missing_operating_regions.loc[i, df.columns.get_loc(
-        #     'operating_regions')] = [key for key in regions.keys()]
-        missing_operating_regions['operating_regions'][i] = np.array([
-            key for key in regions.keys()], dtype=object)
+        missing_operating_regions.loc[i, df.columns.get_loc(
+            'operating_regions')] = np.array([
+                key for key in regions.keys()], dtype=object)
+        # missing_operating_regions['operating_regions'][i] = np.array([
+        #     key for key in regions.keys()], dtype=object)
         df.to_csv(os.path.join(
             dirname, "data-sources/Distributor_data_with_radius.csv"))
 
