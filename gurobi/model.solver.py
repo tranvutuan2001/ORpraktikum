@@ -2,135 +2,173 @@
 # Template for our final model
 from gurobipy import *
 import numpy as np
+from dataprp import data_preprocess
+import timeit, json
 
-#
 # from https://www.haustechnikdialog.de/Forum/t/42992/Auslegung-Waermepumpe-auf-2200-Betriebsstunden-pro-Jahr-#:~:text=Hallo%2C-,ca.,die%20Betriebsdauer%20richtig%20hinzugenommen%20worden.
 CONSTANT_HOURS_OF_HEATING_PER_YEAR = 2000
-NUMBER_OF_MONTHS = 12  # number of months
+NUMBER_OF_MONTHS = 10  # number of months
 
 
-def preprocess():
-    """Preprocess the data TODO: figure out what input is needed for this function
-    Args: 
-        Our data sets 
-    Returns:
-        S (set): set of districts and workforce in that district
-        I (dict): clusters of house types. 
-            - 'buidling_type': type of building EFH, 
-            - 'surface_area': the surface area 
-            - 'modernazation_status': the modernization status of the building
-            - 'max_heat_demand': the amount of heat this building requires TODO: make sure if this is for a year
-            - 'district': the district in which the building is located
-            - 'count': the number of houses in a particular cluster
-        M (dict) set of heatpumps from https://www.topten.eu/private/products/heat_pumps
-            - 'cop': cop of the heat pump
-            - 'produced heat': the amount of heat it can produce TODO: find out what this means probably per hour
-    """
-    raise NotImplementedError("preprocess")
-    S = set()
-    I = dict()
-    M = dict()
-    D = None  # for now just return None
-    return S, I, M, D
-
-
-def solve(T=NUMBER_OF_MONTHS, S=None, I=None, M=None, D=None):
+def solve():
     """Solves the heat pump problem.
 
-    Args: 
-        T (int): number of months startting from January
-        S (set): set of districts and workforce in that district
-        I (dict): clusters of house types. 
-            - 'buidling_type': type of building EFH, 
-            - 'surface_area': the surface area 
-            - 'modernazation_status': the modernization status of the building
-            - 'max_heat_demand': the amount of heat this building requires TODO: make sure if this is for a year
-            - 'district': the district in which the building is located
-            - 'count': the number of houses in a particular cluster
-        M (dict) set of heatpumps from https://www.topten.eu/private/products/heat_pumps
-            - 'cop': cop of the heat pump
-            - 'produced heat': the amount of heat it can produce TODO: find out what this means probably per hour
-
-                            FOR LATER
-        __________________________________________________________________________________________________________
-
-        # D (dict) set of installation providers . 
-        #     - 'location': the location of the installation provider
-        #     - 'operating_radius': the radius in which the installation provider operates
-        #     - 'total_workforce': the work force of the installation provider
-        #     TODO find sources for this. Is this even possible??
+    T (int): number of months startting from January
+    M (dict) : dictionary of heat pumps, each containing the keys:
+        'brand_name' (str) : brand name of the heat pump
+        'cop' (float) : COP of the heat pump
+        'produced heat' (float) : heat produced by the heat pump
+    I (dict) : dictionary of buildings each containing the keys:
+        "building_type" (str) : building type
+        "modernization_status" (str) : status of the building (i.e. whether it is modernized or not)
+        "max_heat_demand" (int)  : maximum heat demand of the building (in kWh/m^2)
+        "district" (str) : district of the building
+        "quantity" (int) : number of buildings of the same type in the district
+    D (dict) dictionary of working capacity of every district
+        D = {district: workforce}
+        (district: String, workforce: int)
+    __________________________________________________________________________________________________________
 
     """
+    print("Preprocess the data")
+    start = timeit.default_timer()
+    D, M, I = data_preprocess()
+    T = NUMBER_OF_MONTHS;
+    stop = timeit.default_timer()
+    print('Time in seconds to prepare the data: ', stop - start)
 
-    storage, totalhouses, heatdemand, boilercosts, hpcosts, hpinvestment, workforce = prepare_params(
-        T, S, I, M, D)
+    print("Prepare the parameters")
+    start = timeit.default_timer()
+    storage, heatdemand, boilercosts, hpcosts, hpinvestment = prepare_params(
+        T, I, M)
+    stop = timeit.default_timer()
+    print('Time in seconds to prepare the parameters ', stop - start)
 
+    print("Preparing A and Fpow")
+    start = timeit.default_timer()
     Fpow = dict()
     for i in I:
         for m in M:
             produced_heat = M[m]['produced heat']
             max_heat_demand = I[i]['max_heat_demand']
-            if max_heat_demand / produced_heat >= CONSTANT_HOURS_OF_HEATING_PER_YEAR:
+            if max_heat_demand <= produced_heat:
                 # this means the heatpump matches our heat demand
                 Fpow[(i, m)] = 1
             else:
                 Fpow[(i, m)] = 0
 
+    stop = timeit.default_timer()
+    print('Time in seconds to prepare A and Fpow: ', stop - start)
+    print("Preparing the model\n")
+    # Create a new model
     model = Model("Heatpumps")
-
+    print()
+    print("Adding variables")
+    start = timeit.default_timer()
     # Variables
-    x  # Quantity of installed heat pumps with given conditions
-    w  # Quantity of installed heat pumps by distributor d
+    print()
 
-    # Constraints TODO: add constraints
+    print("Adding variables for the heatpumps", len(
+        M) * len(I) * T, "variables will be added")
+    # Quantity of installed heat pumps with given conditions
+    x = {}
+    for m in M:
+        for i in I:
+            for t in range(T):
+                # name = f"x: install hp_{str(m)} in house_{str(i)} in district_{str(s)} in month_{str(t)}"
+                x[m, i, t] = model.addVar(
+                    vtype=GRB.INTEGER,
+                    name=f'x#install_hp_of_type_{str(m)}#at_house_type_{str(i)}#in_month_{str(t)}'
+                )
 
+    stop = timeit.default_timer()
+    print('Time in seconds to add the variables: ', stop - start)
+
+    print("Adding the constraints")
+    start = timeit.default_timer()
+    # Constraint 1:
+    for i in I:
+        for m in M:
+            for t in range(T):
+                if Fpow[(i, m)] == 0:
+                    model.addConstr(x[m, i, t] == 0)
+
+    # Constraint 3:
+    for i in I:
+        model.addConstr(
+            quicksum(x[m, i, t] for m in M for t in range(T)) == I[i]['quantity']
+        )
+
+    # Constraint 4:
+    for t in range(T):
+        for m in M:
+            model.addConstr(quicksum(x[m, i, t] for i in I) <= storage[m, t])
+
+    # For every district in every month, the number of installed heatpump must be smaller or equal
+    # the maximum capacity (workforce)
+    for d in D:
+        workforce = D[d]
+        for t in range(T):
+            l = []
+            for i in I:
+                if I[i]['district'] == d:
+                    for m in M:
+                            l.append(x[m, i, t])
+
+            model.addConstr(quicksum(l) <= workforce)
+
+    # Constraint 8:
+    model.addConstrs(
+        x[m, i, t] >= 0 for m in M for i in I for t in range(T)
+    )
+
+    stop = timeit.default_timer()
+    print('Time in seconds to prepare A and Fpow: ', stop - start)
+
+    print("Adding objective function")
+    start = timeit.default_timer()
     # Objective
-    obj = None  # TODO
+    obj = quicksum((x[m, i, t] * hpinvestment[m]
+                    + quicksum(x[m, i, t_1] * hpcosts[m] *
+                               heatdemand[i, t_1] for t_1 in range(t + 1))
+                    + (I[i]['quantity'] - quicksum(x[m, i, t_1] for t_1 in range(t + 1))) * boilercosts[i] * heatdemand[i, t])
+                   for m in M for i in I for t in range(T))
     model.setObjective(obj, GRB.MINIMIZE)
+    stop = timeit.default_timer()
+    print('Time in seconds to add the objective function: ', stop - start)
     model.update()
+    print("Solving the model")
+    start = timeit.default_timer()
+    model.write("model.lp")
     model.optimize()
+    # model.computeIIS()
+    stop = timeit.default_timer()
+    write_solution(model, D, M, I)
+    print('Time in seconds to solve the model: ', stop - start)
     return model
 
 
-def prepare_params(T, S, I, M, B, D):
+def prepare_params(T, I, M):
     """Prepares the parameters based on the data
 
     Args: 
         T (int): number of months startting from January
-        S (set): set of districts and workforce in that district
-        I (dict): clusters of house types. each entry is a representative of the cluster (take average values or median or majority). 
-            Each entry has the following attributes:
-            - 'buidling_type': type of building EFH, 
-            - 'surface_area': the surface area 
-            - 'modernazation_status': the modernization status of the building
-            - 'max_heat_demand': the amount of heat this building requires TODO: make sure if this is for a year
-            - 'district': the district in which the building is located
-            - 'count': the number of houses in a particular cluster
-        M (dict) set of heatpumps from https://www.topten.eu/private/products/heat_pumps
-            - 'cop': cop of the heat pump
-            - 'produced heat': the amount of heat it can produce TODO: find out what this, means probably per hour
-            - 'investment': the investment cost of the heat pump
-        B (dict) set of boilers. Each entry is a representative of the cluster (take average values or median or majority).
-            Each entry has the following attributes:
-                - 'name': the name of the boiler
-                - 'cost': the costs per unit of heat
-
-                            FOR LATER
-        __________________________________________________________________________________________________________
-
-        # D (dict) set of installation providers . 
-        #     - 'location': the location of the installation provider
-        #     - 'operating_radius': the radius in which the installation provider operates
-        #     - 'total_workforce': the work force of the installation provider
-        #     TODO find sources for this. Is this even possible??
+        M (dict) : dictionary of heat pumps, each containing the keys:
+            'brand_name' (str) : brand name of the heat pump
+            'cop' (float) : COP of the heat pump
+            'produced heat' (float) : heat produced by the heat pump
+        I (dict) : dictionary of buildings each containing the keys:
+            "building_type" (str) : building type
+            "modernization_status" (str) : status of the building (i.e. whether it is modernized or not)
+            "max_heat_demand" (int)  : maximum heat demand of the building (in kWh/m^2)
+            "district" (str) : district of the building
+            "count" (int) : number of buildings of the same type in the district
     Returns:
         storage[t,m]: stock level of heat pumps
-        totalhouses[i,s]: total count of similar houses in a district
         heatdemand[i,t]: requested heat demand of a house type in a month
-        boilercosts[b,s]: variable costs for gas boilers per unit of heat
-        hpcosts[m,s]: variable costs for heat pumps per unit of heat
-        hpinvestment[m,s]: fixed purchasing costs for heat pump
-        workforce[d,t]: workforce capacities of distributors per month
+        boilercosts[i]: variable costs for gas boilers per unit of heat
+        hpcosts[m]: variable costs for heat pumps per unit of heat
+        hpinvestment[m]: fixed purchasing costs for heat pump
 
                             FOR LATER
         __________________________________________________________________________________________________________
@@ -140,36 +178,50 @@ def prepare_params(T, S, I, M, B, D):
     # from https://www.raponline.org/wp-content/uploads/2022/02/Heat-pump-running-costs-v271.pdf
     AVERAGE_BOILER_COST_PER_UNIT = 0.07  # pounds per kWh
 
-    storage = np.empty(shape=(T, len(M)))
-    totalhouses = np.empty(shape=(len(I), len(S)))
+    storage = np.empty(shape=(len(M), T))
     heatdemand = np.empty(shape=(len(I), T))
-    boilercosts = np.empty(shape=(len(B), len(S)))
-    hpcosts = np.empty(shape=(len(M), len(S)))
-    hpinvestment = np.empty(shape=(len(M), len(S)))
-    workforce = np.empty(shape=(len(D), T))
-    # sub = np.empty(shape=(len(M)))
-    # availablepower = np.empty(shape=(len(renawable), T))
+    boilercosts = np.empty(shape=(len(I)))
+    hpcosts = np.empty(shape=(len(M)))
+    hpinvestment = np.empty(shape=(len(M)))
     for t in range(T):
         for m in M:
-            storage[t, m] = 1000
+            storage[m, t] = 100000
 
     for i in I:
-        for s in S:
-            totalhouses[i, s] = I[i]['count']
         for t in range(T):
-            heatdemand[i, t] = I[i]['max_heat_demand'] / \
-                12  # to get the heat demand per month
+            heatdemand[i, t] = I[i]['max_heat_demand']
 
-    for s in S:
-        boilercosts[s] = AVERAGE_BOILER_COST_PER_UNIT
+    for i in I:
+        boilercosts[i] = AVERAGE_BOILER_COST_PER_UNIT
 
     for m in M:
-        for s in S:
-            hpcosts[m, s] = M[m]['produced heat'] / M[m]['cop']
-            hpinvestment[m, s] = M[m]['investment']
+        hpcosts[m] = M[m]['produced heat'] / M[m]['cop']
+        hpinvestment[m] = 1000
 
-    for d in D:
-        for t in range(T):
-            workforce[d, t] = D[d]['total_workforce']
+    return storage, heatdemand, boilercosts, hpcosts, hpinvestment
 
-    return storage, totalhouses, heatdemand, boilercosts, hpcosts, hpinvestment, workforce
+
+def write_solution(model, D, M, I):
+    with open('optimization_result.txt', 'w') as f:
+        f.write('Work force configuration:\n')
+        for index in D:
+            f.write(f'{index}: {D[index]}\n')
+
+        f.write('\n')
+        f.write('Heat pump models configuration:\n')
+        for index in M:
+            f.write(f'{index}: {M[index]}\n')
+
+        f.write('\n')
+        f.write('House type configuration:\n')
+        for index in I:
+            f.write(f'{index}: {I[index]}\n')
+
+        f.write('\n')
+        f.write('Optimal variable set:\n')
+        res = json.loads(model.getJSONSolution())['Vars']
+        for var in res:
+            f.write(f'{var}\n')
+
+
+solve()

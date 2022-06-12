@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 from gurobipy import *
 from datasetloader import yearly_electric_costs
 
