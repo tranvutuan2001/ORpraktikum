@@ -37,8 +37,10 @@ def add_operating_radius():
     # get the districts from the ACOOLHEAD data
     ACOOLHEAD = os.path.join(
         dirname, "data-sources/data_from_Hannah_with_coordinates_and_zipcodes.csv")
+
     df_acoolhead = pd.read_csv(ACOOLHEAD)
-    districts = df_acoolhead[['Administrative district', 'zipcode']]
+    districts = df_acoolhead[['Administrative district', 'zipcode']].groupby(
+        'Administrative district')
 
     # get the operating regions for each missing row
     for i in tqdm(missing_operating_regions.index):
@@ -57,21 +59,21 @@ def add_operating_radius():
 
 
 def get_operating_regions(districts, zipcode):
+    zipcode = '0'+str(zipcode) if len(str(zipcode)) == 4 else str(zipcode)
     regions = {}
     known_distances = {}
 
     # get the distance between the zipcode and each district
-    for i in range(len(districts)):
-        if districts['zipcode'][i] < 10000:
-            zipcode_of_district = '0' + str(zipcode_of_district)
-        else:
-            zipcode_of_district = str(districts['zipcode'][i])
+    for district, zipcodes in districts.groups.items():
+        zipcode_of_district = '0' + \
+            str(zipcodes[0]) if len(
+                str(zipcodes[0])) == 4 else str(zipcodes[0])
         if zipcode_of_district == zipcode:
-            regions[districts['Administrative district'][i]] = 0
+            regions[district] = 0
             continue
         if zipcode_of_district[0] != zipcode[0]:
             continue
-        if districts['Administrative district'][i] in regions.keys():
+        if district in regions.keys():
             continue
         if (zipcode_of_district, zipcode) in known_distances.keys():
             distance = known_distances[(zipcode_of_district, zipcode)]
