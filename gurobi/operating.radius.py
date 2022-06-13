@@ -1,3 +1,4 @@
+from this import d
 from utilities import get_distance
 import pandas as pd
 import numpy as np
@@ -81,15 +82,16 @@ def add_operating_districts():
     for i in tqdm(df.index):
         zipcode = df.loc[i, 'zipcode']
         radius = df.loc[i, 'operating radius']
-        regions = [key for key in get_operating_districts(
-            districts, str(zipcode), radius).keys()]
-        df.iloc[i, df.columns.get_loc(
-            'operating districts')] = ';'.join(regions)
+        if(df.loc[i, 'operating districts'] is None or df.loc[i, 'operating districts'] is np.nan):
+            regions = [key for key in get_operating_districts(
+                districts, str(zipcode), radius).keys()]
+            df.iloc[i, df.columns.get_loc(
+                'operating districts')] = ';'.join(regions)
 
-        # missing_operating_regions['operating districts'][i] = np.array([
-        #     key for key in regions.keys()], dtype=object)
-        df.to_csv(os.path.join(
-            dirname, "data-sources/Distributor_data_with_radius.csv"), index=False)
+            # missing_operating_regions['operating districts'][i] = np.array([
+            #     key for key in regions.keys()], dtype=object)
+            df.to_csv(os.path.join(
+                dirname, "data-sources/Distributor_data_with_radius.csv"), index=False)
 
     # save the dataframe
     df.to_csv(os.path.join(
@@ -108,7 +110,7 @@ def get_operating_districts(districts, zipcode, op_radius=MAX_OPERATING_RADIUS):
         if diff_time.total_seconds() > MAX_EXECUTION_TIME:  # stop search if execution time is exceeded
             return regions
 
-        district, zipcode = districts.iloc[i]
+        district, z = districts.iloc[i]
         if district in regions.keys():
             continue
 
@@ -118,8 +120,8 @@ def get_operating_districts(districts, zipcode, op_radius=MAX_OPERATING_RADIUS):
         #     str(zipcodes[0]) if len(
         #         str(zipcodes[0])) == 4 else str(zipcodes[0])
         zipcode_of_district = '0' + \
-            str(zipcode) if len(
-                str(zipcode)) == 4 else str(zipcode)
+            str(z) if len(
+                str(z)) == 4 else str(z)
 
         if zipcode_of_district == zipcode:
             regions[district] = 0
@@ -138,7 +140,11 @@ def get_operating_districts(districts, zipcode, op_radius=MAX_OPERATING_RADIUS):
         else:
             distance = get_distance({'postalcode': zipcode, 'country': 'Germany'}, {
                 'postalcode': zipcode_of_district, 'country': 'Germany'})
-            known_distances[zipcode_of_district, zipcode] = distance
+            if distance == 0 and zipcode != zipcode_of_district:
+                raise Exception('Distance is 0 for zipcodes: ' +
+                                zipcode + ' and ' + zipcode_of_district)
+            if distance is not None:
+                known_distances[zipcode_of_district, zipcode] = distance
 
             if not distance == None and distance < op_radius:
                 regions[district] = distance
