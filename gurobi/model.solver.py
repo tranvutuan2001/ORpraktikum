@@ -41,7 +41,7 @@ def solve():
     print("Preprocess the data")
     start = timeit.default_timer()
     D, M, I = data_preprocess()
-    T = NUMBER_OF_MONTHS;
+    T = NUMBER_OF_MONTHS
     stop = timeit.default_timer()
     print('Time in seconds to prepare the data: ', stop - start)
 
@@ -77,6 +77,8 @@ def solve():
     start = timeit.default_timer()
     # Variables
     print()
+    
+    print(len(M))
 
     print("Adding variables for the heatpumps", len(
         M) * len(I) * T, "variables will be added")
@@ -236,11 +238,11 @@ def prepare_params(T, I, M, D):
     ELECTRICITY_COST_PER_UNIT = 0.4805
 
     for m in M:
-            # hpcost is multiplied with heatdemand in obj function, so it is should be cost/kwh. 
+            # hpcost is multiplied with heatdemand in obj function, so it should be cost/kwh. 
             # we consider it now as the constant elctricity price of one dimension, since acoording to EON this price can be guaranteed till 2024. 
-            # Price can be made to dependent on time ( added tax might be increased) and districts by adapting the vector timefactor and districsfactor.
+            # Price can be made to dependent on time ( added tax might be increased) and districts by adapting the vector timefactor and locationfactor.
             hpcosts[m] = ELECTRICITY_COST_PER_UNIT / M[m]['cop']
-            hpinvestment[m] = 1000
+            hpinvestment[m] = M[m]['price']
     
     # there is a base cost per year to sign EON contract
     hpcosts = 134.36/12 + hpcosts        
@@ -261,7 +263,7 @@ def prepare_params(T, I, M, D):
     # heatpump co2 emission based on electricity supplied by EON
     for  m in M:
         hpCO2[m] = CO2_EMISSION_EON / M[m]['cop']
-    
+       
     
    
     return storage, heatdemand, boilercosts, hpcosts,  hpinvestment,  \
