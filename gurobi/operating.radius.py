@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import os
 from tqdm import tqdm
+from datetime import datetime
+
 dirname = os.path.dirname(__file__)
 
 MAX_OPERATING_RADIUS = 100  # in km
@@ -25,14 +27,27 @@ def add_operating_radius():
         dirname, "data-sources/Distributor_data.csv")
     df = pd.read_csv(DISTRIBUTERS_DATA)
     df['operating radius'] = None
-    df['operating radius'] = df['operating radius'].fillna(0)
+    df['operating radius'] = df['operating radius'].fillna(150)
     df.to_csv(os.path.join(
         dirname, "data-sources/Distributor_data_with_radius.csv"), index=False)
 
     df['operating radius'] = df['operating radius'].astype(int)
 
     for i in tqdm(range(len(df))):
-        df.iloc[i, df.columns.get_loc('operating radius')] = 100
+        if i <= round(5*len(df)/100):
+            df.iloc[i, df.columns.get_loc('operating radius')] = 800
+        elif i <= round(5*len(df)/100) + round(10*len(df)/100):
+            df.iloc[i, df.columns.get_loc('operating radius')] = 400
+        elif i <= round(20*len(df)/100) + round(5*len(df)/100) + round(10*len(df)/100):
+            df.iloc[i, df.columns.get_loc('operating radius')] = 200
+
+    print("Generated operating radius")
+    print(round(len(df[df['operating radius'] == 200])/len(df)
+          * 100, 2), "% of distributors have operating radius of 200")
+    print(round(len(df[df['operating radius'] == 400])/len(df)
+          * 100, 2), "% of distributors have operating radius of 400")
+    print(round(len(df[df['operating radius'] == 800])/len(df)
+          * 100, 2), "% of distributors have operating radius of 800")
 
     df.to_csv(os.path.join(
         dirname, "data-sources/Distributor_data_with_radius.csv"), index=False)
@@ -84,25 +99,37 @@ def add_operating_districts():
 def get_operating_districts(districts, zipcode, op_radius=MAX_OPERATING_RADIUS):
     zipcode = '0'+str(zipcode) if len(str(zipcode)) == 4 else str(zipcode)
     regions = {}
+    MAX_EXECUTION_TIME = 120  # in seconds
+    districts = districts.apply(lambda x: x.sample(frac=0.3))
 
-    # get the distance between the zipcode and each district
-    for district, zipcodes in districts.groups.items():
+    start = datetime.now()
+    for i in tqdm(range(len(districts)), leave=False):
+        diff_time = datetime.now() - start
+        if diff_time.total_seconds() > MAX_EXECUTION_TIME:  # stop search if execution time is exceeded
+            return regions
+
+        district, zipcode = districts.iloc[i]
+        if district in regions.keys():
+            continue
+
+        if len(regions.keys()) >= 5:
+            return regions
+        # zipcode_of_district = '0' + \
+        #     str(zipcodes[0]) if len(
+        #         str(zipcodes[0])) == 4 else str(zipcodes[0])
         zipcode_of_district = '0' + \
-            str(zipcodes[0]) if len(
-                str(zipcodes[0])) == 4 else str(zipcodes[0])
-
-        if op_radius > 700:
-            regions[district] = 1
+            str(zipcode) if len(
+                str(zipcode)) == 4 else str(zipcode)
 
         if zipcode_of_district == zipcode:
             regions[district] = 0
             continue
-        if zipcode_of_district[0] != zipcode[0]:
-            continue
-        if district in regions.keys():
-            continue
-        if zipcode_of_district[:3] != zipcode[:3]:
-            continue
+        # if op_radius > 700:
+        #     regions[district] = 1
+        # if zipcode_of_district[0] != zipcode[0]:
+        #     continue
+        # if zipcode_of_district[:3] != zipcode[:3]:
+        #     continue
 
         if (zipcode_of_district, zipcode) in known_distances.keys():
             distance = known_distances[(zipcode_of_district, zipcode)]
