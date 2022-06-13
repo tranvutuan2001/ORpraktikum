@@ -1,4 +1,3 @@
-
 import pandas as pd
 import os
 from gurobipy import *
@@ -12,7 +11,6 @@ dirname = os.path.dirname(__file__)
 ACOOLHEAD = os.path.join(dirname, './data-sources/data_from_Hannah_with_coordinates_zipcodes_heatcapacity.csv')
 HEAT_PUMPS = os.path.join(dirname, './data-sources/heat_pumps_air_water_only.csv')
 FPOWDATA = os.path.join(dirname, './data-sources/fpow.csv')
-
 
 
 def data_preprocess():
@@ -32,10 +30,10 @@ def data_preprocess():
             'count' (int) : number of buildings of the same type in the district
         fitness (dict): contains info if a heat pump model m can satisfy the demand of a house type i (1 if yes, else 0) 
         """
-    
+
     print("Preprocess the data")
     start = timeit.default_timer()
-    
+
     df = pd.read_csv(ACOOLHEAD)
     df = df.head(1000)
     df = df.reset_index(drop=True)
@@ -47,12 +45,12 @@ def data_preprocess():
     dict_i = prepare_housing_data(df)
     dict_s = prepare_workforce_data(df)
     dict_m = prepare_heatpump_data(df_hp)
-    
-    fitness= prepare_fitness()
-    
+
+    fitness = prepare_fitness()
+
     stop = timeit.default_timer()
     print('Time in seconds to prepare the data: ', stop - start, "\n")
-    return  dict_s, dict_m,dict_i, fitness
+    return dict_s, dict_m, dict_i, fitness
 
 
 def prepare_fitness():
@@ -60,33 +58,33 @@ def prepare_fitness():
     reads the csv file containing the fitness data
 
     """
-    fitness={}
+    fitness = {}
     with open(FPOWDATA) as csvfile:
-        datareader = csv.reader(csvfile,delimiter=";")
+        datareader = csv.reader(csvfile, delimiter=";")
         next(csvfile)
         for row in datareader:
-            fitness[(int(row[0]),int(row[1]))]=int(row[2])
+            fitness[(int(row[0]), int(row[1]))] = int(row[2])
     return fitness
-   
+
 
 def prepare_housing_data(df):
-    dict_i= {i:
-             {
-                 "district": df["Administrative district"][i],
-                 "type of building": df["Type of building"][i],
-                 "quantity": int(round(df["Number of buildings"][i],0)),
-                 "Surface area": int(df["Surface area [m^2]"][i]),
-                 "modernization status": df["modernization status"][i],
-                 "max heat demand [kWh/m^2]": df["max heat demand [kWh/m^2]"][i],
-                 "average heat demand": df["average heat demand [kWh/m^2]"][i],
-                 "Heatcapacity": df["Heatcapacity"][i],
-                 "Klimazone": df["Klimazone"][i],
-                 "year of construction": df["Year of construction"][i],
-                 "max_heat_demand_Patrick": round(int(df["Surface area [m^2]"][i])*df["Heatcapacity"][i]/1000,2),
-                 #"Floors": df["Floors"][i]
-                 }
-             for i in range(len(df["long"]))}
-        
+    dict_i = {i:
+        {
+            "district": df["Administrative district"][i],
+            "type of building": df["Type of building"][i],
+            "quantity": int(round(df["Number of buildings"][i], 0)),
+            "Surface area": int(df["Surface area [m^2]"][i]),
+            "modernization status": df["modernization status"][i],
+            "max heat demand [kWh/m^2]": df["max heat demand [kWh/m^2]"][i],
+            "average heat demand": df["average heat demand [kWh/m^2]"][i],
+            "Heatcapacity": df["Heatcapacity"][i],
+            "Klimazone": df["Klimazone"][i],
+            "year of construction": df["Year of construction"][i],
+            "max_heat_demand_Patrick": round(int(df["Surface area [m^2]"][i]) * df["Heatcapacity"][i] / 1000, 2),
+            # "Floors": df["Floors"][i]
+        }
+        for i in range(len(df["long"]))}
+
     return dict_i
 
 
@@ -98,17 +96,15 @@ def prepare_heatpump_data(df_hp):
             'produced heat': df_hp['Heat output A2/W35 (kW)'][i]
         }
         for i in range(len(df_hp['hp_name']))}
-        
+
     return dict_m
-
-
 
 
 def prepare_workforce_data(df):
     district = df['Administrative district'].unique()
     workforce = []
 
-#TODO: replace below with functional realistic code
+    # TODO: replace below with functional realistic code
 
     for i in range(0, len(district)):
         n = 10000000000000
@@ -119,9 +115,6 @@ def prepare_workforce_data(df):
     dict_s = {district[i]: workforce[i] for i in range(len(district))}
 
     return dict_s
-
-
-
 
 
 def prepare_params(T, I, M):
@@ -151,7 +144,7 @@ def prepare_params(T, I, M):
         sub[m]: fixed subsidies for heat pump models
         availablepower[renewable,t]: usable power from renewables
     """
-    
+
     print("Prepare the parameters")
     start = timeit.default_timer()
     AVERAGE_BOILER_COST_PER_UNIT = 0.17
@@ -159,11 +152,11 @@ def prepare_params(T, I, M):
     boilercosts = np.empty(shape=(len(I)))
     hpcosts = np.empty(shape=(len(M)))
     hpinvestment = np.empty(shape=(len(M)))
-    max_sales= []
-    
+    max_sales = []
+
     for t in range(T):
-        max_sales.append(111000+111000*0.14*t)
-        
+        max_sales.append(111000 + 111000 * 0.14 * t)
+
     for i in I:
         for t in range(T):
             heatdemand[i, t] = I[i]["average heat demand"]
@@ -173,13 +166,12 @@ def prepare_params(T, I, M):
 
     for m in M:
         hpcosts[m] = 0.56 / M[m]['cop']
-        
+
         hpinvestment[m] = 1
     stop = timeit.default_timer()
     print('Time in seconds to prepare the parameters ', stop - start)
-    
-    return max_sales, heatdemand, boilercosts, hpcosts, hpinvestment
 
+    return max_sales, heatdemand, boilercosts, hpcosts, hpinvestment
 
 
 """ -> Instead of calculating Fpow within the model, 

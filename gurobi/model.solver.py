@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 # Template for our final model
 
 from gurobipy import *
@@ -13,8 +13,9 @@ import timeit, csv
 
 dirname = os.path.dirname(__file__)
 
-NUMBER_OF_MONTHS = 9 # number of months
-MIN_PERCENTAGE = 0.8 # minimum required share of houses that receive HP
+NUMBER_OF_MONTHS = 9  # number of months
+MIN_PERCENTAGE = 0.8  # minimum required share of houses that receive HP
+
 
 def solve():
     """Solves the heat pump problem.
@@ -36,13 +37,12 @@ def solve():
     __________________________________________________________________________________________________________
 
     """
-    
-    #Preparation of Data and Parameters
-    T=NUMBER_OF_MONTHS
-    D, M, I, fitness= data_preprocess()
+
+    # Preparation of Data and Parameters
+    T = NUMBER_OF_MONTHS
+    D, M, I, fitness = data_preprocess()
     max_sales, heatdemand, boilercosts, hpcosts, hpinvestment = prepare_params(T, I, M)
-    
-    
+
     # Create a new model
     print("Preparing the model\n")
     model = Model("Heatpumps")
@@ -63,8 +63,6 @@ def solve():
     stop = timeit.default_timer()
     print('Time in seconds to add the variables: ', stop - start, "\n")
 
-
-
     print("Adding the constraints")
     start = timeit.default_timer()
     # Constraint 1: Consider Installability : never assign HP if they do not fit to the house type
@@ -75,37 +73,34 @@ def solve():
                     model.addConstr(x[m, i, t] == 0)
 
     # Constraint 2:  Install heat pumps in AT LEAST the specified percentage of all houses
-    
+
     model.addConstr(
-        quicksum(x[m, i, t] for m in M for i in I for t in range(T)) >= MIN_PERCENTAGE*quicksum(I[i]['quantity'] for i in I)
-        )
-     #Constraint 3: Only install as many heatpumps in a house category as the total quantity of houses of that type
+        quicksum(x[m, i, t] for m in M for i in I for t in range(T)) >= MIN_PERCENTAGE * quicksum(I[i]['quantity'] for i in I)
+    )
+    # Constraint 3: Only install as many heatpumps in a house category as the total quantity of houses of that type
     for i in I:
         model.addConstr(
             quicksum(x[m, i, t] for m in M for t in range(T)) <= I[i]['quantity']
         )
-    
 
     # Constraint 4: Only install up to the current expected sales volume
     for t in range(T):
         model.addConstr(quicksum(x[m, i, t] for i in I for m in M) <= max_sales[t])
-    
-    #Constraints 5: Respect the operation radius for each distributor
-    #TODO: add the constraint 5 as explained above
-    
-    #Constraint 6: Respect maximum worker capacity
-    #TODO: implement the constraint "yearly workforce <= qty of heat pumps installed by the distributor"
-    
 
-    
+    # Constraints 5: Respect the operation radius for each distributor
+    # TODO: add the constraint 5 as explained above
+
+    # Constraint 6: Respect maximum worker capacity
+    # TODO: implement the constraint "yearly workforce <= qty of heat pumps installed by the distributor"
+
     stop = timeit.default_timer()
-    print("Time in seconds to add the constraints: ", stop-start, "\n")
-    
+    print("Time in seconds to add the constraints: ", stop - start, "\n")
+
     # Add Objective
     print("Adding objective function")
     start = timeit.default_timer()
-    #TODO: add correct cost function
-    
+    # TODO: add correct cost function
+
     obj = quicksum((x[m, i, t] * hpinvestment[m]
                     + quicksum(x[m, i, t_1] * hpcosts[m] *
                                heatdemand[i, t_1] for t_1 in range(t + 1))
@@ -113,26 +108,19 @@ def solve():
                    for m in M for i in I for t in range(T))
     model.setObjective(obj, GRB.MINIMIZE)
     stop = timeit.default_timer()
-    print('Time in seconds to add the objective function: ', stop - start ,"\n")
+    print('Time in seconds to add the objective function: ', stop - start, "\n")
     model.update()
-    
-    
-    #Solve Model
+
+    # Solve Model
     print("Solving the model")
     start = timeit.default_timer()
-    model.write(os.path.join(dirname,"solutions\model.lp"))
+    model.write(os.path.join(dirname, "solutions\model.lp"))
     model.optimize()
     stop = timeit.default_timer()
-    write_solution_csv(model, D, M, I,T)
-    print('Time in seconds to solve the model: ', stop - start,"\n")
-   
+    write_solution_csv(model, D, M, I, T)
+    print('Time in seconds to solve the model: ', stop - start, "\n")
+
     return model
-
-
-
-        
-
-
 
     """ For testing purposes, can be ignored
     print("Set threshold as",MIN_PERCENTAGE)
@@ -148,5 +136,5 @@ def solve():
     """
     return
 
-solve()
 
+solve()
