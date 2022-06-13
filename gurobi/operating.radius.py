@@ -5,8 +5,9 @@ import os
 from tqdm import tqdm
 dirname = os.path.dirname(__file__)
 
-MAX_OPERATING_RADIUS = 120  # in km
+MAX_OPERATING_RADIUS = 90  # in km
 distances = {}
+known_distances = {}
 
 
 def add_operating_radius():
@@ -26,12 +27,11 @@ def add_operating_radius():
         df['operating_regions'] = None
         df['operating_regions'] = df['operating_regions'].astype(object)
         df.to_csv(os.path.join(
-            dirname, "data-sources/Distributor_data_with_radius.csv"))
+            dirname, "data-sources/Distributor_data_with_radius.csv"), index=False)
 
     df['operating_regions'] = df['operating_regions'].astype(object)
     # get missing operating regions
     missing_operating_regions = df[df['operating_regions'].isna()]
-
     # get the districts from the ACOOLHEAD data
     ACOOLHEAD = os.path.join(
         dirname, "data-sources/data_from_Hannah_with_coordinates_and_zipcodes.csv")
@@ -43,24 +43,24 @@ def add_operating_radius():
     # get the operating regions for each missing row
     for i in tqdm(missing_operating_regions.index):
         zipcode = missing_operating_regions.loc[i, 'zipcode']
-        regions = get_operating_regions(districts, str(zipcode))
-        missing_operating_regions.iat[i, df.columns.get_loc(
-            'operating_regions')] = np.array([
-                key for key in regions.keys()], dtype=object)
+        regions = [key for key in get_operating_regions(
+            districts, str(zipcode))]
+        df.iloc[i, df.columns.get_loc(
+            'operating_regions')] = ';'.join(regions)
+
         # missing_operating_regions['operating_regions'][i] = np.array([
         #     key for key in regions.keys()], dtype=object)
         df.to_csv(os.path.join(
-            dirname, "data-sources/Distributor_data_with_radius.csv"))
+            dirname, "data-sources/Distributor_data_with_radius.csv"), index=False)
 
     # save the dataframe
     df.to_csv(os.path.join(
-        dirname, "data-sources/Distributor_data_with_radius.csv"))
+        dirname, "data-sources/Distributor_data_with_radius.csv"), index=False)
 
 
 def get_operating_regions(districts, zipcode):
     zipcode = '0'+str(zipcode) if len(str(zipcode)) == 4 else str(zipcode)
     regions = {}
-    known_distances = {}
 
     # get the distance between the zipcode and each district
     for district, zipcodes in districts.groups.items():
@@ -74,6 +74,9 @@ def get_operating_regions(districts, zipcode):
             continue
         if district in regions.keys():
             continue
+        if zipcode_of_district[:3] != zipcode[:3]:
+            continue
+
         if (zipcode_of_district, zipcode) in known_distances.keys():
             distance = known_distances[(zipcode_of_district, zipcode)]
         elif (zipcode, zipcode_of_district) in known_distances.keys():
@@ -85,7 +88,7 @@ def get_operating_regions(districts, zipcode):
 
         if not distance == None and distance < MAX_OPERATING_RADIUS:
             regions[district] = distance
-        # distances[district['zipcode'],zipcode] = distance
+
     return regions
 
 
