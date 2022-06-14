@@ -8,14 +8,6 @@ import timeit, json
 # from https://www.haustechnikdialog.de/Forum/t/42992/Auslegung-Waermepumpe-auf-2200-Betriebsstunden-pro-Jahr-#:~:text=Hallo%2C-,ca.,die%20Betriebsdauer%20richtig%20hinzugenommen%20worden.
 CONSTANT_HOURS_OF_HEATING_PER_YEAR = 2000
 NUMBER_OF_MONTHS = 10  # number of months
-# from https://www.volker-quaschning.de/datserv/CO2-spez/index_e.php
-CO2_EMISSION_GAS = 433 # gramm/ kwh
-# from https://www.eon.de/de/gk/strom/oekostrom.html#:~:text=Im%20Jahr%201990%20lag%20der,der%20CO%202%2DEmissionen%20leisten.
-CO2_EMISSION_EON = 366 # gramm/kwh in 2020
-# from https://www.umweltbundesamt.de/daten/umwelt-wirtschaft/gesellschaftliche-kosten-von-umweltbelastungen#klimakosten-von-treibhausgas-emissionen
-CO2_EMISSION_PRICE_1 =  201E-6  # euro/gramm,  suggestion by German Environment Agency
-CO2_EMISSION_PRICE_2 =  698E-6  # euro/gram,   then balanced with the welfare losses caused by climate change for current and future generations
-BOILER_EFFICIENCY = 0.7
 
 
 def solve():
@@ -41,16 +33,14 @@ def solve():
     print("Preprocess the data")
     start = timeit.default_timer()
     D, M, I = data_preprocess()
-    T = NUMBER_OF_MONTHS
+    T = NUMBER_OF_MONTHS;
     stop = timeit.default_timer()
     print('Time in seconds to prepare the data: ', stop - start)
 
     print("Prepare the parameters")
     start = timeit.default_timer()
-
-    storage, heatdemand, boilercosts, hpcosts, hpinvestment, electr_timefactor, \
-        gas_timefactor, electr_locationfactor, gas_locationfactor, CO2_timefactor, hpCO2 = prepare_params( T, I, M, D)
-
+    storage, heatdemand, boilercosts, hpcosts, hpinvestment = prepare_params(
+        T, I, M)
     stop = timeit.default_timer()
     print('Time in seconds to prepare the parameters ', stop - start)
 
@@ -77,8 +67,6 @@ def solve():
     start = timeit.default_timer()
     # Variables
     print()
-    
-    print(len(M))
 
     print("Adding variables for the heatpumps", len(
         M) * len(I) * T, "variables will be added")
@@ -118,7 +106,6 @@ def solve():
 
     # For every district in every month, the number of installed heatpump must be smaller or equal
     # the maximum capacity (workforce)
-    # d is a string as key of dictionary!
     for d in D:
         workforce = D[d]
         for t in range(T):
@@ -136,21 +123,16 @@ def solve():
     )
 
     stop = timeit.default_timer()
-    print('Time in seconds to adding constraints: ', stop - start)
+    print('Time in seconds to prepare A and Fpow: ', stop - start)
 
     print("Adding objective function")
     start = timeit.default_timer()
     # Objective
-    obj = quicksum( ( x[m, i, t] * hpinvestment[m]
-                    + quicksum( x[m, i, t_1] * ( hpcosts[m] * electr_timefactor[t_1] * electr_locationfactor[d] 
-                                                           + hpCO2[m] * CO2_EMISSION_PRICE_1 * CO2_timefactor[t_1])
-                                               * heatdemand[i, t_1] for t_1 in range(t + 1) )
-                    + (I[i]['quantity'] - quicksum(x[m, i,  t_1] for t_1 in range(t + 1)))
-                                     * ( boilercosts[i] * gas_timefactor[t] * gas_locationfactor[d] 
-                                                          + CO2_EMISSION_GAS / BOILER_EFFICIENCY * CO2_EMISSION_PRICE_1 * CO2_timefactor[t] )
-                                     * heatdemand[i, t]) 
-                    for m in M for i in I for d in D for t in range(T) )
-
+    obj = quicksum((x[m, i, t] * hpinvestment[m]
+                    + quicksum(x[m, i, t_1] * hpcosts[m] *
+                               heatdemand[i, t_1] for t_1 in range(t + 1))
+                    + (I[i]['quantity'] - quicksum(x[m, i, t_1] for t_1 in range(t + 1))) * boilercosts[i] * heatdemand[i, t])
+                   for m in M for i in I for t in range(T))
     model.setObjective(obj, GRB.MINIMIZE)
     stop = timeit.default_timer()
     print('Time in seconds to add the objective function: ', stop - start)
@@ -166,7 +148,7 @@ def solve():
     return model
 
 
-def prepare_params(T, I, M, D):
+def prepare_params(T, I, M):
     """Prepares the parameters based on the data
 
     Args: 
@@ -193,27 +175,14 @@ def prepare_params(T, I, M, D):
         sub[m]: fixed subsidies for heat pump models
         availablepower[renewable,t]: usable power from renewables
     """
-    # # from https://www.raponline.org/wp-content/uploads/2022/02/Heat-pump-running-costs-v271.pdf
-    # AVERAGE_BOILER_COST_PER_UNIT = 0.07  # pounds per kWh
-
-    # from https://www.globalpetrolprices.com/Germany/natural_gas_prices/
-    AVERAGE_BOILER_COST_PER_UNIT = 0.071  #  euro per kWh for private household
+    # from https://www.raponline.org/wp-content/uploads/2022/02/Heat-pump-running-costs-v271.pdf
+    AVERAGE_BOILER_COST_PER_UNIT = 0.07  # pounds per kWh
 
     storage = np.empty(shape=(len(M), T))
     heatdemand = np.empty(shape=(len(I), T))
     boilercosts = np.empty(shape=(len(I)))
     hpcosts = np.empty(shape=(len(M)))
     hpinvestment = np.empty(shape=(len(M)))
-    # workforce = np.empty(shape=(len(D), T))
-    electr_timefactor =  np.empty(T)
-    gas_timefactor = np.empty(T)
-    electr_locationfactor = {}
-    gas_locationfactor = {}
-    CO2_timefactor = np.empty(T)
-    hpCO2 = np.empty(shape=(len(M)))
-    # sub = np.empty(shape=(len(M)))
-    # availablepower = np.empty(shape=(len(renawable), T))
-
     for t in range(T):
         for m in M:
             storage[m, t] = 100000
@@ -222,52 +191,14 @@ def prepare_params(T, I, M, D):
         for t in range(T):
             heatdemand[i, t] = I[i]['max_heat_demand']
 
-
-
     for i in I:
-            # boiler assumed to have the energy efficiency of 70%
-            boilercosts[i] = AVERAGE_BOILER_COST_PER_UNIT / BOILER_EFFICIENCY
-
-    # for m in M:
-    #     for s in S:
-    #         hpcosts[m, s] = M[m]['produced heat'] / M[m]['cop']
-    #     hpinvestment[m] = 1000
-    
-     # electricity price taken from: https://www.eon.de/de/pk/strom/stromanbieter/guenstiger-stromanbieter.html
-     # consider the price based on the tarif without minimum contract duration requirement
-    ELECTRICITY_COST_PER_UNIT = 0.4805
+        boilercosts[i] = AVERAGE_BOILER_COST_PER_UNIT
 
     for m in M:
-            # hpcost is multiplied with heatdemand in obj function, so it should be cost/kwh. 
-            # we consider it now as the constant elctricity price of one dimension, since acoording to EON this price can be guaranteed till 2024. 
-            # Price can be made to dependent on time ( added tax might be increased) and districts by adapting the vector timefactor and locationfactor.
-            hpcosts[m] = ELECTRICITY_COST_PER_UNIT / M[m]['cop']
-            hpinvestment[m] = M[m]['price']
-    
-    # there is a base cost per year to sign EON contract
-    hpcosts = 134.36/12 + hpcosts        
-        
-    # price of those terms are currently asummed to be constant over time
-    electr_timefactor = np.ones(T)
-    gas_timefactor = np.ones(T)
-    CO2_timefactor = np.ones(T)
+        hpcosts[m] = M[m]['produced heat'] / M[m]['cop']
+        hpinvestment[m] = 1000
 
-    # price of those terms are currently assumed to be the same over differenct districts
-    # d is a string as key of dictionary!
-    for d in D:
-        electr_locationfactor[d] = 1  
-        gas_locationfactor[d] = 1
-
-    
-
-    # heatpump co2 emission based on electricity supplied by EON
-    for  m in M:
-        hpCO2[m] = CO2_EMISSION_EON / M[m]['cop']
-       
-    
-   
-    return storage, heatdemand, boilercosts, hpcosts,  hpinvestment,  \
-             electr_timefactor, gas_timefactor, electr_locationfactor, gas_locationfactor, CO2_timefactor, hpCO2
+    return storage, heatdemand, boilercosts, hpcosts, hpinvestment
 
 
 def write_solution(model, D, M, I):
@@ -291,5 +222,6 @@ def write_solution(model, D, M, I):
         res = json.loads(model.getJSONSolution())['Vars']
         for var in res:
             f.write(f'{var}\n')
+
 
 solve()
