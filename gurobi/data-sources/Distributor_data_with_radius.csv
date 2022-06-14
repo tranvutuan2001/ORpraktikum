@@ -98,7 +98,7 @@ Elektro Jost GmbH,"45289 Essen-Burgaltendorf, Germany",45289,200,AltenkirchenWes
 Elektro Lübke KG,"24103 Kiel, Germany",24103,200,
 ELEKTRO Luckow & Söhne GmbH,"40721 Hilden, Germany",40721,200,AltenkirchenWesterwald;Bernkastel_WittlichLand;BielefeldStadt;BochumStadt;BonnStadt
 Elektro Riedel Inh. Frank Riedel,"30916 Isernhagen, Germany",30916,200,AltmarkSalzwedelLand;AmmerlandLand;BielefeldStadt;BraunschweigStadt;BremenBundesland
-Elektro Roßwein GmbH,"04741 Roßwein, Germany",4741,200,
+Elektro Roßwein GmbH,"04741 Roßwein, Germany",4741,200,AltenburgerLandLand;AltmarkSalzwedelLand;Anhalt_BitterfeldLand;BautzenLand
 ELEKTRO SCHNICKMANN GmbH,"51789 Lindlar-Hartegasse, Germany",51789,200,
 Elektro Zech GmbH,"87666 Pforzen, Germany",87666,200,
 Elektro-Beck,"73466 Lauchheim, Germany",73466,200,
@@ -370,86 +370,86 @@ Schwedisches Wärmepumpen Center,"03042 Cottbus, Germany",3042,150,
 Schwering GmbH,"46286 Dorsten-Rhade, Germany",46286,150,
 Schwuchow Sanitär- und Heizungs GmbH,"12107 Berlin, Germany",12107,150,
 seepex GmbH,"46240 Bottrop, Germany",46240,150,
-Selz & Cie GmbH,"69126 Heidelberg, Germany",69126,150,
-SH Siegerland -SHK Gebäudetechnik,"57258 Freudenberg, Germany",57258,150,
-SHK Brodde,"48431 Rheine, Germany",48431,150,
-Siebert Gebäudetechnik GmbH & Co. KG,"34376 Immenhausen, Germany",34376,150,
-Siegmund & Schulze GmbH,"12524 Berlin, Germany",12524,150,
-Silbereis GmbH,"69226 Nußloch, Germany",69226,150,
-SINA GmbH,"45239 Essen-Werden, Germany",45239,150,
-Solartec Röder GmbH,"63607 Wächtersbach, Germany",63607,150,
-Sparka Heizung-Sanitär-Klimatechnik,"46147 Oberhausen, Germany",46147,150,
-Speck Gebäudetechnik GmbH,"31311 Uetze, Germany",31311,150,
-Stenzel GmbH,"72760 Reutlingen, Germany",72760,150,
-Stephan Simon MEISTER Heizungsbau & Sanitärtechnik,"63073 Offenbach am Main, Germany",63073,150,
-Stöckicht GmbH Inh. me. Gerald Schwalbach,"65201 Wiesbaden, Germany",65201,150,
-Stoltenberg Energie GmbH,"24217 Schönberg, Germany",24217,150,
-Streicher GmbH - Heizung - Sanitär,"71720 Oberstenfeld, Germany",71720,150,
-Strobel GmbH,"72654 Neckartenzlingen, Germany",72654,150,
-STULZ GmbH,"22457 Hamburg, Germany",22457,150,
-Süwag Energie AG,"65929 Frankfurt am Main, Germany",65929,150,
-Team Gruner,"32120 Hiddenhausen, Germany",32120,150,
-TECHMASTER GmbH,"72379 Hechingen, Germany",72379,150,
-teraqsoltec solar,"12687 Berlin, Germany",12687,150,
-tetec thermo-technik Müller GmbH & Co. KG,"85386 Eching, Germany",85386,150,
+Selz & Cie GmbH,"69126 Heidelberg, Germany",69126,150,LudwigshafenamRheinStadt;FrankfurtamMainStadt;MannheimUniversitaetsstadt;AschaffenburgLand;Rhein_Neckar_Land
+SH Siegerland -SHK Gebäudetechnik,"57258 Freudenberg, Germany",57258,150,OdenwaldLand;OberhausenStadt;WiesbadenLandeshauptstadt;MoenchengladbachStadt;Unna
+SHK Brodde,"48431 Rheine, Germany",48431,150,BielefeldStadt;OsnabrueckStadt
+Siebert Gebäudetechnik GmbH & Co. KG,"34376 Immenhausen, Germany",34376,150,GothaLand;Hameln_PyrmontLand;Unna;Herford
+Siegmund & Schulze GmbH,"12524 Berlin, Germany",12524,150,Potsdam_MittelmarkLand;Oder_SpreeLand;CottbusStadt
+Silbereis GmbH,"69226 Nußloch, Germany",69226,150,LudwigsburgLand;RastattLand;NeustadtanderWeinstraße;PirmasensStadt
+SINA GmbH,"45239 Essen-Werden, Germany",45239,150,KoelnStadt;MoenchengladbachStadt;HammStadt;EmslandLand
+Solartec Röder GmbH,"63607 Wächtersbach, Germany",63607,150,MiltenbergLand;Main_SpessartLand;Rhein_Hunsrueck_Land;HeidelbergStadtStadt;Aschaffenburg
+Sparka Heizung-Sanitär-Klimatechnik,"46147 Oberhausen, Germany",46147,150,DortmundStadt;Olpe;OsnabrueckStadt;Rhein_Sieg_;EssenStadt
+Speck Gebäudetechnik GmbH,"31311 Uetze, Germany",31311,150,Herford;LueneburgLand
+Stenzel GmbH,"72760 Reutlingen, Germany",72760,150,ReutlingenLand;KarlsruheStadtStadt;Dingolfing_LandauLand
+Stephan Simon MEISTER Heizungsbau & Sanitärtechnik,"63073 Offenbach am Main, Germany",63073,150,Siegen_Wittgenstein;KoblenzStadt
+Stöckicht GmbH Inh. me. Gerald Schwalbach,"65201 Wiesbaden, Germany",65201,150,OffenbachamMainStadt;GrafschaftBentheimLand;Darmstadt;MainzStadt
+Stoltenberg Energie GmbH,"24217 Schönberg, Germany",24217,150,Ploen;Pinneberg
+Streicher GmbH - Heizung - Sanitär,"71720 Oberstenfeld, Germany",71720,150,GoeppingenLand;HaßbergeLand;SchwaebischHallLand;UlmUniversitaetsstadtStadt;Darmstadt_DieburgLand
+Strobel GmbH,"72654 Neckartenzlingen, Germany",72654,150,LudwigsburgLand;BirkenfeldLand;HeilbronnStadtStadt;GoeppingenLand
+STULZ GmbH,"22457 Hamburg, Germany",22457,150,Rendsburg_Eckernfoerde;FlensburgStadt
+Süwag Energie AG,"65929 Frankfurt am Main, Germany",65929,150,Rheingau_Taunus_Land;Aschaffenburg;MiltenbergLand;WormsStadt;Mayen_KoblenzLand
+Team Gruner,"32120 Hiddenhausen, Germany",32120,150,Unna;Hoexter;Steinfurt;VechtaLand;BielefeldStadt
+TECHMASTER GmbH,"72379 Hechingen, Germany",72379,150,Breisgau_Hochschwarzwald;BirkenfeldLand;KarlsruheStadtStadt;BiberachLand;Neckar_Odenwald_
+teraqsoltec solar,"12687 Berlin, Germany",12687,150,BarnimLand
+tetec thermo-technik Müller GmbH & Co. KG,"85386 Eching, Germany",85386,150,OstallgaeuLand;Saale_Holzland_Land;Pfaffenhofena.d.IlmLand;HarburgLand;Weißenburg_Gunzenhausen
 Teucher GmbH,"09456 Arnsfeld, Germany",9456,150,
-tga-service gmbh,"64372 Ober-Ramstadt, Germany",64372,150,
-Thomas Gerold GmbH,"83707 Bad Wiessee-Ringsee, Germany",83707,150,
-Thorsten Kißler Heizung & Sanitär,"67133 Maxdorf, Germany",67133,150,
-Torsten Böres GmbH,"55606 Oberhausen, Germany",55606,150,
-Torsten Kühl Gas- und Wasserinstallateurmeister,"01640 Coswig, Germany",1640,150,
-Trane Klima- und Kältetechnisches Büro GmbH,"82152 Krailling, Germany",82152,150,
-TRAUB GmbH & Co. Haustechnik KG,"82031 Grunwald, Germany",82031,150,
+tga-service gmbh,"64372 Ober-Ramstadt, Germany",64372,150,PforzheimStadtStadt;SuedwestpfalzLand;OffenbachLand;Main_Tauber_Land;MannheimUniversitaetsstadt
+Thomas Gerold GmbH,"83707 Bad Wiessee-Ringsee, Germany",83707,150,Weideni.d.OPf.;TraunsteinLand
+Thorsten Kißler Heizung & Sanitär,"67133 Maxdorf, Germany",67133,150,Dingolfing_LandauLand;LudwigshafenamRheinStadt
+Torsten Böres GmbH,"55606 Oberhausen, Germany",55606,150,Saarpfalz_Land;Merzig_WadernLand;AhrweilerLand;VulkaneifelLand;NeustadtanderWeinstraße
+Torsten Kühl Gas- und Wasserinstallateurmeister,"01640 Coswig, Germany",1640,150,NordsachsenLand;Groß_GerauLand;SaechsischeSchweiz_Osterz;BautzenLand;DresdenStadt
+Trane Klima- und Kältetechnisches Büro GmbH,"82152 Krailling, Germany",82152,150,LandsbergamLechLand;Muehldorfa.InnLand;RosenheimLandLand;Weilheim_SchongauLand
+TRAUB GmbH & Co. Haustechnik KG,"82031 Grunwald, Germany",82031,150,Rosenheim;Muehldorfa.InnLand;SaaleLand;AugsburgLandLand;Ingolstadt
 Ullmann Heizungsbau GmbH,"01844 Neustadt, OT Langburkersdorf, Germany",1844,150,
-Upmeyer Haustechnik GmbH,"49525 Lengerich, Germany",49525,150,
-Uponor GmbH,"97437 Hassfurt, Germany",97437,150,
-Uwe Felsmann GmbH,"64342 Seeheim, Germany",64342,150,
-Uwe Zimmer Heizung - Sanitär - Dachklempnerarbeiten,"15295 Brieskow-Finkenheerd, Germany",15295,150,
+Upmeyer Haustechnik GmbH,"49525 Lengerich, Germany",49525,150,EssenStadt;Herford;Borken;Soest;RemscheidStadt
+Uponor GmbH,"97437 Hassfurt, Germany",97437,150,Bayreuth;KitzingenLand;SonnebergLand
+Uwe Felsmann GmbH,"64342 Seeheim, Germany",64342,150,RastattLand;WormsStadt;MiltenbergLand;AschaffenburgLand;KuselLand
+Uwe Zimmer Heizung - Sanitär - Dachklempnerarbeiten,"15295 Brieskow-Finkenheerd, Germany",15295,150,BerlinBundesland;OberhavelLand
 Versorgungstechnik BSK GmbH,"02625 Bautzen, Germany",2625,150,
-Volker Blunck GmbH - Heizung - Sanitär - Elektro,"24306 Bösdorf, Germany",24306,150,
-Volker Kosack - Installateur- & Heizungsbaumeister,"52080 Aachen, Germany",52080,150,
-VWT Wärmetechnik GmbH,"55129 Mainz, Germany",55129,150,
+Volker Blunck GmbH - Heizung - Sanitär - Elektro,"24306 Bösdorf, Germany",24306,150,Dithmarschen;LueneburgLand
+Volker Kosack - Installateur- & Heizungsbaumeister,"52080 Aachen, Germany",52080,150,WuppertalStadt;Maerkischer;EssenStadt;GrafschaftBentheimLand;DuisburgStadt
+VWT Wärmetechnik GmbH,"55129 Mainz, Germany",55129,150,FrankfurtOderStadt;Limburg_WeilburgLand;AschaffenburgLand;Rhein_Pfalz_Land;RegionalverbandSaarbruecken
 W. Förster GmbH,"99198 Erfurt-Büßleben, Germany",99198,150,
-W. Köthe GmbH,"30519 Hanover, Germany",30519,150,
-Wagenhäuser GmbH,"97437 Haßfurt, Germany",97437,150,
-Walter Falk GmbH,"73252 Lenningen, Germany",73252,150,
+W. Köthe GmbH,"30519 Hanover, Germany",30519,150,Minden_Luebbecke;PeineLand;BoerdeLand;Hameln_PyrmontLand;Luechow_DannenbergLand
+Wagenhäuser GmbH,"97437 Haßfurt, Germany",97437,150,HaßbergeLand;Wunsiedeli.Fichtelgebirge;Erlangen_HoechstadtLand;Neumarkti.d.OPf.Land
+Walter Falk GmbH,"73252 Lenningen, Germany",73252,150,Alb_Donau_Land;Main_Tauber_Land;EsslingenLand;PforzheimStadtStadt
 Walter Fehring GmbH,"33014 Bad Driburg, Germany",33014,150,
-Walter Gräfenstein GmbH,"45473 Mülheim an der Ruhr, Germany",45473,150,
-Walter Langen KG,"54294 Trier, Germany",54294,150,
-Wärme mit System.de Ltd.,"36341 Lauterbach (Hessen), Germany",36341,150,
-Wärmetechnik Leickel GmbH,"44653 Herne, Germany",44653,150,
-WätaS Wärmetauscher Sachsen GmbH,"09526 Olbernhau, Germany",9526,150,
-"Weber GmbH, Elektro- und Solaranlagen","74078 Heilbronn-Kirchhausen, Germany",74078,150,
-Weisky & Co. GmbH,"83352 Altenmarkt, Germany",83352,150,
-Wenzel & Herzog GmbH,"15890 Schlaubetal / OT Fünfeichen, Germany",15890,150,
-Werner Peters GmbH,"46485 Wesel, Germany",46485,150,
-Werner Wallraff GmbH & Co.KG,"48157 Munster, Germany",48157,150,
-Werrlein GmbH & Co.KG,"91443 Scheinfeld, Germany",91443,150,
-Wessel & Tyc Haustechnik GmbH,"28279 Bremen, Germany",28279,150,
-Weyher Haustechnik GmbH,"28844 Weyhe, Germany",28844,150,
-Willi Hammer GmbH - Sanitär Heizung Solar,"75181 Pforzheim-Eutingen, Germany",75181,150,
-Willig Gas - Wasser - Wärme,"64283 Darmstadt, Germany",64283,150,
-WILO SE,"44263 Dortmund, Germany",44263,150,
-Winfried Zahnen Gas- und Wasserinstallateurmeister,"54595 Watzerath, Germany",54595,150,
-Wittemann GmbH,"76297 Stutensee-Friedrichstal, Germany",76297,150,
-"Woermann & Söhne, sanitäre Anlagen und Heizung GmbH","14163 Berlin (Berlin-Zehlendorf), Germany",14163,150,
-Wolfgang Kozian Heizungsbau GmbH,"63128 Dietzenbach, Germany",63128,150,
-Würth Elektrogroßhandel GmbH & Co. KG,"91522 Ansbach, Germany",91522,150,
-Wust & Heck GmbH,"55471 Reich / Hunsrück, Germany",55471,150,
-Zdoniak Elektrotechnik,"23936 Grevesmühlen, Germany",23936,150,
-Zinnenlauf Service GmbH,"40472 Düsseldorf, Germany",40472,150,
-Zita Jacobs GmbH,"66740 Saarlouis, Germany",66740,150,
-ZLE Ehrlich GmbH,"76532 Baden-Baden, Germany",76532,150,
-ZOGEL GmbH,"38300 Wolfenbüttel, Germany",38300,150,
-ZWS Zukunftsorientierte Wärme Systeme GmbH,"47506 Neukirchen-Vluyn, Germany",47506,150,
-ELITEC Elektrische Industrietechnik GmbH,"64653 Lorsch, Germany",64653,150,
-Kälte-Aktiv Team GmbH,"91154 Roth, Germany",91154,150,
-Remko GmbH & Co. KG,"32791 Lage, Germany",32791,150,
-Carl Mettler Elektrogroßhandels-GmbH,"66117 Saarbrücken, Germany",66117,150,
-H2 Umwelttechnik GbR,"52428 Jülich, Germany",52428,150,
-Nesseler + Esser GmbH & Co. KG,"50389 Wesseling, Germany",50389,150,
-Neukälte Kälte- Klima- und Wärmepumpen GmbH,"66292 Riegelsberg, Germany",66292,150,
-Schalk GmbH secespol deutschland gmbh,"86500 Kutzenhausen, Germany",86500,150,
-Secespol Deutschland gmbh,"45141 Essen, Germany",45141,150,
-Maxhütte Technologie GmbH & Co. KG,"92237 Sulzbach-Rosenberg, Germany",92237,150,
-Viessmann Werke GmbH & Co. KG,"35108 Allendorf (Eder), Germany",35108,150,
+Walter Gräfenstein GmbH,"45473 Mülheim an der Ruhr, Germany",45473,150,LeverkusenStadt;SolingenStadt;Recklinghausen
+Walter Langen KG,"54294 Trier, Germany",54294,150,Merzig_WadernLand;VulkaneifelLand;GrafschaftBentheimLand
+Wärme mit System.de Ltd.,"36341 Lauterbach (Hessen), Germany",36341,150,EisenachStadt;Schmalkalden_Meiningen
+Wärmetechnik Leickel GmbH,"44653 Herne, Germany",44653,150,Mettmann;RemscheidStadt;Unna
+WätaS Wärmetauscher Sachsen GmbH,"09526 Olbernhau, Germany",9526,150,SaechsischeSchweiz_Osterz
+"Weber GmbH, Elektro- und Solaranlagen","74078 Heilbronn-Kirchhausen, Germany",74078,150,HohenloheLand;KaiserslauternStadt;FreudenstadtLand;AhrweilerLand;Wuerzburg
+Weisky & Co. GmbH,"83352 Altenmarkt, Germany",83352,150,MuenchenLandLand;TraunsteinLand
+Wenzel & Herzog GmbH,"15890 Schlaubetal / OT Fünfeichen, Germany",15890,150,Oberspreewald_LausitzLand;Maerkisch_OderlandLand
+Werner Peters GmbH,"46485 Wesel, Germany",46485,150,BonnStadt;BochumStadt;LeverkusenStadt;Heinsberg;Mettmann
+Werner Wallraff GmbH & Co.KG,"48157 Munster, Germany",48157,150,BochumStadt;MuensterStadt;CloppenburgLand;DiepholzLand
+Werrlein GmbH & Co.KG,"91443 Scheinfeld, Germany",91443,150,Schweinfurt;Neumarkti.d.OPf.Land;BayreuthLandLand;KulmbachLand
+Wessel & Tyc Haustechnik GmbH,"28279 Bremen, Germany",28279,150,RotenburgWuemmeLand;HamburgBundesland;DiepholzLand
+Weyher Haustechnik GmbH,"28844 Weyhe, Germany",28844,150,DiepholzLand;OsterholzLand;CuxhavenLand;AmmerlandLand;OldenburgOldenburgStadt
+Willi Hammer GmbH - Sanitär Heizung Solar,"75181 Pforzheim-Eutingen, Germany",75181,150,LandauinderPfalzStadt;MannheimUniversitaetsstadt;GoeppingenLand;HeilbronnStadtStadt;Darmstadt_DieburgLand
+Willig Gas - Wasser - Wärme,"64283 Darmstadt, Germany",64283,150,Neustadta.d.Waldnaab;DonnersbergLand;KarlsruheStadtStadt;Main_Tauber_Land;WetterauLand
+WILO SE,"44263 Dortmund, Germany",44263,150,DuesseldorfStadt;Waldeck_FrankenbergLand;Soest;DuisburgStadt;MoenchengladbachStadt
+Winfried Zahnen Gas- und Wasserinstallateurmeister,"54595 Watzerath, Germany",54595,150,SolingenStadt
+Wittemann GmbH,"76297 Stutensee-Friedrichstal, Germany",76297,150,SuedwestpfalzLand;FrankenthalPfalzStadt;Main_Kinzig_Land;FreiburgimBreisgauStadt;MiltenbergLand
+"Woermann & Söhne, sanitäre Anlagen und Heizung GmbH","14163 Berlin (Berlin-Zehlendorf), Germany",14163,150,AltmarkSalzwedelLand;Anhalt_BitterfeldLand;BarnimLand;BrandenburganderHavel;BurgenlandLand
+Wolfgang Kozian Heizungsbau GmbH,"63128 Dietzenbach, Germany",63128,150,AhrweilerLand;AltenkirchenWesterwald;Alzey_WormsLand;Aschaffenburg;BadDuerkheimLand
+Würth Elektrogroßhandel GmbH & Co. KG,"91522 Ansbach, Germany",91522,150,Aichach_FriedbergLand;Alb_Donau_Land;Amberg;Ansbach;AnsbachLandLand
+Wust & Heck GmbH,"55471 Reich / Hunsrück, Germany",55471,150,AhrweilerLand;AltenkirchenWesterwald;Alzey_WormsLand;Aschaffenburg;BadDuerkheimLand
+Zdoniak Elektrotechnik,"23936 Grevesmühlen, Germany",23936,150,Ostholstein
+Zinnenlauf Service GmbH,"40472 Düsseldorf, Germany",40472,150,AltenkirchenWesterwald;BochumStadt;BonnStadt;Borken;BottropStadt
+Zita Jacobs GmbH,"66740 Saarlouis, Germany",66740,150,Alzey_WormsLand;BadDuerkheimLand;Bernkastel_WittlichLand
+ZLE Ehrlich GmbH,"76532 Baden-Baden, Germany",76532,150,Alzey_WormsLand;Baden_BadenStadtStadt;BirkenfeldLand;BoeblingenLand
+ZOGEL GmbH,"38300 Wolfenbüttel, Germany",38300,150,AltmarkSalzwedelLand;BraunschweigStadt;BurgenlandLand
+ZWS Zukunftsorientierte Wärme Systeme GmbH,"47506 Neukirchen-Vluyn, Germany",47506,150,AltenkirchenWesterwald;BochumStadt;BonnStadt;Borken;BottropStadt
+ELITEC Elektrische Industrietechnik GmbH,"64653 Lorsch, Germany",64653,150,AhrweilerLand;Alzey_WormsLand;Aschaffenburg;BadDuerkheimLand;BirkenfeldLand
+Kälte-Aktiv Team GmbH,"91154 Roth, Germany",91154,150,Aichach_FriedbergLand;Amberg;Ansbach;Augsburg;BadToelz_Wolfratshausen
+Remko GmbH & Co. KG,"32791 Lage, Germany",32791,150,BielefeldStadt;BochumStadt
+Carl Mettler Elektrogroßhandels-GmbH,"66117 Saarbrücken, Germany",66117,150,AhrweilerLand;Alzey_WormsLand;BadDuerkheimLand;Bernkastel_WittlichLand
+H2 Umwelttechnik GbR,"52428 Jülich, Germany",52428,150,AltenkirchenWesterwald;BochumStadt;BonnStadt;Borken;BottropStadt
+Nesseler + Esser GmbH & Co. KG,"50389 Wesseling, Germany",50389,150,AltenkirchenWesterwald;Bernkastel_WittlichLand;BochumStadt;BonnStadt;Borken
+Neukälte Kälte- Klima- und Wärmepumpen GmbH,"66292 Riegelsberg, Germany",66292,150,Alzey_WormsLand;BadDuerkheimLand;Bernkastel_WittlichLand
+Schalk GmbH secespol deutschland gmbh,"86500 Kutzenhausen, Germany",86500,150,Aichach_FriedbergLand;Alb_Donau_Land;Augsburg;BadToelz_Wolfratshausen;BergstraßeLand
+Secespol Deutschland gmbh,"45141 Essen, Germany",45141,150,AltenkirchenWesterwald;BielefeldStadt;BochumStadt;BonnStadt;Borken
+Maxhütte Technologie GmbH & Co. KG,"92237 Sulzbach-Rosenberg, Germany",92237,150,Amberg;Ansbach;Bamberg;Bayreuth
+Viessmann Werke GmbH & Co. KG,"35108 Allendorf (Eder), Germany",35108,150,AltenkirchenWesterwald
