@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import os
 from tqdm import tqdm
+from random import sample
 from datetime import datetime
 
 dirname = os.path.dirname(__file__)
@@ -76,15 +77,17 @@ def add_operating_districts():
 
     df_acoolhead = pd.read_csv(ACOOLHEAD)
     districts = df_acoolhead[['Administrative district', 'zipcode']].groupby(
-        'Administrative district')
+        'Administrative district').agg({'zipcode': 'first'}).reset_index()
 
     # get the operating regions for each missing row
-    for i in tqdm(df.index):
+    for j in tqdm(df.index):
+        i = (len(df)-1) - j  # start at bottom of df
         zipcode = df.loc[i, 'zipcode']
         radius = df.loc[i, 'operating radius']
         if(df.loc[i, 'operating districts'] is None or df.loc[i, 'operating districts'] is np.nan):
+
             regions = [key for key in get_operating_districts(
-                districts, str(zipcode), radius).keys()]
+                districts.values, str(zipcode), radius).keys()]
             df.iloc[i, df.columns.get_loc(
                 'operating districts')] = ';'.join(regions)
 
@@ -102,7 +105,10 @@ def get_operating_districts(districts, zipcode, op_radius=MAX_OPERATING_RADIUS):
     zipcode = '0'+str(zipcode) if len(str(zipcode)) == 4 else str(zipcode)
     regions = {}
     MAX_EXECUTION_TIME = 120  # in seconds
-    districts = districts.apply(lambda x: x.sample(frac=0.3))
+    districts = sample(districts.tolist(), round(0.3*len(districts))
+                       )  # sample 30% of districts
+    # districts = districts.apply(lambda x: x.sample(
+    #     frac=0.3, random_state=np.random.RandomState(seed=42)))  # sample 30% of districts group
 
     start = datetime.now()
     for i in tqdm(range(len(districts)), leave=False):
@@ -110,7 +116,7 @@ def get_operating_districts(districts, zipcode, op_radius=MAX_OPERATING_RADIUS):
         if diff_time.total_seconds() > MAX_EXECUTION_TIME:  # stop search if execution time is exceeded
             return regions
 
-        district, z = districts.iloc[i]
+        district, z = districts[i]
         if district in regions.keys():
             continue
 
