@@ -15,7 +15,14 @@ dirname = os.path.dirname(__file__)
 
 NUMBER_OF_MONTHS = 9  # number of months
 MIN_PERCENTAGE = 0.8  # minimum required share of houses that receive HP
-
+# from https://www.volker-quaschning.de/datserv/CO2-spez/index_e.php
+CO2_EMISSION_GAS = 433 # gramm/ kwh
+# from https://www.eon.de/de/gk/strom/oekostrom.html#:~:text=Im%20Jahr%201990%20lag%20der,der%20CO%202%2DEmissionen%20leisten.
+CO2_EMISSION_EON = 366 # gramm/kwh in 2020
+# from https://www.umweltbundesamt.de/daten/umwelt-wirtschaft/gesellschaftliche-kosten-von-umweltbelastungen#klimakosten-von-treibhausgas-emissionen
+CO2_EMISSION_PRICE_1 =  201E-6  # euro/gramm,  suggestion by German Environment Agency
+CO2_EMISSION_PRICE_2 =  698E-6  # euro/gram,   then balanced with the welfare losses caused by climate change for current and future generations
+BOILER_EFFICIENCY = 0.7
 
 def solve():
     """Solves the heat pump problem.
@@ -25,6 +32,7 @@ def solve():
         'brand_name' (str) : brand name of the heat pump
         'cop' (float) : COP of the heat pump
         'produced heat' (float) : heat produced by the heat pump
+        'price'(float) : price of heat pump including installation and accessories
     I (dict) : dictionary of buildings each containing the keys:
         "building_type" (str) : building type
         "modernization_status" (str) : status of the building (i.e. whether it is modernized or not)
@@ -41,7 +49,8 @@ def solve():
     # Preparation of Data and Parameters
     T = NUMBER_OF_MONTHS
     D, M, I, fitness = data_preprocess()
-    max_sales, heatdemand, boilercosts, hpcosts, hpinvestment = prepare_params(T, I, M)
+    max_sales, heatdemand, boilercosts, hpcosts, hpinvestment,  electr_timefactor, \
+        gas_timefactor, electr_locationfactor, gas_locationfactor, CO2_timefactor, hpCO2 = prepare_params(T, I, M, D)
 
     # Create a new model
     print("Preparing the model\n")
@@ -102,10 +111,14 @@ def solve():
     # TODO: add correct cost function
 
     obj = quicksum((x[m, i, t] * hpinvestment[m]
-                    + quicksum(x[m, i, t_1] * hpcosts[m] *
-                               heatdemand[i, t_1] for t_1 in range(t + 1))
-                    + (I[i]['quantity'] - quicksum(x[m, i, t_1] for t_1 in range(t + 1))) * boilercosts[i] * heatdemand[i, t])
-                   for m in M for i in I for t in range(T))
+                     + quicksum( x[m, i, t_1] * ( hpcosts[m] * electr_timefactor[t_1] * electr_locationfactor[d] 
+                                                           + hpCO2[m] * CO2_EMISSION_PRICE_1 * CO2_timefactor[t_1])
+                                               * heatdemand[i, t_1] for t_1 in range(t + 1) )
+                     + (I[i]['quantity'] - quicksum(x[m, i,  t_1] for t_1 in range(t + 1)))
+                                     * ( boilercosts[i] * gas_timefactor[t] * gas_locationfactor[d] 
+                                                          + CO2_EMISSION_GAS / BOILER_EFFICIENCY * CO2_EMISSION_PRICE_1 * CO2_timefactor[t] )
+                    * heatdemand[i, t])  
+                   for m in M for i in I  for d in D for t in range(T))
     model.setObjective(obj, GRB.MINIMIZE)
     stop = timeit.default_timer()
     print('Time in seconds to add the objective function: ', stop - start, "\n")
