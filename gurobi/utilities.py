@@ -80,7 +80,10 @@ def get_coordinates(location):
     """
 
     # Get the coordinates of the location
-    location = geolocator.geocode(location)
+    try:
+        location = geolocator.geocode(location)
+    except:
+        return None, None
     time.sleep(1)
     if location is None:
         return None, None
