@@ -9,9 +9,7 @@ from datetime import datetime
 
 dirname = os.path.dirname(__file__)
 
-MAX_OPERATING_RADIUS = 100  # in km
-distances = {}
-known_distances = {}
+known_distances = {}  # {(zipcode1, zipcode2): distance}
 
 
 def add_operating_radius():
@@ -85,9 +83,8 @@ def add_operating_districts():
         zipcode = df.loc[i, 'zipcode']
         radius = df.loc[i, 'operating radius']
         if(df.loc[i, 'operating districts'] is None or df.loc[i, 'operating districts'] is np.nan):
-
-            regions = [key for key in get_operating_districts(
-                districts.values, str(zipcode), radius).keys()]
+            regions = get_operating_districts(
+                districts, str(zipcode), radius, sample_size=0.2).keys()
             df.iloc[i, df.columns.get_loc(
                 'operating districts')] = ';'.join(regions)
 
@@ -101,61 +98,70 @@ def add_operating_districts():
         dirname, "data-sources/Distributor_data_with_radius.csv"), index=False)
 
 
-def get_operating_districts(districts, zipcode, op_radius=MAX_OPERATING_RADIUS):
+def get_operating_districts(districts, zipcode, op_radius=100, timeout=120, max_districts=5, sample_size=1):
+    """Find the districts that are within the operating radius of the zipcode.
+
+    Args:
+        districts (DataFrame): dataframe of district names and zipcodes
+        zipcode (int or str): zipcode of the distributor
+        op_radius (int, optional): the operating radius of the distributor. Defaults to 100.
+        timeout (int, optional): time in seconds after which the search should stop. Defaults to 120.
+        max_districts (int, optional): number of districts in radius after which the search should stop. Defaults to 5.
+        sample_size (float, optional): size of the sample from the districts . Defaults to 1.
+
+    Raises:
+        Exception: if calculated distance is 0 and zipcodes are not the same
+
+    Returns:
+        dict: dictionary of districts and their distances
+    """
+    # add 0 to zipcode if it is 4 digits
     zipcode = '0'+str(zipcode) if len(str(zipcode)) == 4 else str(zipcode)
-    regions = {}
-    MAX_EXECUTION_TIME = 120  # in seconds
-    districts = sample(districts.tolist(), round(0.3*len(districts))
-                       )  # sample 30% of districts
-    # districts = districts.apply(lambda x: x.sample(
-    #     frac=0.3, random_state=np.random.RandomState(seed=42)))  # sample 30% of districts group
+    operating_districts = {}  # {district: distance}
+    districts = sample(districts.values.tolist(), round(sample_size*len(districts))
+                       )  # sample sample_size% of districts
 
     start = datetime.now()
     for i in tqdm(range(len(districts)), leave=False):
-        diff_time = datetime.now() - start
-        if diff_time.total_seconds() > MAX_EXECUTION_TIME:  # stop search if execution time is exceeded
-            return regions
+        diff_time = datetime.now() - start  # time since start
+        if diff_time.total_seconds() > timeout:  # stop search if execution time is exceeded
+            return operating_districts
 
-        district, z = districts[i]
-        if district in regions.keys():
-            continue
+        district_name, z = districts[i]
+        if district_name in operating_districts.keys():
+            continue  # skip if already found
 
-        if len(regions.keys()) >= 5:
-            return regions
-        # zipcode_of_district = '0' + \
-        #     str(zipcodes[0]) if len(
-        #         str(zipcodes[0])) == 4 else str(zipcodes[0])
+        if len(operating_districts.keys()) >= max_districts:
+            return operating_districts  # return if max_districts regions found
+
         zipcode_of_district = '0' + \
             str(z) if len(
-                str(z)) == 4 else str(z)
+                str(z)) == 4 else str(z)  # add 0 to zipcode if only 4 digits
 
         if zipcode_of_district == zipcode:
-            regions[district] = 0
+            # if zipcode is in district, set distance to 0
+            operating_districts[district_name] = 0
             continue
-        # if op_radius > 700:
-        #     regions[district] = 1
-        # if zipcode_of_district[0] != zipcode[0]:
-        #     continue
-        # if zipcode_of_district[:3] != zipcode[:3]:
-        #     continue
 
-        if (zipcode_of_district, zipcode) in known_distances.keys():
+        if (zipcode_of_district, zipcode) in known_distances.keys():  # if distance is already known
             distance = known_distances[(zipcode_of_district, zipcode)]
-        elif (zipcode, zipcode_of_district) in known_distances.keys():
+        elif (zipcode, zipcode_of_district) in known_distances.keys():  # if distance is already known
             distance = known_distances[(zipcode, zipcode_of_district)]
         else:
+            # get distance between zipcodes if not known
             distance = get_distance({'postalcode': zipcode, 'country': 'Germany'}, {
                 'postalcode': zipcode_of_district, 'country': 'Germany'})
             if distance == 0 and zipcode != zipcode_of_district:
                 raise Exception('Distance is 0 for zipcodes: ' +
-                                zipcode + ' and ' + zipcode_of_district)
+                                zipcode + ' and ' + zipcode_of_district)  # raise error if distance is 0 and zipcodes are not the same
             if distance is not None:
-                known_distances[zipcode_of_district, zipcode] = distance
+                known_distances[zipcode_of_district,
+                                zipcode] = distance  # save distance
+                if distance < op_radius:
+                    # add to district if distance is less than op_radius
+                    operating_districts[district_name] = distance
 
-            if not distance == None and distance < op_radius:
-                regions[district] = distance
-
-    return regions
+    return operating_districts
 
 
 # add_operating_radius()
