@@ -1,5 +1,6 @@
-from utilities import get_zipcode
+from utilities import get_zipcode, get_coordinates
 import pandas as pd
+import numpy as np
 import os
 from tqdm import tqdm
 dirname = os.path.dirname(__file__)
@@ -170,5 +171,31 @@ def add_coordinates_to_csv():
     assert df['long'].eq(0).sum() == 0
 
 
-add_coordinates_to_csv()
-add_zipcodes_to_csv()
+def add_coordinates_to_csv():
+    DISTRIBUTERS_DATA = os.path.join(
+        dirname, "data-sources/Distributor_data_with_coordinates.csv")
+    df = pd.read_csv(DISTRIBUTERS_DATA)
+
+    for i in tqdm(range(len(df))):
+        # get the zipcode
+        zipcode = df['zipcode'][i]
+        if not np.isnan(df['lat'][i]) and not np.isnan(df['long'][i]):
+            continue
+        zipcode = '0' + str(zipcode) if len(str(zipcode)
+                                            ) == 4 else str(zipcode)
+        # get the coordinates
+        lat, lng = get_coordinates(
+            {'postalcode': zipcode, 'country': 'Germany'})
+        df.iloc[i, df.columns.get_loc('lat')] = lat
+        df.iloc[i, df.columns.get_loc('long')] = lng
+
+    df = df[['Distributors', 'Address', 'zipcode', 'lat',
+             'long', 'operating radius', 'operating districts']]
+
+    df.to_csv(os.path.join(
+        dirname, "data-sources/Distributor_data_with_coordinates.csv"), index=False)
+
+
+# add_coordinates_to_csv()
+# add_zipcodes_to_csv()
+# add_coordinates_to_csv()

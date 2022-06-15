@@ -1,5 +1,5 @@
 from this import d
-from utilities import get_distance
+from utilities import get_driving_distance
 import pandas as pd
 import numpy as np
 import os
@@ -72,16 +72,16 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
         raise Exception(ACOOLHEAD, "not found")
 
     df_acoolhead = pd.read_csv(ACOOLHEAD)
-    df_distributors = pd.read_csv(DISTRIBUTERS_DATA)
-    if(not 'operating districts' in df_distributors.columns):
-        df_distributors['operating districts'] = None
+    df = pd.read_csv(DISTRIBUTERS_DATA)
+    if(not 'operating districts' in df.columns):
+        df['operating districts'] = None
 
-    df_distributors['operating districts'] = df_distributors['operating districts'].astype(
+    df['operating districts'] = df['operating districts'].astype(
         str)
 
     if(operating_radius is not None):
         # if operating_radius is set then only work with distributors with that radius
-        df_distributors = df_distributors[df_distributors['operating radius']
+        df_distributors = df[df['operating radius']
                                           == operating_radius]
 
     districts = df_acoolhead[['Administrative district', 'zipcode']].groupby(
@@ -89,23 +89,23 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
 
     # get the operating regions for each missing row
     for i in tqdm(df_distributors.index):
-        # i = (len(df_distributors)-1) - j  # start at bottom of df
-        zipcode = df_distributors.loc[i, 'zipcode']
-        radius = df_distributors.loc[i, 'operating radius']
-        if(df_distributors.loc[i, 'operating districts'] is None or df_distributors.loc[i, 'operating districts'] is np.nan or len(df_distributors.loc[i, 'operating districts'].split(';')) < max_districts):
+        # i = (len(df)-1) - j  # start at bottom of df
+        zipcode = df.loc[i, 'zipcode']
+        radius = df.loc[i, 'operating radius']
+        if(df.loc[i, 'operating districts'] is None or df.loc[i, 'operating districts'] is np.nan or len(df.loc[i, 'operating districts'].split(';')) < max_districts):
             regions = get_operating_districts(
                 districts, str(zipcode), radius, sample_size=sample_size, max_districts=max_districts).keys()
-            df_distributors.iloc[i, df_distributors.columns.get_loc(
+            df.iloc[i, df.columns.get_loc(
                 'operating districts')] = ';'.join(regions)
 
             # missing_operating_regions['operating districts'][i] = np.array([
             #     key for key in regions.keys()], dtype=object)
-            df_distributors.to_csv(os.path.join(
-                dirname, "data-sources/Distributor_data_with_radius.csv"), index=False)
+            df.to_csv(os.path.join(
+                dirname, "data-sources/test.csv"), index=False)
 
     # save the dataframe
-    df_distributors.to_csv(os.path.join(
-        dirname, "data-sources/Distributor_data_with_radius.csv"), index=False)
+    df.to_csv(os.path.join(
+        dirname, "data-sources/test.csv"), index=False)
 
 
 def get_operating_districts(districts, zipcode, op_radius=100, timeout=120, max_districts=5, sample_size=1):
@@ -160,7 +160,7 @@ def get_operating_districts(districts, zipcode, op_radius=100, timeout=120, max_
             distance = known_distances[(zipcode, zipcode_of_district)]
         else:
             # get distance between zipcodes if not known
-            distance = get_distance({'postalcode': zipcode, 'country': 'Germany'}, {
+            distance = get_driving_distance({'postalcode': zipcode, 'country': 'Germany'}, {
                 'postalcode': zipcode_of_district, 'country': 'Germany'})
             if distance == 0 and zipcode != zipcode_of_district:
                 raise Exception('Distance is 0 for zipcodes: ' +

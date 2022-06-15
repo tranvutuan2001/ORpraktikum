@@ -39,7 +39,7 @@ def get_weather_data(city):
     raise Exception(f"Error: {r.status_code}")
 
 
-def get_distance(origin, destination):
+def get_driving_distance(origin, destination):
     """
     Calculates the distance between two locations using the OSMR API. 
     :param origin: The origin location (e.g. "London, UK")
