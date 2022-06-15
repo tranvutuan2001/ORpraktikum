@@ -5,22 +5,26 @@ from gurobipy import GRB
 import csv
 import timeit
 import numpy as np
+from utilities import cal_dist
 import json
 
 dirname = os.path.dirname(__file__)
 ACOOLHEAD = os.path.join(dirname, './data-sources/data_from_Hannah_with_coordinates_zipcodes_heatcapacity.csv')
+DISTRIBUTOR = os.path.join(dirname, './data-sources/Distributor_data_with_coordinates.csv')
 HEAT_PUMPS = os.path.join(dirname, './data-sources/heat_pumps_air_water_only.csv')
 FPOWDATA = os.path.join(dirname, './data-sources/fpow.csv')
 
 # from https://www.globalpetrolprices.com/Germany/natural_gas_prices/
-AVERAGE_BOILER_COST_PER_UNIT = 0.071  #  euro per kWh for private household
-#AVERAGE_BOILER_COST_PER_UNIT = 0.17
+AVERAGE_BOILER_COST_PER_UNIT = 0.071  # euro per kWh for private household
+# AVERAGE_BOILER_COST_PER_UNIT = 0.17
 BOILER_EFFICIENCY = 0.7
 # electricity price taken from: https://www.eon.de/de/pk/strom/stromanbieter/guenstiger-stromanbieter.html
 # consider the price based on the tarif without minimum contract duration requirement
 ELECTRICITY_COST_PER_UNIT = 0.4805
 # from https://www.eon.de/de/gk/strom/oekostrom.html#:~:text=Im%20Jahr%201990%20lag%20der,der%20CO%202%2DEmissionen%20leisten.
-CO2_EMISSION_EON = 366 # gramm/kwh in 2020
+CO2_EMISSION_EON = 366  # gramm/kwh in 2020
+OPERATING_RADIUS = 250
+FIX_POINT = (50.849305, 6.533625)
 
 
 def data_preprocess():
@@ -45,21 +49,19 @@ def data_preprocess():
     start = timeit.default_timer()
 
     df = pd.read_csv(ACOOLHEAD)
-    df = df.head(1000)
+    # df = df.head(1000)
     df = df.reset_index(drop=True)
 
     df_hp = pd.read_csv(HEAT_PUMPS)
-    df_hp_s= df_hp.sort_values(['COP A2/W35','Heat output A2/W35 (kW)'], ascending=[True, True])
-    df_hp = df_hp_s.iloc[ ::10,:]
+    df_hp_s = df_hp.sort_values(['COP A2/W35', 'Heat output A2/W35 (kW)'], ascending=[True, True])
+    df_hp = df_hp_s.iloc[::10, :]
     df_hp = df_hp.reset_index(drop=True)
     # price can't be found
-    df_hp.drop([0,3,10,12], axis=0, inplace=True)
-    df_hp=df_hp.append(df_hp_s.iloc[-3])
+    df_hp.drop([0, 3, 10, 12], axis=0, inplace=True)
+    df_hp = df_hp.append(df_hp_s.iloc[-3])
 
     df_hp = df_hp.reset_index(drop=True)
-    print(df_hp['hp_name'])
-
-
+    df_distributor = pd.read_csv(DISTRIBUTOR)
 
     # # if there is discount, original price is taken
     # # https://domotec.ch/wp-content/uploads/2022/06/1.1-pl-allgemein-06.2022-DE.pdf
@@ -70,22 +72,23 @@ def data_preprocess():
     # # https://docplayer.org/82079403-Preisliste-waermepumpen-systeme-der-cta-ag.html
     # # https://shop.smuk.at/shop/USER_ARTIKEL_HANDLING_AUFRUF.php?Kategorie_ID=9389&Ziel_ID=12271890
 
-    price =[13025, 14316.4, 14108.64, 15175, 9930.55, 17005.37, 19104.95, 12066.6,  17983.20, 28680]
+    price = [13025, 14316.4, 14108.64, 15175, 9930.55, 17005.37, 19104.95, 12066.6, 17983.20, 28680]
 
     #  installation + accessories from https://www.energieheld.de/heizung/waermepumpe/kosten
-    price = [x+3000 for x in price]
+    price = [x + 3000 for x in price]
 
     df_hp.insert(4, 'price', price, True)
 
     dict_i = prepare_housing_data(df)
     dict_d = prepare_workforce_data(df)
     dict_m = prepare_heatpump_data(df_hp)
+    dict_distributor = prepare_distributor(df_distributor)
 
     fitness = prepare_fitness()
 
     stop = timeit.default_timer()
     print('Time in seconds to prepare the data: ', stop - start, "\n")
-    return dict_d, dict_m, dict_i, fitness
+    return dict_d, dict_m, dict_i, fitness, dict_distributor
 
 
 def prepare_fitness():
@@ -116,11 +119,21 @@ def prepare_housing_data(df):
             "Klimazone": df["Klimazone"][i],
             "year of construction": df["Year of construction"][i],
             "max_heat_demand_Patrick": round(int(df["Surface area [m^2]"][i]) * df["Heatcapacity"][i] / 1000, 2),
+            'long': df['long'][i],
+            'lat': df['lat'][i]
             # "Floors": df["Floors"][i]
         }
-        for i in range(len(df["long"]))}
+        for i in range(len(df["long"])) if cal_dist(FIX_POINT, (df['lat'][i], df['long'][i])) < OPERATING_RADIUS
+    }
 
-    return dict_i
+    result = {}
+    for i in dict_i:
+        if i < 1000:
+            result[i] = dict_i[i]
+        else:
+            break
+
+    return result
 
 
 def prepare_heatpump_data(df_hp):
@@ -129,7 +142,7 @@ def prepare_heatpump_data(df_hp):
             'brand_name': df_hp['hp_name'][i],
             'cop': df_hp['COP A2/W35'][i],
             'produced heat': df_hp['Heat output A2/W35 (kW)'][i],
-            'price' : df_hp['price'][i]
+            'price': df_hp['price'][i]
         }
         for i in range(len(df_hp['hp_name']))}
 
@@ -151,6 +164,17 @@ def prepare_workforce_data(df):
     dict_s = {district[i]: workforce[i] for i in range(len(district))}
 
     return dict_s
+
+
+def prepare_distributor(df):
+    return {
+        i: {
+            'name': df['Distributors'][i],
+            'long': df['long'],
+            'lat': df['lat']
+        }
+        for i in range(len(df)) if cal_dist(FIX_POINT, (df['lat'][i], df['long'][i])) < 2 * OPERATING_RADIUS
+    }
 
 
 def prepare_params(T, I, M, D):
@@ -210,7 +234,7 @@ def prepare_params(T, I, M, D):
             heatdemand[i, t] = I[i]["average heat demand"]
 
     for i in I:
-        boilercosts[i] = AVERAGE_BOILER_COST_PER_UNIT / BOILER_EFFICIENCY 
+        boilercosts[i] = AVERAGE_BOILER_COST_PER_UNIT / BOILER_EFFICIENCY
 
     for m in M:
         # hpcost is multiplied with heatdemand in obj function, so it should be cost/kwh. 
@@ -219,11 +243,10 @@ def prepare_params(T, I, M, D):
         hpcosts[m] = ELECTRICITY_COST_PER_UNIT / M[m]['cop']
         hpinvestment[m] = M[m]['price']
 
-      
-    # there is a base cost per year to sign EON contract 
+    # there is a base cost per year to sign EON contract
     # https://www.eon.de/de/pk/strom/stromanbieter/guenstiger-stromanbieter.html
-    hpcosts = [x+ 134.36/12 for x in hpcosts]
-    
+    hpcosts = [x + 134.36 / 12 for x in hpcosts]
+
     # price of those terms are currently asummed to be constant over time
     electr_timefactor = np.ones(T)
     gas_timefactor = np.ones(T)
@@ -232,21 +255,18 @@ def prepare_params(T, I, M, D):
     # price of those terms are currently assumed to be the same over differenct districts
     # d is a string as key of dictionary!
     for d in D:
-        electr_locationfactor[d] = 1  
+        electr_locationfactor[d] = 1
         gas_locationfactor[d] = 1
 
-    
-
     # heatpump co2 emission based on electricity supplied by EON
-    for  m in M:
-        hpCO2[m] = CO2_EMISSION_EON / M[m]['cop']     
+    for m in M:
+        hpCO2[m] = CO2_EMISSION_EON / M[m]['cop']
 
-        
     stop = timeit.default_timer()
     print('Time in seconds to prepare the parameters ', stop - start)
 
     return max_sales, heatdemand, boilercosts, hpcosts, hpinvestment, \
-             electr_timefactor, gas_timefactor, electr_locationfactor, gas_locationfactor, CO2_timefactor, hpCO2
+           electr_timefactor, gas_timefactor, electr_locationfactor, gas_locationfactor, CO2_timefactor, hpCO2
 
 
 """ -> Instead of calculating Fpow within the model, 

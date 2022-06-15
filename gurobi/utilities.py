@@ -67,7 +67,7 @@ def get_driving_distance(origin, destination):
         routes = json.loads(r.content)
         if len(routes.get('routes')) > 0:
             distance = routes.get("routes")[
-                0]['distance']/1000  # convert to km
+                           0]['distance'] / 1000  # convert to km
             time.sleep(1)
             return distance
         raise Exception("No routes found")
@@ -112,3 +112,37 @@ def get_coordinates(location):
         return None, None
 
     return location.latitude, location.longitude
+
+
+from math import radians, cos, sin, asin, sqrt
+
+
+def distance(lat1, lat2, lon1, lon2):
+    # The math module contains a function named
+    # radians which converts from degrees to radians.
+    lon1 = radians(lon1)
+    lon2 = radians(lon2)
+    lat1 = radians(lat1)
+    lat2 = radians(lat2)
+
+    # Haversine formula
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+
+    c = 2 * asin(sqrt(a))
+
+    # Radius of earth in kilometers. Use 3956 for miles
+    r = 6371
+
+    # calculate the result
+    return c * r
+
+
+def cal_dist(x1, x2):
+    lat_x1 = x1[0]
+    long_x1 = x1[1]
+    lat_x2 = x2[0]
+    long_x2 = x2[1]
+    result = distance(lat_x1, lat_x2, long_x1, long_x2)
+    return result
