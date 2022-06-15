@@ -23,7 +23,7 @@ BOILER_EFFICIENCY = 0.7
 ELECTRICITY_COST_PER_UNIT = 0.4805
 # from https://www.eon.de/de/gk/strom/oekostrom.html#:~:text=Im%20Jahr%201990%20lag%20der,der%20CO%202%2DEmissionen%20leisten.
 CO2_EMISSION_EON = 366  # gramm/kwh in 2020
-OPERATING_RADIUS = 250
+RADIUS_OF_INTEREST = 50
 FIX_POINT = (50.849305, 6.533625)
 
 
@@ -123,11 +123,11 @@ def prepare_housing_data(df):
             'lat': df['lat'][i]
             # "Floors": df["Floors"][i]
         }
-        for i in range(len(df["long"])) if cal_dist(FIX_POINT, (df['lat'][i], df['long'][i])) < OPERATING_RADIUS
+        for i in range(len(df["long"])) if cal_dist(FIX_POINT, (df['lat'][i], df['long'][i])) < RADIUS_OF_INTEREST
     }
 
     result = {i: list(dict_i.values())[i] for i in range(
-        len(dict_i.values())) if i < 1000}
+        len(dict_i.values())) if i < 100}
 
     return result
 
@@ -166,10 +166,10 @@ def prepare_distributor(df):
     return {
         i: {
             'name': df['Distributors'][i],
-            'long': df['long'],
-            'lat': df['lat']
+            'long': df['long'][i],
+            'lat': df['lat'][i]
         }
-        for i in range(len(df)) if cal_dist(FIX_POINT, (df['lat'][i], df['long'][i])) < 2 * OPERATING_RADIUS
+        for i in range(len(df)) if cal_dist(FIX_POINT, (df['lat'][i], df['long'][i])) < 2 * RADIUS_OF_INTEREST
     }
 
 

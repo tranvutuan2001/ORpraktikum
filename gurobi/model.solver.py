@@ -24,7 +24,7 @@ CO2_EMISSION_EON = 366  # gramm/kwh in 2020
 CO2_EMISSION_PRICE_1 = 201E-6  # euro/gramm,  suggestion by German Environment Agency
 CO2_EMISSION_PRICE_2 = 698E-6  # euro/gram,   then balanced with the welfare losses caused by climate change for current and future generations
 BOILER_EFFICIENCY = 0.7
-OPERATING_RADIUS = 250
+OPERATING_RADIUS = 20
 
 
 def solve():
@@ -61,7 +61,7 @@ def solve():
     # Add Variables
     print("Adding variables")
     start = timeit.default_timer()
-    print(len(M) * len(I) * T, "variables will be added")
+    print(len(M) * len(I) * T * len(distributors), "variables will be added")
     # Quantity of installed heat pumps with given conditions
     x = {}
     for m in M:
@@ -122,15 +122,15 @@ def solve():
     start = timeit.default_timer()
     # TODO: add correct cost function
 
-    obj = quicksum((x[m, i, t] * hpinvestment[m]
-                    + quicksum(x[m, i, t_1] * (hpcosts[m] * electr_timefactor[t_1] * electr_locationfactor[d]
+    obj = quicksum((x[m, i, t, distr] * hpinvestment[m]
+                    + quicksum(x[m, i, t_1, distr] * (hpcosts[m] * electr_timefactor[t_1] * electr_locationfactor[d]
                                                + hpCO2[m] * CO2_EMISSION_PRICE_1 * CO2_timefactor[t_1])
                                * heatdemand[i, t_1] for t_1 in range(t + 1))
-                    + (I[i]['quantity'] - quicksum(x[m, i, t_1] for t_1 in range(t + 1)))
+                    + (I[i]['quantity'] - quicksum(x[m, i, t_1, distr] for t_1 in range(t + 1)))
                     * (boilercosts[i] * gas_timefactor[t] * gas_locationfactor[d]
                        + CO2_EMISSION_GAS / BOILER_EFFICIENCY * CO2_EMISSION_PRICE_1 * CO2_timefactor[t])
                     * heatdemand[i, t])
-                   for m in M for i in I for d in D for t in range(T))
+                   for m in M for i in I for d in D for t in range(T) for distr in distributors)
     model.setObjective(obj, GRB.MINIMIZE)
     stop = timeit.default_timer()
     print('Time in seconds to add the objective function: ', stop - start, "\n")
