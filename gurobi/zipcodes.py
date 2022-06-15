@@ -1,4 +1,4 @@
-from utilities import get_zipcode_by_coords
+from utilities import get_zipcode
 import pandas as pd
 import os
 from tqdm import tqdm
@@ -75,7 +75,7 @@ def add_zipcodes_to_csv():
                 else:
                     # Get the zipcode from the coordinates by calling the geolocator api.
                     # This is a slow process as we need to limit the number of requests to 1 per second.
-                    zipcode = get_zipcode_by_coords(lat, lng)
+                    zipcode = get_zipcode((lat, lng))
                     if zipcode != None and zipcode != 0:
                         knownzipcodes[(lat, lng)] = zipcode
                     else:

@@ -11,6 +11,20 @@ def get_weather_data(city):
     """
     Gets the weather data for a location using the OpenWeatherMap API.
     :param city: The location (e.g. "London, UK")
+    :return: The weather data for the location  (e.g. "{'coord': {'lon': 6.0827, 'lat': 50.7759},
+                                                        'weather': [{'id': 801, 'main': 'Clouds', 'description': 'few clouds', 'icon': '02d'}],
+                                                        'base': 'stations', 
+                                                        'main': {'temp': 19.48, 'feels_like': 19.13, 'temp_min': 16.59, 'temp_max': 22.19, 'pressure': 1016, 'humidity': 63},
+                                                        'visibility': 10000,
+                                                        'wind': {'speed': 2.23, 'deg': 30, 'gust': 2.04},
+                                                        'clouds': {'all': 11}, 
+                                                        'dt': 1655280324, 
+                                                        'sys': {'type': 2, 'id': 2013497, 'country': 'DE', 'sunrise': 1655263317, 'sunset': 1655322623},
+                                                        'timezone': 7200,
+                                                        'id': 3247449, 
+                                                        'name': 'Aachen',
+                                                        'cod': 200
+                                                        }")
     """
 
     lat, lng = get_coordinates(city)
@@ -27,10 +41,14 @@ def get_weather_data(city):
 
 def get_distance(origin, destination):
     """
-    Calculates the distance between two locations using the OSMR API.
+    Calculates the distance between two locations using the OSMR API. 
     :param origin: The origin location (e.g. "London, UK")
     :param destination: The destination location (e.g. "New York, US")
     :return: The distance between the two locations (in km)
+    Examples:
+        - get_distance({'postalcode': '88279', 'country': 'Germany'}, {
+               'postalcode': '01067', 'country': 'Germany'})
+        - get_distance("Aachen", "Luxembourg")
     """
 
     # Get the coordinates of the origin and destination
@@ -57,20 +75,26 @@ def get_distance(origin, destination):
 
 
 def get_zipcode(location):
-    lat, lng = get_coordinates(location)
+    """Get the zip code from a location
+
+    Args:
+        location: The location either a tuple of (lat, lng) or a string of the location name
+
+    Returns:
+        float: the zipcode of the location
+    Examples:
+        - get_zipcode("London, UK")
+    """
+    if type(location) is tuple:
+        lat, lng = location
+    else:
+        lat, lng = get_coordinates(location)
     if lat is None or lng is None:
         return None
     location = geolocator.reverse((lat, lng))
     time.sleep(1)
     return location.raw['address']['postcode']
 
-
-def get_zipcode_by_coords(lat, lng):
-    location = geolocator.reverse((lat, lng))
-    time.sleep(1)
-    if location is None or not 'postcode' in location.raw['address']:
-        return 0
-    return location.raw['address']['postcode']
 
 def get_coordinates(location):
     """
@@ -79,7 +103,6 @@ def get_coordinates(location):
     :return: The latitude and longitude of the location
     """
 
-    # Get the coordinates of the location
     try:
         location = geolocator.geocode(location)
     except:
@@ -88,22 +111,4 @@ def get_coordinates(location):
     if location is None:
         return None, None
 
-    lat = location.latitude
-    lng = location.longitude
-
-    return lat, lng
-
-
-# source = "Aachen"
-# destination = "Luxembourg"
-
-# distance = get_distance(source, destination)
-# print(
-#     f'By car, you need to travel {distance} km from {source} to {destination}.')
-
-# print(f"Weather in {source}: ", get_weather_data(source)['main']['temp'], "°C")
-
-# print(f"Zip code for {source}: ", get_zipcode(source))
-
-# print(get_distance({'postalcode': '88279', 'country': 'Germany'}, {
-#     'postalcode': '01067', 'country': 'Germany'}))
+    return location.latitude, location.longitude
