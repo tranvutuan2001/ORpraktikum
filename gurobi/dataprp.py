@@ -126,7 +126,8 @@ def prepare_housing_data(df):
         for i in range(len(df["long"])) if cal_dist(FIX_POINT, (df['lat'][i], df['long'][i])) < OPERATING_RADIUS
     }
 
-    result = {i: list(dict_i.values())[i] for i in range(len(dict_i.values()))}
+    result = {i: list(dict_i.values())[i] for i in range(
+        len(dict_i.values())) if i < 1000}
 
     return result
 
