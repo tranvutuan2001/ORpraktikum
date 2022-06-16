@@ -24,10 +24,10 @@ CO2_EMISSION_EON = 366  # gramm/kwh in 2020
 CO2_EMISSION_PRICE_1 = 201E-6  # euro/gramm,  suggestion by German Environment Agency
 CO2_EMISSION_PRICE_2 = 698E-6  # euro/gram,   then balanced with the welfare losses caused by climate change for current and future generations
 BOILER_EFFICIENCY = 0.7
-OPERATING_RADIUS = 20
 
 
-def solve():
+def solve(OPERATING_RADIUS=20
+          ):
     """Solves the heat pump problem.
 
     T (int): number of months startting from January

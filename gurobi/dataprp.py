@@ -9,9 +9,12 @@ from utilities import cal_dist
 import json
 
 dirname = os.path.dirname(__file__)
-ACOOLHEAD = os.path.join(dirname, './data-sources/data_from_Hannah_with_coordinates_zipcodes_heatcapacity.csv')
-DISTRIBUTOR = os.path.join(dirname, './data-sources/Distributor_data_with_coordinates.csv')
-HEAT_PUMPS = os.path.join(dirname, './data-sources/heat_pumps_air_water_only.csv')
+ACOOLHEAD = os.path.join(
+    dirname, './data-sources/data_from_Hannah_with_coordinates_zipcodes_heatcapacity.csv')
+DISTRIBUTOR = os.path.join(
+    dirname, './data-sources/Distributor_data_with_coordinates.csv')
+HEAT_PUMPS = os.path.join(
+    dirname, './data-sources/heat_pumps_air_water_only.csv')
 FPOWDATA = os.path.join(dirname, './data-sources/fpow.csv')
 
 # from https://www.globalpetrolprices.com/Germany/natural_gas_prices/
@@ -23,11 +26,10 @@ BOILER_EFFICIENCY = 0.7
 ELECTRICITY_COST_PER_UNIT = 0.4805
 # from https://www.eon.de/de/gk/strom/oekostrom.html#:~:text=Im%20Jahr%201990%20lag%20der,der%20CO%202%2DEmissionen%20leisten.
 CO2_EMISSION_EON = 366  # gramm/kwh in 2020
-RADIUS_OF_INTEREST = 50
 FIX_POINT = (50.849305, 6.533625)
 
 
-def data_preprocess():
+def data_preprocess(RADIUS_OF_INTEREST=30):
     """    
     This function preprocesses the data from the excel and csv file and returns S,M,I, fitness
     Returns:
@@ -53,7 +55,8 @@ def data_preprocess():
     df = df.reset_index(drop=True)
 
     df_hp = pd.read_csv(HEAT_PUMPS)
-    df_hp_s = df_hp.sort_values(['COP A2/W35', 'Heat output A2/W35 (kW)'], ascending=[True, True])
+    df_hp_s = df_hp.sort_values(
+        ['COP A2/W35', 'Heat output A2/W35 (kW)'], ascending=[True, True])
     df_hp = df_hp_s.iloc[::10, :]
     df_hp = df_hp.reset_index(drop=True)
     # price can't be found
@@ -72,7 +75,8 @@ def data_preprocess():
     # # https://docplayer.org/82079403-Preisliste-waermepumpen-systeme-der-cta-ag.html
     # # https://shop.smuk.at/shop/USER_ARTIKEL_HANDLING_AUFRUF.php?Kategorie_ID=9389&Ziel_ID=12271890
 
-    price = [13025, 14316.4, 14108.64, 15175, 9930.55, 17005.37, 19104.95, 12066.6, 17983.20, 28680]
+    price = [13025, 14316.4, 14108.64, 15175, 9930.55,
+             17005.37, 19104.95, 12066.6, 17983.20, 28680]
 
     #  installation + accessories from https://www.energieheld.de/heizung/waermepumpe/kosten
     price = [x + 3000 for x in price]
@@ -105,26 +109,26 @@ def prepare_fitness():
     return fitness
 
 
-def prepare_housing_data(df):
+def prepare_housing_data(df, RADIUS_OF_INTEREST=20):
     dict_i = {i:
-        {
-            "district": df["Administrative district"][i],
-            "type of building": df["Type of building"][i],
-            "quantity": int(round(df["Number of buildings"][i], 0)),
-            "Surface area": int(df["Surface area [m^2]"][i]),
-            "modernization status": df["modernization status"][i],
-            "max heat demand [kWh/m^2]": df["max heat demand [kWh/m^2]"][i],
-            "average heat demand": df["average heat demand [kWh/m^2]"][i],
-            "Heatcapacity": df["Heatcapacity"][i],
-            "Klimazone": df["Klimazone"][i],
-            "year of construction": df["Year of construction"][i],
-            "max_heat_demand_Patrick": round(int(df["Surface area [m^2]"][i]) * df["Heatcapacity"][i] / 1000, 2),
-            'long': df['long'][i],
-            'lat': df['lat'][i]
-            # "Floors": df["Floors"][i]
-        }
-        for i in range(len(df["long"])) if cal_dist(FIX_POINT, (df['lat'][i], df['long'][i])) < RADIUS_OF_INTEREST
-    }
+              {
+                  "district": df["Administrative district"][i],
+                  "type of building": df["Type of building"][i],
+                  "quantity": int(round(df["Number of buildings"][i], 0)),
+                  "Surface area": int(df["Surface area [m^2]"][i]),
+                  "modernization status": df["modernization status"][i],
+                  "max heat demand [kWh/m^2]": df["max heat demand [kWh/m^2]"][i],
+                  "average heat demand": df["average heat demand [kWh/m^2]"][i],
+                  "Heatcapacity": df["Heatcapacity"][i],
+                  "Klimazone": df["Klimazone"][i],
+                  "year of construction": df["Year of construction"][i],
+                  "max_heat_demand_Patrick": round(int(df["Surface area [m^2]"][i]) * df["Heatcapacity"][i] / 1000, 2),
+                  'long': df['long'][i],
+                  'lat': df['lat'][i]
+                  # "Floors": df["Floors"][i]
+              }
+              for i in range(len(df["long"])) if cal_dist(FIX_POINT, (df['lat'][i], df['long'][i])) < RADIUS_OF_INTEREST
+              }
 
     result = {i: list(dict_i.values())[i] for i in range(
         len(dict_i.values())) if i < 100}
@@ -134,13 +138,13 @@ def prepare_housing_data(df):
 
 def prepare_heatpump_data(df_hp):
     dict_m = {i:
-        {
-            'brand_name': df_hp['hp_name'][i],
-            'cop': df_hp['COP A2/W35'][i],
-            'produced heat': df_hp['Heat output A2/W35 (kW)'][i],
-            'price': df_hp['price'][i]
-        }
-        for i in range(len(df_hp['hp_name']))}
+              {
+                  'brand_name': df_hp['hp_name'][i],
+                  'cop': df_hp['COP A2/W35'][i],
+                  'produced heat': df_hp['Heat output A2/W35 (kW)'][i],
+                  'price': df_hp['price'][i]
+              }
+              for i in range(len(df_hp['hp_name']))}
 
     return dict_m
 
@@ -162,7 +166,7 @@ def prepare_workforce_data(df):
     return dict_s
 
 
-def prepare_distributor(df):
+def prepare_distributor(df, RADIUS_OF_INTEREST=20):
     return {
         i: {
             'name': df['Distributors'][i],
@@ -233,8 +237,8 @@ def prepare_params(T, I, M, D):
         boilercosts[i] = AVERAGE_BOILER_COST_PER_UNIT / BOILER_EFFICIENCY
 
     for m in M:
-        # hpcost is multiplied with heatdemand in obj function, so it should be cost/kwh. 
-        # we consider it now as the constant elctricity price of one dimension, since acoording to EON this price can be guaranteed till 2024. 
+        # hpcost is multiplied with heatdemand in obj function, so it should be cost/kwh.
+        # we consider it now as the constant elctricity price of one dimension, since acoording to EON this price can be guaranteed till 2024.
         # Price can be made to dependent on time ( added tax might be increased) and districts by adapting the vector timefactor and locationfactor.
         hpcosts[m] = ELECTRICITY_COST_PER_UNIT / M[m]['cop']
         hpinvestment[m] = M[m]['price']
@@ -262,7 +266,7 @@ def prepare_params(T, I, M, D):
     print('Time in seconds to prepare the parameters ', stop - start)
 
     return max_sales, heatdemand, boilercosts, hpcosts, hpinvestment, \
-           electr_timefactor, gas_timefactor, electr_locationfactor, gas_locationfactor, CO2_timefactor, hpCO2
+        electr_timefactor, gas_timefactor, electr_locationfactor, gas_locationfactor, CO2_timefactor, hpCO2
 
 
 """ -> Instead of calculating Fpow within the model, 
