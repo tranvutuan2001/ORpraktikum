@@ -7,6 +7,7 @@ import timeit
 import numpy as np
 from utilities import cal_dist
 import json
+import re
 
 dirname = os.path.dirname(__file__)
 ACOOLHEAD = os.path.join(
@@ -16,6 +17,7 @@ DISTRIBUTOR = os.path.join(
 HEAT_PUMPS = os.path.join(
     dirname, './data-sources/heat_pumps_air_water_price.csv')
 FPOWDATA = os.path.join(dirname, './data-sources/fpow.csv')
+
 
 # from https://www.globalpetrolprices.com/Germany/natural_gas_prices/
 AVERAGE_BOILER_COST_PER_UNIT = 0.071  # euro per kWh for private household
@@ -37,6 +39,7 @@ def load_data_and_parameters(T):
         T, housing, heatpumps, workforce)
 
     return data, parameters
+
 
 def data_preprocess():
     """    
@@ -63,10 +66,12 @@ def data_preprocess():
     heatpump_dataframe = pd.read_csv(HEAT_PUMPS)
     distributors_dataframe = pd.read_csv(DISTRIBUTOR)
 
-    housing_data = prepare_housing_data(housing_dataframe, max_entries=1000)
+    housing_data = prepare_housing_data(
+        housing_dataframe, max_entries=1000, zipcodes_of_interest="^(5[0-3])")
     workforce_data = prepare_workforce_data(housing_dataframe)
     heatpump_data = prepare_heatpump_data(heatpump_dataframe, max_entries=5)
-    distributor_data = prepare_distributor(distributors_dataframe)
+    distributor_data = prepare_distributor(
+        distributors_dataframe,  zipcodes_of_interest="^(5[0-3])")
     fitness_data = prepare_fitness()
 
     stop = timeit.default_timer()
@@ -89,7 +94,7 @@ def prepare_fitness():
     return fitness
 
 
-def prepare_housing_data(df, RADIUS_OF_INTEREST=20, max_entries=None):
+def prepare_housing_data(df, RADIUS_OF_INTEREST=None, max_entries=None, zipcodes_of_interest=None):
     housing_data = {i:
                     {
                         "district": df["Administrative district"][i],
@@ -107,7 +112,7 @@ def prepare_housing_data(df, RADIUS_OF_INTEREST=20, max_entries=None):
                         'lat': df['lat'][i]
                         # "Floors": df["Floors"][i]
                     }
-                    for i in range(len(df["long"])) if cal_dist(FIX_POINT, (df['lat'][i], df['long'][i])) < RADIUS_OF_INTEREST
+                    for i in range(len(df["long"])) if len(str(df["zipcode"][i])) == 5 and re.match(zipcodes_of_interest, str(df["zipcode"][i]))
                     }
 
     if max_entries is None:
@@ -150,14 +155,14 @@ def prepare_workforce_data(df):
     return dict_s
 
 
-def prepare_distributor(df, RADIUS_OF_INTEREST=20):
+def prepare_distributor(df, RADIUS_OF_INTEREST=20, zipcodes_of_interest=None):
     return {
         i: {
             'name': df['Distributors'][i],
             'long': df['long'][i],
             'lat': df['lat'][i]
         }
-        for i in range(len(df)) if cal_dist(FIX_POINT, (df['lat'][i], df['long'][i])) < 2 * RADIUS_OF_INTEREST
+        for i in range(len(df)) if len(str(df["zipcode"][i])) == 5 and re.match(zipcodes_of_interest, str(df["zipcode"][i]))
     }
 
 
@@ -272,6 +277,7 @@ def calcFpow():
     return 
 calcFpow()
 """
+
 
 def add_price_to_heatpumps():
     heatpump_dataframe = pd.read_csv(HEAT_PUMPS)
