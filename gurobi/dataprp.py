@@ -62,9 +62,9 @@ def data_preprocess():
     distributors_dataframe = pd.read_csv(DISTRIBUTOR)
 
     housing_data = prepare_housing_data(
-        housing_dataframe, max_entries=10, zipcodes_of_interest="^(5[0-3])")
+        housing_dataframe, max_entries=None, zipcodes_of_interest="^(5[0-3])")
     districts = get_districts(housing_dataframe)
-    heatpump_data = prepare_heatpump_data(heatpump_dataframe, max_entries=10)
+    heatpump_data = prepare_heatpump_data(heatpump_dataframe, max_entries=5)
     distributor_data = prepare_distributor(
         distributors_dataframe,  zipcodes_of_interest="^(5[0-3])",  max_entries=10)
     fitness_data = prepare_fitness()
@@ -120,6 +120,7 @@ def prepare_housing_data(df, RADIUS_OF_INTEREST=None, max_entries=None, zipcodes
 
 
 def prepare_heatpump_data(df_hp, max_entries=None):
+    df_hp = df_hp.sort_values(by=['Heat output A2/W35 (kW)'], ascending=False)
     heatpump_data = {i:
                      {
                          'brand_name': df_hp['hp_name'][i],
