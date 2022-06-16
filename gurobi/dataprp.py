@@ -24,7 +24,6 @@ BOILER_EFFICIENCY = 0.7
 ELECTRICITY_COST_PER_UNIT = 0.4805
 # from https://www.eon.de/de/gk/strom/oekostrom.html#:~:text=Im%20Jahr%201990%20lag%20der,der%20CO%202%2DEmissionen%20leisten.
 CO2_EMISSION_EON = 366  # gramm/kwh in 2020
-FIX_POINT = (50.849305, 6.533625)
 
 
 def load_data_and_parameters(T):
@@ -108,7 +107,8 @@ def prepare_housing_data(df, RADIUS_OF_INTEREST=None, max_entries=None, zipcodes
                         'lat': df['lat'][i]
                         # "Floors": df["Floors"][i]
                     }
-                    for i in range(len(df["long"])) if len(str(df["zipcode"][i])) == 5 and re.match(zipcodes_of_interest, str(df["zipcode"][i]))
+                    for i in range(len(df["long"]))
+                    if len(str(df["zipcode"][i])) == 5 and re.match(zipcodes_of_interest, str(df["zipcode"][i]))
                     }
 
     if max_entries is None:
@@ -137,6 +137,7 @@ def prepare_heatpump_data(df_hp, max_entries=None):
 def get_districts(df):
     return df['Administrative district'].unique()
 
+
 def prepare_distributor(df, RADIUS_OF_INTEREST=20, zipcodes_of_interest=None, max_entries=None):
     distributors ={
         i: {
@@ -144,14 +145,15 @@ def prepare_distributor(df, RADIUS_OF_INTEREST=20, zipcodes_of_interest=None, ma
             'long': df['long'][i],
             'lat': df['lat'][i]
         }
-        for i in range(len(df)) if len(str(df["zipcode"][i])) == 5 and re.match(zipcodes_of_interest, str(df["zipcode"][i]))
+        for i in range(len(df))
+        if len(str(df["zipcode"][i])) == 5 and re.match(zipcodes_of_interest, str(df["zipcode"][i]))
     }
     if max_entries is None:
+
         return distributors
     else:
         return {i: list(distributors.values())[i] for i in range(
             len(distributors.values())) if i < max_entries}
-
 
 def prepare_params(T, I, M, D):
     """Prepares the parameters based on the data
