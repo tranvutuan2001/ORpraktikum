@@ -149,7 +149,6 @@ def prepare_distributor(df, RADIUS_OF_INTEREST=20, zipcodes_of_interest=None, ma
         if len(str(df["zipcode"][i])) == 5 and re.match(zipcodes_of_interest, str(df["zipcode"][i]))
     }
     if max_entries is None:
-
         return distributors
     else:
         return {i: list(distributors.values())[i] for i in range(

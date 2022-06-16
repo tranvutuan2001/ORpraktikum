@@ -54,9 +54,7 @@ def solve(OPERATING_RADIUS=2000
 
     (districts, heatpumps, housing, fitness, distributors) = data
     (max_sales, heatdemand, boilercosts, hpcosts, hpinvestment, electr_timefactor,
-        gas_timefactor, electr_locationfactor, gas_locationfactor, CO2_timefactor, hpCO2) = parameters
-
-    
+     gas_timefactor, electr_locationfactor, gas_locationfactor, CO2_timefactor, hpCO2) = parameters
 
     # Create a new model
     print("Preparing the model\n")
@@ -130,15 +128,14 @@ def solve(OPERATING_RADIUS=2000
     start = timeit.default_timer()
     # TODO: add correct cost function
 
-    obj = quicksum((x[m, i, t,d] * hpinvestment[m]
+    obj = quicksum((x[m, i, t, d] * hpinvestment[m]
                     + quicksum(x[m, i, t_1, d] * (hpcosts[m] * electr_timefactor[t_1] * electr_locationfactor[housing[i]['district']]
-                                                           + hpCO2[m] * CO2_EMISSION_PRICE_1 * CO2_timefactor[t_1])
-                                               * heatdemand[i, t_1] for t_1 in range(t + 1) )
-                    + (housing[i]['quantity'] - quicksum(x[m, i,  t_1, d]
-                       for t_1 in range(t + 1)))
+                                                  + hpCO2[m] * CO2_EMISSION_PRICE_1 * CO2_timefactor[t_1])
+                               * heatdemand[i, t_1] for t_1 in range(t + 1))
+                    + (housing[i]['quantity'] - quicksum(x[m, i, t_1, d] for t_1 in range(t + 1)))
                     * (boilercosts[i] * gas_timefactor[t] * gas_locationfactor[housing[i]['district']]
-                                                          + CO2_EMISSION_GAS / BOILER_EFFICIENCY * CO2_EMISSION_PRICE_1 * CO2_timefactor[t] )
-                    * heatdemand[i, t])  
+                       + CO2_EMISSION_GAS / BOILER_EFFICIENCY * CO2_EMISSION_PRICE_1 * CO2_timefactor[t])
+                    * heatdemand[i, t])
                    for i in housing for m in heatpumps for d in distributors for t in range(T))
     model.setObjective(obj, GRB.MINIMIZE)
     stop = timeit.default_timer()
@@ -151,7 +148,7 @@ def solve(OPERATING_RADIUS=2000
     model.write(os.path.join(dirname, "solutions\model.lp"))
     model.optimize()
     stop = timeit.default_timer()
-    write_solution_csv(model, districts, heatpumps, housing, T,distributors)
+    write_solution_csv(model, districts, heatpumps, housing, T, distributors)
     print('Time in seconds to solve the model: ', stop - start, "\n")
 
     return model

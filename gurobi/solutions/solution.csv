@@ -1,10 +1,10 @@
-district;year construct;type;modern;HPModel;Year;QTY;totalhouses;percent of totalhouses;heatcapacity
-Rhein_Erft_;1918;EFH;tabula_retrofit;4;3;801;801;1.0;10.81
-Rhein_Erft_;1948;EFH;tabula_standard;4;3;1714;1714;1.0;22.81
-Rhein_Erft_;1948;EFH;tabula_retrofit;4;3;923;923;1.0;10.26
-Rhein_Erft_;1957;EFH;tabula_standard;4;3;400;3983;0.10042681395932714;23.33
-Rhein_Erft_;1957;EFH;tabula_retrofit;4;3;2145;2145;1.0;10.5
-Rhein_Erft_;1968;EFH;tabula_standard;4;3;4869;4869;1.0;23.5
-Rhein_Erft_;1968;EFH;tabula_retrofit;4;3;2622;2622;1.0;10.58
-Rhein_Erft_;1978;EFH;tabula_standard;4;3;4426;4426;1.0;14.04
-Rhein_Erft_;1978;EFH;tabula_retrofit;4;3;2383;2383;1.0;6.32
+district;year construct;type;modern;HPModel;Year;QTY;totalhouses;percent of totalhouses;heatcapacity;distributor
+Rhein_Erft_;1918;EFH;tabula_retrofit;4;3;801;801;1.0;10.81;Dr. Kurt Korsing GmbH & Co. KG
+Rhein_Erft_;1948;EFH;tabula_standard;4;3;1714;1714;1.0;22.81;Dr. Kurt Korsing GmbH & Co. KG
+Rhein_Erft_;1948;EFH;tabula_retrofit;4;3;923;923;1.0;10.26;Fuchs Heizung + Haustechnik GmbH
+Rhein_Erft_;1957;EFH;tabula_standard;4;3;400;3983;0.10042681395932714;23.33;Dr. Kurt Korsing GmbH & Co. KG
+Rhein_Erft_;1957;EFH;tabula_retrofit;4;3;2145;2145;1.0;10.5;Dr. Kurt Korsing GmbH & Co. KG
+Rhein_Erft_;1968;EFH;tabula_standard;4;3;4869;4869;1.0;23.5;Dr. Kurt Korsing GmbH & Co. KG
+Rhein_Erft_;1968;EFH;tabula_retrofit;4;3;2622;2622;1.0;10.58;Fuchs Heizung + Haustechnik GmbH
+Rhein_Erft_;1978;EFH;tabula_standard;4;3;4426;4426;1.0;14.04;Dr. Kurt Korsing GmbH & Co. KG
+Rhein_Erft_;1978;EFH;tabula_retrofit;4;3;2383;2383;1.0;6.32;Dr. Kurt Korsing GmbH & Co. KG

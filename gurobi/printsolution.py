@@ -21,17 +21,17 @@ def write_solution_csv(model, D, M, I, T, distributors):
     f = open(os.path.join(dirname, "solutions\solution.csv"), 'w', newline="")
     writer = csv.writer(f, delimiter=";")
     writer.writerow(
-        ["district", "year construct", "type", "modern", "HPModel", "Year", "QTY", "totalhouses", "percent of totalhouses", "heatcapacity"])
+        ["district", "year construct", "type", "modern", "HPModel", "Year", "QTY", "totalhouses", "percent of totalhouses", "heatcapacity", "distributor"])
     for i in I:
         for m in M:
-            for d in distributors:
-                for t in range(T):
-                    if model.getVarByName(f'hp_type_{str(m)}_at_house_type_{str(i)}_in_month_{str(t)}_by_distributor_{str(distributors[d]["name"])}').X != 0:
-                        p = model.getVarByName(
-                            f'hp_type_{str(m)}_at_house_type_{str(i)}_in_month_{str(t)}_by_distributor_{str(distributors[d]["name"])}').X
+            for t in range(T):
+                for d in distributors:
+                    var = model.getVarByName(f'hp_type_{str(m)}_at_house_type_{str(i)}_in_month_{str(t)}_by_distributor_{str(distributors[d]["name"])}').X
+                    if var != 0:
+                        p = var
                         percent = p / I[i]["quantity"]
                         row = [I[i]["district"], I[i]["year of construction"], I[i]["type of building"], I[i]["modernization status"], m, t,
-                            int(p), I[i]["quantity"], percent, I[i]["max_heat_demand_Patrick"]]
+                               int(p), I[i]["quantity"], percent, I[i]["max_heat_demand_Patrick"], distributors[d]['name']]
                         writer.writerow(row)
     f.close()
     return
