@@ -2,14 +2,12 @@
 # !/usr/bin/env python3
 # Template for our final model
 
-from gurobipy import *
-from gurobipy import GRB
-import numpy as np
+from gurobipy import Model, quicksum, GRB
 import os
 
-from dataprp import data_preprocess, prepare_params
+from dataprp import load_data_and_parameters
 from printsolution import write_solution_csv
-import timeit, csv
+import timeit
 from utilities import cal_dist
 
 dirname = os.path.dirname(__file__)
@@ -22,7 +20,8 @@ CO2_EMISSION_GAS = 433  # gramm/ kwh
 CO2_EMISSION_EON = 366  # gramm/kwh in 2020
 # from https://www.umweltbundesamt.de/daten/umwelt-wirtschaft/gesellschaftliche-kosten-von-umweltbelastungen#klimakosten-von-treibhausgas-emissionen
 CO2_EMISSION_PRICE_1 = 201E-6  # euro/gramm,  suggestion by German Environment Agency
-CO2_EMISSION_PRICE_2 = 698E-6  # euro/gram,   then balanced with the welfare losses caused by climate change for current and future generations
+# euro/gram,   then balanced with the welfare losses caused by climate change for current and future generations
+CO2_EMISSION_PRICE_2 = 698E-6
 BOILER_EFFICIENCY = 0.7
 
 
@@ -50,10 +49,13 @@ def solve(OPERATING_RADIUS=20
     """
 
     # Preparation of Data and Parameters
+    data, parameters = load_data_and_parameters(NUMBER_OF_MONTHS)
+
+    (workforce, heatpumps, housing, fitness, distributors) = data
+    (max_sales, heatdemand, boilercosts, hpcosts, hpinvestment, electr_timefactor,
+        gas_timefactor, electr_locationfactor, gas_locationfactor, CO2_timefactor, hpCO2) = parameters
+
     T = NUMBER_OF_MONTHS
-    D, M, I, fitness, distributors = data_preprocess()
-    max_sales, heatdemand, boilercosts, hpcosts, hpinvestment, electr_timefactor, \
-    gas_timefactor, electr_locationfactor, gas_locationfactor, CO2_timefactor, hpCO2 = prepare_params(T, I, M, D)
 
     # Create a new model
     print("Preparing the model\n")
@@ -61,16 +63,17 @@ def solve(OPERATING_RADIUS=20
     # Add Variables
     print("Adding variables")
     start = timeit.default_timer()
-    print(len(M) * len(I) * T * len(distributors), "variables will be added")
+    print(len(heatpumps) * len(housing) * T *
+          len(distributors), "variables will be added")
     # Quantity of installed heat pumps with given conditions
     x = {}
-    for m in M:
-        for i in I:
+    for m in heatpumps:
+        for i in housing:
             for t in range(T):
                 for d in distributors:
                     # name = f"x: install hp_{str(m)} in house_{str(i)} in district_{str(s)} in month_{str(t)} by distributor d"
                     x[m, i, t, d] = model.addVar(
-                        vtype=GRB.INTEGER,
+                        vtype='I',
                         name=f'hp_type_{str(m)}_at_house_type_{str(i)}_in_month_{str(t)}_by_distributor_{str(distributors[d]["name"])}'
                     )
     stop = timeit.default_timer()
@@ -79,8 +82,8 @@ def solve(OPERATING_RADIUS=20
     print("Adding the constraints")
     start = timeit.default_timer()
     # Constraint 1: Consider Installability : never assign HP if they do not fit to the house type
-    for i in I:
-        for m in M:
+    for i in housing:
+        for m in heatpumps:
             for t in range(T):
                 for d in distributors:
                     if fitness[i, m] == 0:
@@ -88,26 +91,30 @@ def solve(OPERATING_RADIUS=20
 
     # Constraint 2:  Install heat pumps in AT LEAST the specified percentage of all houses
     model.addConstr(
-        quicksum(x[m, i, t, d] for m in M for i in I for t in range(T) for d in distributors) >= MIN_PERCENTAGE * quicksum(I[i]['quantity'] for i in I)
+        quicksum(x[m, i, t, d] for m in heatpumps for i in housing for t in range(
+            T) for d in distributors) >= MIN_PERCENTAGE * quicksum(housing[i]['quantity'] for i in housing)
     )
 
     # Constraint 3: Only install as many heatpumps in a house category as the total quantity of houses of that type
-    for i in I:
+    for i in housing:
         model.addConstr(
-            quicksum(x[m, i, t, d] for m in M for t in range(T) for d in distributors) <= I[i]['quantity']
+            quicksum(x[m, i, t, d] for m in heatpumps for t in range(T)
+                     for d in distributors) <= housing[i]['quantity']
         )
 
     # Constraint 4: Only install up to the current expected sales volume
     for t in range(T):
-        model.addConstr(quicksum(x[m, i, t, d] for i in I for m in M for d in distributors) <= max_sales[t])
+        model.addConstr(quicksum(
+            x[m, i, t, d] for i in housing for m in heatpumps for d in distributors) <= max_sales[t])
 
     # Constraints 5: Respect the operation radius for each distributor
     # TODO: add the constraint 5 as explained above
     for d in distributors:
-        for m in M:
-            for i in I:
+        for m in heatpumps:
+            for i in housing:
                 for t in range(T):
-                    dist = cal_dist((I[i]['lat'], I[i]['long']), (distributors[d]['lat'], distributors[d]['long']))
+                    dist = cal_dist((housing[i]['lat'], housing[i]['long']),
+                                    (distributors[d]['lat'], distributors[d]['long']))
                     if dist > OPERATING_RADIUS:
                         model.addConstr(x[m, i, t, d] == 0)
 
@@ -124,13 +131,14 @@ def solve(OPERATING_RADIUS=20
 
     obj = quicksum((x[m, i, t, distr] * hpinvestment[m]
                     + quicksum(x[m, i, t_1, distr] * (hpcosts[m] * electr_timefactor[t_1] * electr_locationfactor[d]
-                                               + hpCO2[m] * CO2_EMISSION_PRICE_1 * CO2_timefactor[t_1])
+                                                      + hpCO2[m] * CO2_EMISSION_PRICE_1 * CO2_timefactor[t_1])
                                * heatdemand[i, t_1] for t_1 in range(t + 1))
-                    + (I[i]['quantity'] - quicksum(x[m, i, t_1, distr] for t_1 in range(t + 1)))
+                    + (housing[i]['quantity'] - quicksum(x[m, i, t_1, distr]
+                       for t_1 in range(t + 1)))
                     * (boilercosts[i] * gas_timefactor[t] * gas_locationfactor[d]
                        + CO2_EMISSION_GAS / BOILER_EFFICIENCY * CO2_EMISSION_PRICE_1 * CO2_timefactor[t])
                     * heatdemand[i, t])
-                   for m in M for i in I for d in D for t in range(T) for distr in distributors)
+                   for m in heatpumps for i in housing for d in workforce for t in range(T) for distr in distributors)
     model.setObjective(obj, GRB.MINIMIZE)
     stop = timeit.default_timer()
     print('Time in seconds to add the objective function: ', stop - start, "\n")
@@ -142,7 +150,7 @@ def solve(OPERATING_RADIUS=20
     model.write(os.path.join(dirname, "solutions\model.lp"))
     model.optimize()
     stop = timeit.default_timer()
-    write_solution_csv(model, D, M, I, T)
+    write_solution_csv(model, workforce, heatpumps, housing, T)
     print('Time in seconds to solve the model: ', stop - start, "\n")
 
     return model

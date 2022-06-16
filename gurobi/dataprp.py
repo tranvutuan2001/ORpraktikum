@@ -29,6 +29,15 @@ CO2_EMISSION_EON = 366  # gramm/kwh in 2020
 FIX_POINT = (50.849305, 6.533625)
 
 
+def load_data_and_parameters(T):
+    data = data_preprocess()
+    workforce, heatpumps, housing, _, _ = data
+
+    parameters = prepare_params(
+        T, housing, heatpumps, workforce)
+
+    return data, parameters
+
 def data_preprocess():
     """    
     This function preprocesses the data from the excel and csv file and returns S,M,I, fitness
@@ -47,7 +56,7 @@ def data_preprocess():
         fitness (dict): contains info if a heat pump model m can satisfy the demand of a house type i (1 if yes, else 0) 
         """
 
-    print("Preprocess the data")
+    print("Prepare the data")
     start = timeit.default_timer()
 
     housing_dataframe = pd.read_csv(ACOOLHEAD)
@@ -56,12 +65,12 @@ def data_preprocess():
 
     housing_data = prepare_housing_data(housing_dataframe, max_entries=1000)
     workforce_data = prepare_workforce_data(housing_dataframe)
-    heatpump_data = prepare_heatpump_data(heatpump_dataframe,max_entries=5)
+    heatpump_data = prepare_heatpump_data(heatpump_dataframe, max_entries=5)
     distributor_data = prepare_distributor(distributors_dataframe)
     fitness_data = prepare_fitness()
 
     stop = timeit.default_timer()
-    print('Time to prepare the data: ',round(stop - start,2), "s\n")
+    print('Time to prepare the data: ', round(stop - start, 2), "s\n")
 
     return workforce_data, heatpump_data, housing_data, fitness_data, distributor_data
 
@@ -82,24 +91,24 @@ def prepare_fitness():
 
 def prepare_housing_data(df, RADIUS_OF_INTEREST=20, max_entries=None):
     housing_data = {i:
-              {
-                  "district": df["Administrative district"][i],
-                  "type of building": df["Type of building"][i],
-                  "quantity": int(round(df["Number of buildings"][i], 0)),
-                  "Surface area": int(df["Surface area [m^2]"][i]),
-                  "modernization status": df["modernization status"][i],
-                  "max heat demand [kWh/m^2]": df["max heat demand [kWh/m^2]"][i],
-                  "average heat demand": df["average heat demand [kWh/m^2]"][i],
-                  "Heatcapacity": df["Heatcapacity"][i],
-                  "Klimazone": df["Klimazone"][i],
-                  "year of construction": df["Year of construction"][i],
-                  "max_heat_demand_Patrick": round(int(df["Surface area [m^2]"][i]) * df["Heatcapacity"][i] / 1000, 2),
-                  'long': df['long'][i],
-                  'lat': df['lat'][i]
-                  # "Floors": df["Floors"][i]
-              }
-              for i in range(len(df["long"])) if cal_dist(FIX_POINT, (df['lat'][i], df['long'][i])) < RADIUS_OF_INTEREST
-              }
+                    {
+                        "district": df["Administrative district"][i],
+                        "type of building": df["Type of building"][i],
+                        "quantity": int(round(df["Number of buildings"][i], 0)),
+                        "Surface area": int(df["Surface area [m^2]"][i]),
+                        "modernization status": df["modernization status"][i],
+                        "max heat demand [kWh/m^2]": df["max heat demand [kWh/m^2]"][i],
+                        "average heat demand": df["average heat demand [kWh/m^2]"][i],
+                        "Heatcapacity": df["Heatcapacity"][i],
+                        "Klimazone": df["Klimazone"][i],
+                        "year of construction": df["Year of construction"][i],
+                        "max_heat_demand_Patrick": round(int(df["Surface area [m^2]"][i]) * df["Heatcapacity"][i] / 1000, 2),
+                        'long': df['long'][i],
+                        'lat': df['lat'][i]
+                        # "Floors": df["Floors"][i]
+                    }
+                    for i in range(len(df["long"])) if cal_dist(FIX_POINT, (df['lat'][i], df['long'][i])) < RADIUS_OF_INTEREST
+                    }
 
     if max_entries is None:
         return {i: list(housing_data.values())[i] for i in range(
@@ -111,16 +120,16 @@ def prepare_housing_data(df, RADIUS_OF_INTEREST=20, max_entries=None):
 
 def prepare_heatpump_data(df_hp, max_entries=None):
     heatpump_data = {i:
-              {
-                  'brand_name': df_hp['hp_name'][i],
-                  'cop': df_hp['COP A2/W35'][i],
-                  'produced heat': df_hp['Heat output A2/W35 (kW)'][i],
-                  'price': df_hp['price'][i]
-              }
-              for i in range(len(df_hp['hp_name']))}
+                     {
+                         'brand_name': df_hp['hp_name'][i],
+                         'cop': df_hp['COP A2/W35'][i],
+                         'produced heat': df_hp['Heat output A2/W35 (kW)'][i],
+                         'price': df_hp['price'][i]
+                     }
+                     for i in range(len(df_hp['hp_name']))}
     if max_entries is not None:
         return {i: list(heatpump_data.values())[i] for i in range(
-            len(heatpump_data.values())) if i< max_entries}
+            len(heatpump_data.values())) if i < max_entries}
     return heatpump_data
 
 
@@ -188,8 +197,6 @@ def prepare_params(T, I, M, D):
         availablepower[renewable,t]: usable power from renewables
     """
 
-    print("Prepare the parameters")
-    start = timeit.default_timer()
     heatdemand = np.empty(shape=(len(I), T))
     boilercosts = np.empty(shape=(len(I)))
     hpcosts = np.empty(shape=(len(M)))
@@ -236,9 +243,6 @@ def prepare_params(T, I, M, D):
     # heatpump co2 emission based on electricity supplied by EON
     for m in M:
         hpCO2[m] = CO2_EMISSION_EON / M[m]['cop']
-
-    stop = timeit.default_timer()
-    print('Time in seconds to prepare the parameters ', stop - start)
 
     return max_sales, heatdemand, boilercosts, hpcosts, hpinvestment, \
         electr_timefactor, gas_timefactor, electr_locationfactor, gas_locationfactor, CO2_timefactor, hpCO2
