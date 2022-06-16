@@ -21,12 +21,14 @@ def write_solution_csv(model, D, M, I, T, distributors):
     f = open(os.path.join(dirname, "solutions\solution.csv"), 'w', newline="")
     writer = csv.writer(f, delimiter=";")
     writer.writerow(
-        ["district", "year construct", "type", "modern", "HPModel", "Year", "QTY", "totalhouses", "percent of totalhouses", "heatcapacity", "distributor"])
+        ["district", "year construct", "type", "modern", "HPModel", "Year", "QTY", "totalhouses", "percent of totalhouses", "heatcapacity",
+         "distributor"])
     for i in I:
         for m in M:
             for t in range(T):
                 for d in distributors:
-                    var = model.getVarByName(f'hp_type_{str(m)}_at_house_type_{str(i)}_in_month_{str(t)}_by_distributor_{str(distributors[d]["name"])}').X
+                    var = model.getVarByName(
+                        f'hp_type_{str(m)}_at_house_type_{str(i)}_in_year_{str(t)}_by_distributor_{str(distributors[d]["name"])}').X
                     if var != 0:
                         p = var
                         percent = p / I[i]["quantity"]

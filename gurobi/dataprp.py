@@ -1,5 +1,4 @@
 import pandas as pd
-import os
 from gurobipy import *
 import csv
 import timeit
@@ -62,11 +61,13 @@ def data_preprocess():
     distributors_dataframe = pd.read_csv(DISTRIBUTOR)
 
     housing_data = prepare_housing_data(
-        housing_dataframe, max_entries=None, zipcodes_of_interest="^(5[0-3])")
+        housing_dataframe, max_entries=None, zipcodes_of_interest="^(5[0-3])"
+    )
     districts = get_districts(housing_dataframe)
     heatpump_data = prepare_heatpump_data(heatpump_dataframe, max_entries=5)
     distributor_data = prepare_distributor(
-        distributors_dataframe,  zipcodes_of_interest="^(5[0-3])",  max_entries=10)
+        distributors_dataframe, zipcodes_of_interest="^(5[0-3])", max_entries=10
+    )
     fitness_data = prepare_fitness()
 
     stop = timeit.default_timer()
@@ -91,25 +92,25 @@ def prepare_fitness():
 
 def prepare_housing_data(df, RADIUS_OF_INTEREST=None, max_entries=None, zipcodes_of_interest=None):
     housing_data = {i:
-                    {
-                        "district": df["Administrative district"][i],
-                        "type of building": df["Type of building"][i],
-                        "quantity": int(round(df["Number of buildings"][i], 0)),
-                        "Surface area": int(df["Surface area [m^2]"][i]),
-                        "modernization status": df["modernization status"][i],
-                        "max heat demand [kWh/m^2]": df["max heat demand [kWh/m^2]"][i],
-                        "average heat demand": df["average heat demand [kWh/m^2]"][i],
-                        "Heatcapacity": df["Heatcapacity"][i],
-                        "Klimazone": df["Klimazone"][i],
-                        "year of construction": df["Year of construction"][i],
-                        "max_heat_demand_Patrick": round(int(df["Surface area [m^2]"][i]) * df["Heatcapacity"][i] / 1000, 2),
-                        'long': df['long'][i],
-                        'lat': df['lat'][i]
-                        # "Floors": df["Floors"][i]
-                    }
-                    for i in range(len(df["long"]))
-                    if len(str(df["zipcode"][i])) == 5 and re.match(zipcodes_of_interest, str(df["zipcode"][i]))
-                    }
+        {
+            "district": df["Administrative district"][i],
+            "type of building": df["Type of building"][i],
+            "quantity": int(round(df["Number of buildings"][i], 0)),
+            "Surface area": int(df["Surface area [m^2]"][i]),
+            "modernization status": df["modernization status"][i],
+            "max heat demand [kWh/m^2]": df["max heat demand [kWh/m^2]"][i],
+            "average heat demand": df["average heat demand [kWh/m^2]"][i],
+            "Heatcapacity": df["Heatcapacity"][i],
+            "Klimazone": df["Klimazone"][i],
+            "year of construction": df["Year of construction"][i],
+            "max_heat_demand_Patrick": round(int(df["Surface area [m^2]"][i]) * df["Heatcapacity"][i] / 1000, 2),
+            'long': df['long'][i],
+            'lat': df['lat'][i]
+            # "Floors": df["Floors"][i]
+        }
+        for i in range(len(df["long"]))
+        if len(str(df["zipcode"][i])) == 5 and re.match(zipcodes_of_interest, str(df["zipcode"][i]))
+    }
 
     if max_entries is None:
         return {i: list(housing_data.values())[i] for i in range(
@@ -122,13 +123,13 @@ def prepare_housing_data(df, RADIUS_OF_INTEREST=None, max_entries=None, zipcodes
 def prepare_heatpump_data(df_hp, max_entries=None):
     df_hp = df_hp.sort_values(by=['Heat output A2/W35 (kW)'], ascending=False)
     heatpump_data = {i:
-                     {
-                         'brand_name': df_hp['hp_name'][i],
-                         'cop': df_hp['COP A2/W35'][i],
-                         'produced heat': df_hp['Heat output A2/W35 (kW)'][i],
-                         'price': df_hp['price'][i]
-                     }
-                     for i in range(len(df_hp['hp_name']))}
+        {
+            'brand_name': df_hp['hp_name'][i],
+            'cop': df_hp['COP A2/W35'][i],
+            'produced heat': df_hp['Heat output A2/W35 (kW)'][i],
+            'price': df_hp['price'][i]
+        }
+        for i in range(len(df_hp['hp_name']))}
     if max_entries is not None:
         return {i: list(heatpump_data.values())[i] for i in range(
             len(heatpump_data.values())) if i < max_entries}
@@ -140,7 +141,7 @@ def get_districts(df):
 
 
 def prepare_distributor(df, RADIUS_OF_INTEREST=20, zipcodes_of_interest=None, max_entries=None):
-    distributors ={
+    distributors = {
         i: {
             'name': df['Distributors'][i],
             'long': df['long'][i],
@@ -155,11 +156,12 @@ def prepare_distributor(df, RADIUS_OF_INTEREST=20, zipcodes_of_interest=None, ma
         return {i: list(distributors.values())[i] for i in range(
             len(distributors.values())) if i < max_entries}
 
+
 def prepare_params(T, I, M, D):
     """Prepares the parameters based on the data
 
     Args: 
-        T (int): number of months startting from January
+        T (int): number of years to be considered
         M (dict) : dictionary of heat pumps, each containing the keys:
             'brand_name' (str) : brand name of the heat pump
             'cop' (float) : COP of the heat pump
@@ -174,7 +176,7 @@ def prepare_params(T, I, M, D):
          D(array): list of unique districts   
     Returns:
         storage[t,m]: stock level of heat pumps
-        heatdemand[i,t]: requested heat demand of a house type in a month
+        heatdemand[i,t]: requested heat demand of a house type in a year
         boilercosts[i]: variable costs for gas boilers per unit of heat
         hpcosts[m]: variable costs for heat pumps per unit of heat
         hpinvestment[m]: fixed purchasing costs for heat pump including installation and accessories
@@ -238,11 +240,13 @@ def prepare_params(T, I, M, D):
         hpCO2[m] = CO2_EMISSION_EON / M[m]['cop']
 
     return max_sales, heatdemand, boilercosts, hpcosts, hpinvestment, \
-        electr_timefactor, gas_timefactor, electr_locationfactor, gas_locationfactor, CO2_timefactor, hpCO2
+           electr_timefactor, gas_timefactor, electr_locationfactor, gas_locationfactor, CO2_timefactor, hpCO2
 
 
 """ -> Instead of calculating Fpow within the model, 
 we calculate it once in advance and save it as a csv """
+
+
 # def calcFpow():
 #     _, M, I,_,_ = data_preprocess()
 #     Fpow = dict()
@@ -253,7 +257,7 @@ we calculate it once in advance and save it as a csv """
 #         for m in M:
 #             produced_heat = M[m]['produced heat']
 #             max_heat_demand = I[i]['max_heat_demand_Patrick']
-           
+
 #             if max_heat_demand <= produced_heat:
 #                 # this means the heatpump matches our heat demand
 #                 row = [i,m,1]
@@ -264,7 +268,6 @@ we calculate it once in advance and save it as a csv """
 #     f.close() 
 #     return 
 # calcFpow()
-
 
 
 def add_price_to_heatpumps():

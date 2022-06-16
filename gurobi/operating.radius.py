@@ -33,11 +33,11 @@ def add_operating_radius(distributor_data_file=None, default_radius=150):
     df['operating radius'] = df['operating radius'].astype(int)
 
     for i in tqdm(range(len(df))):
-        if i <= round(5*len(df)/100):
+        if i <= round(5 * len(df) / 100):
             df.iloc[i, df.columns.get_loc('operating radius')] = 800
-        elif i <= round(5*len(df)/100) + round(10*len(df)/100):
+        elif i <= round(5 * len(df) / 100) + round(10 * len(df) / 100):
             df.iloc[i, df.columns.get_loc('operating radius')] = 400
-        elif i <= round(20*len(df)/100) + round(5*len(df)/100) + round(10*len(df)/100):
+        elif i <= round(20 * len(df) / 100) + round(5 * len(df) / 100) + round(10 * len(df) / 100):
             df.iloc[i, df.columns.get_loc('operating radius')] = 200
 
     df.to_csv(os.path.join(
@@ -73,16 +73,16 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
 
     df_acoolhead = pd.read_csv(ACOOLHEAD)
     df = pd.read_csv(DISTRIBUTERS_DATA)
-    if(not 'operating districts' in df.columns):
+    if (not 'operating districts' in df.columns):
         df['operating districts'] = None
 
     df['operating districts'] = df['operating districts'].astype(
         str)
 
-    if(operating_radius is not None):
+    if (operating_radius is not None):
         # if operating_radius is set then only work with distributors with that radius
         df_distributors = df[df['operating radius']
-                                          == operating_radius]
+                             == operating_radius]
 
     districts = df_acoolhead[['Administrative district', 'zipcode']].groupby(
         'Administrative district').agg({'zipcode': 'first'}).reset_index()
@@ -92,7 +92,8 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
         # i = (len(df)-1) - j  # start at bottom of df
         zipcode = df.loc[i, 'zipcode']
         radius = df.loc[i, 'operating radius']
-        if(df.loc[i, 'operating districts'] is None or df.loc[i, 'operating districts'] is np.nan or len(df.loc[i, 'operating districts'].split(';')) < max_districts):
+        if (df.loc[i, 'operating districts'] is None or df.loc[i, 'operating districts'] is np.nan or len(
+                df.loc[i, 'operating districts'].split(';')) < max_districts):
             regions = get_operating_districts(
                 districts, str(zipcode), radius, sample_size=sample_size, max_districts=max_districts).keys()
             df.iloc[i, df.columns.get_loc(
@@ -126,10 +127,10 @@ def get_operating_districts(districts, zipcode, op_radius=100, timeout=120, max_
         dict: dictionary of districts and their distances
     """
     # add 0 to zipcode if it is 4 digits
-    zipcode = '0'+str(zipcode) if len(str(zipcode)) == 4 else str(zipcode)
+    zipcode = '0' + str(zipcode) if len(str(zipcode)) == 4 else str(zipcode)
     operating_districts = {}  # {district: distance}
     districts = districts.values.tolist()
-    districts = sample(districts, round(sample_size*len(districts))
+    districts = sample(districts, round(sample_size * len(districts))
                        )  # sample sample_size% of districts
 
     start = datetime.now()
@@ -146,8 +147,8 @@ def get_operating_districts(districts, zipcode, op_radius=100, timeout=120, max_
             return operating_districts  # return if max_districts regions found
 
         zipcode_of_district = '0' + \
-            str(z) if len(
-                str(z)) == 4 else str(z)  # add 0 to zipcode if only 4 digits
+                              str(z) if len(
+            str(z)) == 4 else str(z)  # add 0 to zipcode if only 4 digits
 
         if zipcode_of_district == zipcode:
             # if zipcode is in district, set distance to 0
@@ -181,12 +182,12 @@ def print_radius_distributions(df):
     Args:
         df (DataFrame): dataframe to print the distribution of the radius column
     """
-    print(round(len(df[df['operating radius'] == 200])/len(df)
-          * 100, 2), "% of distributors have operating radius of 200")
-    print(round(len(df[df['operating radius'] == 400])/len(df)
-          * 100, 2), "% of distributors have operating radius of 400")
-    print(round(len(df[df['operating radius'] == 800])/len(df)
-          * 100, 2), "% of distributors have operating radius of 800")
+    print(round(len(df[df['operating radius'] == 200]) / len(df)
+                * 100, 2), "% of distributors have operating radius of 200")
+    print(round(len(df[df['operating radius'] == 400]) / len(df)
+                * 100, 2), "% of distributors have operating radius of 400")
+    print(round(len(df[df['operating radius'] == 800]) / len(df)
+                * 100, 2), "% of distributors have operating radius of 800")
 
 
 #  add_operating_radius()

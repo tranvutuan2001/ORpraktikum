@@ -3,7 +3,9 @@ import pandas as pd
 import numpy as np
 import os
 from tqdm import tqdm
+
 dirname = os.path.dirname(__file__)
+
 
 # Check if the zipcode is already known
 
@@ -32,7 +34,7 @@ def add_zipcodes_to_csv():
         ACOOLHEAD = os.path.join(
             dirname, "data-sources/data_from_Hannah_with_coordinates_and_zipcodes.csv")
         df = pd.read_csv(ACOOLHEAD)
-        if(not 'zipcode' in df.columns):
+        if (not 'zipcode' in df.columns):
             df['zipcode'] = None
     # if not, create it from data_from_Hannah_with_coordinates.csv
     else:
@@ -56,7 +58,7 @@ def add_zipcodes_to_csv():
     # get the zipcode for each missing row
     for i in tqdm(df[df['zipcode'].eq(0)].index):
         # save the csv every 100 changes
-        if(change_count % 100 == 0 and change_count != last_save):
+        if (change_count % 100 == 0 and change_count != last_save):
             last_save = change_count
             df.to_csv(os.path.join(
                 dirname, "data-sources/data_from_Hannah_with_coordinates_and_zipcodes.csv"), index=False)
@@ -108,9 +110,9 @@ def add_coordinates_to_csv():
         ACOOLHEAD = os.path.join(
             dirname, "data-sources/data_from_Hannah_with_coordinates.csv")
         df = pd.read_csv(ACOOLHEAD)
-        if(not 'long' in df.columns):
+        if (not 'long' in df.columns):
             df['long'] = None  # add longitude column
-        if(not 'lat' in df.columns):
+        if (not 'lat' in df.columns):
             df['lat'] = None  # add latitude column
     else:
         raise Exception("No data file found")
@@ -132,7 +134,7 @@ def add_coordinates_to_csv():
     # get the lat and long for each missing row
     for i in tqdm(df[df['lat'].eq(0)].index):
         # save the dataframe every 100 changes
-        if(change_count % 100 == 0 and change_count != last_save):
+        if (change_count % 100 == 0 and change_count != last_save):
             last_save = change_count
             df.to_csv(os.path.join(
                 dirname, "data-sources/data_from_Hannah_with_coordinates.csv"), index=False)
@@ -150,7 +152,7 @@ def add_coordinates_to_csv():
     change_count = 0
     last_save = 0
     for i in tqdm(df[df['long'].eq(0)].index):
-        if(change_count % 100 == 0 and change_count != last_save):
+        if (change_count % 100 == 0 and change_count != last_save):
             last_save = change_count
             df.to_csv(os.path.join(
                 dirname, "data-sources/data_from_Hannah_with_coordinates.csv"), index=False)
@@ -194,7 +196,6 @@ def add_coordinates_to_csv():
 
     df.to_csv(os.path.join(
         dirname, "data-sources/Distributor_data_with_coordinates.csv"), index=False)
-
 
 # add_coordinates_to_csv()
 # add_zipcodes_to_csv()

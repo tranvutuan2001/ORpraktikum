@@ -12,7 +12,7 @@ from utilities import cal_dist
 
 dirname = os.path.dirname(__file__)
 
-NUMBER_OF_MONTHS = 9  # number of months
+NUMBER_OF_YEARS = 9  # number of years
 MIN_PERCENTAGE = 0.8  # minimum required share of houses that receive HP
 # from https://www.volker-quaschning.de/datserv/CO2-spez/index_e.php
 CO2_EMISSION_GAS = 433  # gramm/ kwh
@@ -29,7 +29,7 @@ def solve(OPERATING_RADIUS=2000
           ):
     """Solves the heat pump problem.
 
-    T (int): number of months startting from January
+    T (int): number of years to be considered
     M (dict) : dictionary of heat pumps, each containing the keys:
         'brand_name' (str) : brand name of the heat pump
         'cop' (float) : COP of the heat pump
@@ -49,7 +49,7 @@ def solve(OPERATING_RADIUS=2000
     """
 
     # Preparation of Data and Parameters
-    T = NUMBER_OF_MONTHS
+    T = NUMBER_OF_YEARS
     data, parameters = load_data_and_parameters(T)
 
     (districts, heatpumps, housing, fitness, distributors) = data
@@ -70,28 +70,28 @@ def solve(OPERATING_RADIUS=2000
         for i in housing:
             for t in range(T):
                 for d in distributors:
-                    # name = f"x: install hp_{str(m)} in house_{str(i)} in district_{str(s)} in month_{str(t)} by distributor d"
                     x[m, i, t, d] = model.addVar(
                         vtype='I',
-                        name=f'hp_type_{str(m)}_at_house_type_{str(i)}_in_month_{str(t)}_by_distributor_{str(distributors[d]["name"])}'
+                        name=f'hp_type_{str(m)}_at_house_type_{str(i)}_in_year_{str(t)}_by_distributor_{str(distributors[d]["name"])}'
                     )
     stop = timeit.default_timer()
     print('Time in seconds to add the variables: ', stop - start, "\n")
 
     print("Adding the constraints")
     start = timeit.default_timer()
+
     # Constraint 1: Consider Installability : never assign HP if they do not fit to the house type
     for i in housing:
         for m in heatpumps:
             for t in range(T):
                 for d in distributors:
                     if fitness[i, m] == 0:
-                        model.addConstr(x[m, i, t, d] == 0,  name="C1")
+                        model.addConstr(x[m, i, t, d] == 0, name="C1")
 
     # Constraint 2:  Install heat pumps in AT LEAST the specified percentage of all houses
     model.addConstr(
         quicksum(x[m, i, t, d] for m in heatpumps for i in housing for t in range(
-            T) for d in distributors) >= MIN_PERCENTAGE * quicksum(housing[i]['quantity'] for i in housing),  name="C2"
+            T) for d in distributors) >= MIN_PERCENTAGE * quicksum(housing[i]['quantity'] for i in housing), name="C2"
     )
 
     # Constraint 3: Only install as many heatpumps in a house category as the total quantity of houses of that type
@@ -100,7 +100,7 @@ def solve(OPERATING_RADIUS=2000
             model.addConstr(
                 quicksum(x[m, i, t, d] for m in heatpumps for t in range(T)
                          for d in distributors) <= housing[i]['quantity'], name="C3"
-        )
+            )
 
     # Constraint 4: Only install up to the current expected sales volume
     for t in range(T):
@@ -161,7 +161,7 @@ def solve(OPERATING_RADIUS=2000
     k=0
     tot= sum(I[i]["quantity"] for i in I)
     for t in range(T):
-        val= int(sum([model.getVarByName(f'hp_type_{str(m)}_at_house_type_{str(i)}_in_month_{str(t)}').X for m in M for i in I]))
+        val= int(sum([model.getVarByName(f'hp_type_{str(m)}_at_house_type_{str(i)}_in_year_{str(t)}').X for m in M for i in I]))
         k=k+val
         
         print("t=%02d "%(t,),": build", val,"houses", "with maximum houses", tot)
