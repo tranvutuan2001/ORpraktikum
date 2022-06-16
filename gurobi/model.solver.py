@@ -25,7 +25,7 @@ CO2_EMISSION_PRICE_2 = 698E-6
 BOILER_EFFICIENCY = 0.7
 
 
-def solve(OPERATING_RADIUS=20
+def solve(OPERATING_RADIUS=2000
           ):
     """Solves the heat pump problem.
 
@@ -110,14 +110,14 @@ def solve(OPERATING_RADIUS=20
 
     # Constraints 5: Respect the operation radius for each distributor
     # TODO: add the constraint 5 as explained above
-    for d in distributors:
-        for m in heatpumps:
-            for i in housing:
-                for t in range(T):
-                    dist = cal_dist((housing[i]['lat'], housing[i]['long']),
-                                    (distributors[d]['lat'], distributors[d]['long']))
-                    if dist > OPERATING_RADIUS:
-                        model.addConstr(x[m, i, t, d] == 0)
+    # for d in distributors:
+    #     for m in heatpumps:
+    #         for i in housing:
+    #             for t in range(T):
+    #                 dist = cal_dist((housing[i]['lat'], housing[i]['long']),
+    #                                 (distributors[d]['lat'], distributors[d]['long']))
+    #                 if dist > OPERATING_RADIUS:
+    #                     model.addConstr(x[m, i, t, d] == 0)
 
     # Constraint 6: Respect maximum worker capacity
     # TODO: implement the constraint "yearly workforce <= qty of heat pumps installed by the distributor"

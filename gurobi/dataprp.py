@@ -63,11 +63,11 @@ def data_preprocess():
     distributors_dataframe = pd.read_csv(DISTRIBUTOR)
 
     housing_data = prepare_housing_data(
-        housing_dataframe, max_entries=1000, zipcodes_of_interest="^(5[0-3])")
+        housing_dataframe, max_entries=10, zipcodes_of_interest="^(5[0-3])")
     districts = get_districts(housing_dataframe)
     heatpump_data = prepare_heatpump_data(heatpump_dataframe, max_entries=10)
     distributor_data = prepare_distributor(
-        distributors_dataframe,  zipcodes_of_interest="^(5[0-3])")
+        distributors_dataframe,  zipcodes_of_interest="^(5[0-3])",  max_entries=10)
     fitness_data = prepare_fitness()
 
     stop = timeit.default_timer()
@@ -137,8 +137,8 @@ def prepare_heatpump_data(df_hp, max_entries=None):
 def get_districts(df):
     return df['Administrative district'].unique()
 
-def prepare_distributor(df, RADIUS_OF_INTEREST=20, zipcodes_of_interest=None):
-    return {
+def prepare_distributor(df, RADIUS_OF_INTEREST=20, zipcodes_of_interest=None, max_entries=None):
+    distributors ={
         i: {
             'name': df['Distributors'][i],
             'long': df['long'][i],
@@ -146,6 +146,11 @@ def prepare_distributor(df, RADIUS_OF_INTEREST=20, zipcodes_of_interest=None):
         }
         for i in range(len(df)) if len(str(df["zipcode"][i])) == 5 and re.match(zipcodes_of_interest, str(df["zipcode"][i]))
     }
+    if max_entries is None:
+        return distributors
+    else:
+        return {i: list(distributors.values())[i] for i in range(
+            len(distributors.values())) if i < max_entries}
 
 
 def prepare_params(T, I, M, D):
