@@ -96,7 +96,7 @@ def solve(OPERATING_RADIUS=2000
 
     # Constraint 3: Only install as many heatpumps in a house category as the total quantity of houses of that type
     for i in housing:
-        if housing[i]['quantity'] >= 0:
+        # if housing[i]['quantity'] >= 0:
             model.addConstr(
                 quicksum(x[m, i, t, d] for m in heatpumps for t in range(T)
                          for d in distributors) <= housing[i]['quantity'], name="C3"

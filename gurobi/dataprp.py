@@ -7,7 +7,7 @@ import re
 
 dirname = os.path.dirname(__file__)
 ACOOLHEAD = os.path.join(
-    dirname, './data-sources/data_from_Hannah_with_coordinates_zipcodes_heatcapacity.csv')
+    dirname, './data-sources/data_from_Hannah_with_coordinates_zipcodes_heatcapacity_positive_building_count.csv')
 DISTRIBUTOR = os.path.join(
     dirname, './data-sources/Distributor_data_with_coordinates.csv')
 HEAT_PUMPS = os.path.join(
