@@ -12,7 +12,7 @@ from utilities import cal_dist
 
 dirname = os.path.dirname(__file__)
 
-NUMBER_OF_MONTHS = 9  # number of months
+NUMBER_OF_MONTHS = 4  # number of months
 MIN_PERCENTAGE = 0.8  # minimum required share of houses that receive HP
 # from https://www.volker-quaschning.de/datserv/CO2-spez/index_e.php
 CO2_EMISSION_GAS = 433  # gramm/ kwh
@@ -49,13 +49,14 @@ def solve(OPERATING_RADIUS=20
     """
 
     # Preparation of Data and Parameters
-    data, parameters = load_data_and_parameters(NUMBER_OF_MONTHS)
+    T = NUMBER_OF_MONTHS
+    data, parameters = load_data_and_parameters(T)
 
-    (workforce, heatpumps, housing, fitness, distributors) = data
+    (districts, heatpumps, housing, fitness, distributors) = data
     (max_sales, heatdemand, boilercosts, hpcosts, hpinvestment, electr_timefactor,
         gas_timefactor, electr_locationfactor, gas_locationfactor, CO2_timefactor, hpCO2) = parameters
 
-    T = NUMBER_OF_MONTHS
+    
 
     # Create a new model
     print("Preparing the model\n")
@@ -130,15 +131,15 @@ def solve(OPERATING_RADIUS=20
     # TODO: add correct cost function
 
     obj = quicksum((x[m, i, t, distr] * hpinvestment[m]
-                    + quicksum(x[m, i, t_1, distr] * (hpcosts[m] * electr_timefactor[t_1] * electr_locationfactor[d]
+                    + quicksum(x[m, i, t_1, distr] * (hpcosts[m] * electr_timefactor[t_1] * electr_locationfactor[housing[i]['district']]
                                                       + hpCO2[m] * CO2_EMISSION_PRICE_1 * CO2_timefactor[t_1])
                                * heatdemand[i, t_1] for t_1 in range(t + 1))
                     + (housing[i]['quantity'] - quicksum(x[m, i, t_1, distr]
                        for t_1 in range(t + 1)))
-                    * (boilercosts[i] * gas_timefactor[t] * gas_locationfactor[d]
+                    * (boilercosts[i] * gas_timefactor[t] * gas_locationfactor[housing[i]['district']]
                        + CO2_EMISSION_GAS / BOILER_EFFICIENCY * CO2_EMISSION_PRICE_1 * CO2_timefactor[t])
                     * heatdemand[i, t])
-                   for m in heatpumps for i in housing for d in workforce for t in range(T) for distr in distributors)
+                   for m in heatpumps for i in housing for t in range(T) for distr in distributors)
     model.setObjective(obj, GRB.MINIMIZE)
     stop = timeit.default_timer()
     print('Time in seconds to add the objective function: ', stop - start, "\n")
@@ -150,7 +151,7 @@ def solve(OPERATING_RADIUS=20
     model.write(os.path.join(dirname, "solutions\model.lp"))
     model.optimize()
     stop = timeit.default_timer()
-    write_solution_csv(model, workforce, heatpumps, housing, T)
+    write_solution_csv(model, districts, heatpumps, housing, T)
     print('Time in seconds to solve the model: ', stop - start, "\n")
 
     return model

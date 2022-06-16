@@ -1,12 +1,9 @@
 import pandas as pd
 import os
 from gurobipy import *
-from gurobipy import GRB
 import csv
 import timeit
 import numpy as np
-from utilities import cal_dist
-import json
 import re
 
 dirname = os.path.dirname(__file__)
@@ -17,7 +14,6 @@ DISTRIBUTOR = os.path.join(
 HEAT_PUMPS = os.path.join(
     dirname, './data-sources/heat_pumps_air_water_price.csv')
 FPOWDATA = os.path.join(dirname, './data-sources/fpow.csv')
-
 
 # from https://www.globalpetrolprices.com/Germany/natural_gas_prices/
 AVERAGE_BOILER_COST_PER_UNIT = 0.071  # euro per kWh for private household
@@ -33,10 +29,10 @@ FIX_POINT = (50.849305, 6.533625)
 
 def load_data_and_parameters(T):
     data = data_preprocess()
-    workforce, heatpumps, housing, _, _ = data
+    districts, heatpumps, housing, _, _ = data
 
     parameters = prepare_params(
-        T, housing, heatpumps, workforce)
+        T, housing, heatpumps, districts)
 
     return data, parameters
 
@@ -68,8 +64,8 @@ def data_preprocess():
 
     housing_data = prepare_housing_data(
         housing_dataframe, max_entries=1000, zipcodes_of_interest="^(5[0-3])")
-    workforce_data = prepare_workforce_data(housing_dataframe)
-    heatpump_data = prepare_heatpump_data(heatpump_dataframe, max_entries=5)
+    districts = get_districts(housing_dataframe)
+    heatpump_data = prepare_heatpump_data(heatpump_dataframe, max_entries=10)
     distributor_data = prepare_distributor(
         distributors_dataframe,  zipcodes_of_interest="^(5[0-3])")
     fitness_data = prepare_fitness()
@@ -77,7 +73,7 @@ def data_preprocess():
     stop = timeit.default_timer()
     print('Time to prepare the data: ', round(stop - start, 2), "s\n")
 
-    return workforce_data, heatpump_data, housing_data, fitness_data, distributor_data
+    return districts, heatpump_data, housing_data, fitness_data, distributor_data
 
 
 def prepare_fitness():
@@ -138,22 +134,8 @@ def prepare_heatpump_data(df_hp, max_entries=None):
     return heatpump_data
 
 
-def prepare_workforce_data(df):
-    district = df['Administrative district'].unique()
-    workforce = []
-
-    # TODO: replace below with functional realistic code
-
-    for i in range(0, len(district)):
-        n = 10000000000000
-        if i < len(district) / 2:
-            n = 100000000000000
-        workforce.append(n)
-
-    dict_s = {district[i]: workforce[i] for i in range(len(district))}
-
-    return dict_s
-
+def get_districts(df):
+    return df['Administrative district'].unique()
 
 def prepare_distributor(df, RADIUS_OF_INTEREST=20, zipcodes_of_interest=None):
     return {
@@ -182,7 +164,7 @@ def prepare_params(T, I, M, D):
             "max_heat_demand" (int)  : maximum heat demand of the building (in kWh/m^2)
             "district" (str) : district of the building
             "count" (int) : number of buildings of the same type in the district
-         D(dict): dictionary of district names and workfoce in that district   
+         D(array): list of unique districts   
     Returns:
         storage[t,m]: stock level of heat pumps
         heatdemand[i,t]: requested heat demand of a house type in a month
@@ -240,7 +222,6 @@ def prepare_params(T, I, M, D):
     CO2_timefactor = np.ones(T)
 
     # price of those terms are currently assumed to be the same over differenct districts
-    # d is a string as key of dictionary!
     for d in D:
         electr_locationfactor[d] = 1
         gas_locationfactor[d] = 1
@@ -254,29 +235,29 @@ def prepare_params(T, I, M, D):
 
 
 """ -> Instead of calculating Fpow within the model, 
-we calculate it once in advance and save it as a csv
-def calcFpow():
-    D, M, I = data_preprocess()
-    Fpow = dict()
-    f = open('fpow.csv', 'w',newline="")
-    writer= csv.writer(f,delimiter=";")
-    writer.writerow(["house","model","fitness"])
-    for i in I:
-        for m in M:
-            produced_heat = M[m]['produced heat']
-            max_heat_demand = I[i]['max_heat_demand_Patrick']
+we calculate it once in advance and save it as a csv """
+# def calcFpow():
+#     _, M, I,_,_ = data_preprocess()
+#     Fpow = dict()
+#     f = open('fpow_test.csv', 'w',newline="")
+#     writer= csv.writer(f,delimiter=";")
+#     writer.writerow(["house","model","fitness"])
+#     for i in I:
+#         for m in M:
+#             produced_heat = M[m]['produced heat']
+#             max_heat_demand = I[i]['max_heat_demand_Patrick']
            
-            if max_heat_demand <= produced_heat:
-                # this means the heatpump matches our heat demand
-                row = [i,m,1]
-                writer.writerow(row)  
-            else:
-                row = [i,m,0]
-                writer.writerow(row)  
-    f.close() 
-    return 
-calcFpow()
-"""
+#             if max_heat_demand <= produced_heat:
+#                 # this means the heatpump matches our heat demand
+#                 row = [i,m,1]
+#                 writer.writerow(row)  
+#             else:
+#                 row = [i,m,0]
+#                 writer.writerow(row)  
+#     f.close() 
+#     return 
+# calcFpow()
+
 
 
 def add_price_to_heatpumps():
