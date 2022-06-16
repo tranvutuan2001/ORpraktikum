@@ -12,7 +12,7 @@ from utilities import cal_dist
 
 dirname = os.path.dirname(__file__)
 
-NUMBER_OF_MONTHS = 4  # number of months
+NUMBER_OF_MONTHS = 9  # number of months
 MIN_PERCENTAGE = 0.8  # minimum required share of houses that receive HP
 # from https://www.volker-quaschning.de/datserv/CO2-spez/index_e.php
 CO2_EMISSION_GAS = 433  # gramm/ kwh
@@ -86,36 +86,37 @@ def solve(OPERATING_RADIUS=2000
             for t in range(T):
                 for d in distributors:
                     if fitness[i, m] == 0:
-                        model.addConstr(x[m, i, t, d] == 0)
+                        model.addConstr(x[m, i, t, d] == 0,  name="C1")
 
     # Constraint 2:  Install heat pumps in AT LEAST the specified percentage of all houses
     model.addConstr(
         quicksum(x[m, i, t, d] for m in heatpumps for i in housing for t in range(
-            T) for d in distributors) >= MIN_PERCENTAGE * quicksum(housing[i]['quantity'] for i in housing)
+            T) for d in distributors) >= MIN_PERCENTAGE * quicksum(housing[i]['quantity'] for i in housing),  name="C2"
     )
 
     # Constraint 3: Only install as many heatpumps in a house category as the total quantity of houses of that type
     for i in housing:
-        model.addConstr(
-            quicksum(x[m, i, t, d] for m in heatpumps for t in range(T)
-                     for d in distributors) <= housing[i]['quantity']
+        if housing[i]['quantity'] >= 0:
+            model.addConstr(
+                quicksum(x[m, i, t, d] for m in heatpumps for t in range(T)
+                         for d in distributors) <= housing[i]['quantity'], name="C3"
         )
 
     # Constraint 4: Only install up to the current expected sales volume
     for t in range(T):
         model.addConstr(quicksum(
-            x[m, i, t, d] for i in housing for m in heatpumps for d in distributors) <= max_sales[t])
+            x[m, i, t, d] for i in housing for m in heatpumps for d in distributors) <= max_sales[t], name="C4")
 
     # Constraints 5: Respect the operation radius for each distributor
     # TODO: add the constraint 5 as explained above
-    # for d in distributors:
-    #     for m in heatpumps:
-    #         for i in housing:
-    #             for t in range(T):
-    #                 dist = cal_dist((housing[i]['lat'], housing[i]['long']),
-    #                                 (distributors[d]['lat'], distributors[d]['long']))
-    #                 if dist > OPERATING_RADIUS:
-    #                     model.addConstr(x[m, i, t, d] == 0)
+    for d in distributors:
+        for m in heatpumps:
+            for i in housing:
+                for t in range(T):
+                    dist = cal_dist((housing[i]['lat'], housing[i]['long']),
+                                    (distributors[d]['lat'], distributors[d]['long']))
+                    if dist > OPERATING_RADIUS:
+                        model.addConstr(x[m, i, t, d] == 0, name="C5")
 
     # Constraint 6: Respect maximum worker capacity
     # TODO: implement the constraint "yearly workforce <= qty of heat pumps installed by the distributor"
@@ -147,6 +148,8 @@ def solve(OPERATING_RADIUS=2000
     start = timeit.default_timer()
     model.write(os.path.join(dirname, "solutions\model.lp"))
     model.optimize()
+    # model.computeIIS()
+    # model.write(os.path.join(dirname, "solutions\model.ilp"))
     stop = timeit.default_timer()
     write_solution_csv(model, districts, heatpumps, housing, T, distributors)
     print('Time in seconds to solve the model: ', stop - start, "\n")
