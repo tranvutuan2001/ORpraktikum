@@ -111,14 +111,14 @@ def solve():
     # TODO: add correct cost function
 
     obj = quicksum((x[m, i, t] * hpinvestment[m]
-                     + quicksum( x[m, i, t_1] * ( hpcosts[m] * electr_timefactor[t_1] * electr_locationfactor[d] 
+                     + quicksum( x[m, i, t_1] * ( hpcosts[m] * electr_timefactor[t_1] * electr_locationfactor[I[i]['district']] 
                                                            + hpCO2[m] * CO2_EMISSION_PRICE_1 * CO2_timefactor[t_1])
                                                * heatdemand[i, t_1] for t_1 in range(t + 1) )
                      + (I[i]['quantity'] - quicksum(x[m, i,  t_1] for t_1 in range(t + 1)))
-                                     * ( boilercosts[i] * gas_timefactor[t] * gas_locationfactor[d] 
+                                     * ( boilercosts[i] * gas_timefactor[t] * gas_locationfactor[I[i]['district']] 
                                                           + CO2_EMISSION_GAS / BOILER_EFFICIENCY * CO2_EMISSION_PRICE_1 * CO2_timefactor[t] )
                     * heatdemand[i, t])  
-                   for m in M for i in I  for d in D for t in range(T))
+                   for m in M for i in I  for t in range(T))
     model.setObjective(obj, GRB.MINIMIZE)
     stop = timeit.default_timer()
     print('Time in seconds to add the objective function: ', stop - start, "\n")
