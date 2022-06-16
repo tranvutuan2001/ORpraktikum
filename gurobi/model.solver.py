@@ -134,7 +134,8 @@ def solve(OPERATING_RADIUS=2000
                     + quicksum(x[m, i, t_1, d] * (hpcosts[m] * electr_timefactor[t_1] * electr_locationfactor[housing[i]['district']]
                                                            + hpCO2[m] * CO2_EMISSION_PRICE_1 * CO2_timefactor[t_1])
                                                * heatdemand[i, t_1] for t_1 in range(t + 1) )
-                     + (districts[i]['quantity'] - quicksum(x[m, i,  t_1,d] for t_1 in range(t + 1)))
+                    + (housing[i]['quantity'] - quicksum(x[m, i,  t_1, d]
+                       for t_1 in range(t + 1)))
                     * (boilercosts[i] * gas_timefactor[t] * gas_locationfactor[housing[i]['district']]
                                                           + CO2_EMISSION_GAS / BOILER_EFFICIENCY * CO2_EMISSION_PRICE_1 * CO2_timefactor[t] )
                     * heatdemand[i, t])  
@@ -150,7 +151,7 @@ def solve(OPERATING_RADIUS=2000
     model.write(os.path.join(dirname, "solutions\model.lp"))
     model.optimize()
     stop = timeit.default_timer()
-    write_solution_csv(model, districts, heatpumps, housing, T)
+    write_solution_csv(model, districts, heatpumps, housing, T,distributors)
     print('Time in seconds to solve the model: ', stop - start, "\n")
 
     return model

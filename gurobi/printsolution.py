@@ -12,7 +12,7 @@ import csv
 dirname = os.path.dirname(__file__)
 
 
-def write_solution_csv(model, D, M, I, T):
+def write_solution_csv(model, D, M, I, T, distributors):
     status = model.Status
     if status != GRB.OPTIMAL:
         print("Current model is infeasible")
@@ -24,13 +24,15 @@ def write_solution_csv(model, D, M, I, T):
         ["district", "year construct", "type", "modern", "HPModel", "Year", "QTY", "totalhouses", "percent of totalhouses", "heatcapacity"])
     for i in I:
         for m in M:
-            for t in range(T):
-                if model.getVarByName(f'hp_type_{str(m)}_at_house_type_{str(i)}_in_month_{str(t)}').X != 0:
-                    p = model.getVarByName(f'hp_type_{str(m)}_at_house_type_{str(i)}_in_month_{str(t)}').X
-                    percent = p / I[i]["quantity"]
-                    row = [I[i]["district"], I[i]["year of construction"], I[i]["type of building"], I[i]["modernization status"], m, t,
-                           int(p), I[i]["quantity"], percent, I[i]["max_heat_demand_Patrick"]]
-                    writer.writerow(row)
+            for d in distributors:
+                for t in range(T):
+                    if model.getVarByName(f'hp_type_{str(m)}_at_house_type_{str(i)}_in_month_{str(t)}_by_distributor_{str(distributors[d]["name"])}').X != 0:
+                        p = model.getVarByName(
+                            f'hp_type_{str(m)}_at_house_type_{str(i)}_in_month_{str(t)}_by_distributor_{str(distributors[d]["name"])}').X
+                        percent = p / I[i]["quantity"]
+                        row = [I[i]["district"], I[i]["year of construction"], I[i]["type of building"], I[i]["modernization status"], m, t,
+                            int(p), I[i]["quantity"], percent, I[i]["max_heat_demand_Patrick"]]
+                        writer.writerow(row)
     f.close()
     return
 
