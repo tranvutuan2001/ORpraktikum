@@ -29,7 +29,7 @@ CO2_EMISSION_EON = 366  # gramm/kwh in 2020
 FIX_POINT = (50.849305, 6.533625)
 
 
-def data_preprocess(RADIUS_OF_INTEREST=30):
+def data_preprocess():
     """    
     This function preprocesses the data from the excel and csv file and returns S,M,I, fitness
     Returns:
@@ -50,20 +50,19 @@ def data_preprocess(RADIUS_OF_INTEREST=30):
     print("Preprocess the data")
     start = timeit.default_timer()
 
-    df = pd.read_csv(ACOOLHEAD)
-    # df = df.head(1000)
-    df = df.reset_index(drop=True)
+    housing_dataframe = pd.read_csv(ACOOLHEAD)
+    housing_dataframe = housing_dataframe.reset_index(drop=True)
 
-    df_hp = pd.read_csv(HEAT_PUMPS)
-    df_hp_s = df_hp.sort_values(
+    heatpump_dataframe = pd.read_csv(HEAT_PUMPS)
+    df_hp_s = heatpump_dataframe.sort_values(
         ['COP A2/W35', 'Heat output A2/W35 (kW)'], ascending=[True, True])
-    df_hp = df_hp_s.iloc[::10, :]
-    df_hp = df_hp.reset_index(drop=True)
+    heatpump_dataframe = df_hp_s.iloc[::10, :]
+    heatpump_dataframe = heatpump_dataframe.reset_index(drop=True)
     # price can't be found
-    df_hp.drop([0, 3, 10, 12], axis=0, inplace=True)
-    df_hp = df_hp.append(df_hp_s.iloc[-3])
+    heatpump_dataframe.drop([0, 3, 10, 12], axis=0, inplace=True)
+    heatpump_dataframe = heatpump_dataframe.append(df_hp_s.iloc[-3])
+    heatpump_dataframe = heatpump_dataframe.reset_index(drop=True)
 
-    df_hp = df_hp.reset_index(drop=True)
     df_distributor = pd.read_csv(DISTRIBUTOR)
 
     # # if there is discount, original price is taken
@@ -81,18 +80,18 @@ def data_preprocess(RADIUS_OF_INTEREST=30):
     #  installation + accessories from https://www.energieheld.de/heizung/waermepumpe/kosten
     price = [x + 3000 for x in price]
 
-    df_hp.insert(4, 'price', price, True)
+    heatpump_dataframe.insert(4, 'price', price, True)
 
-    dict_i = prepare_housing_data(df)
-    dict_d = prepare_workforce_data(df)
-    dict_m = prepare_heatpump_data(df_hp)
-    dict_distributor = prepare_distributor(df_distributor)
+    housing_data = prepare_housing_data(housing_dataframe)
+    workforce_data = prepare_workforce_data(housing_dataframe)
+    heatpump_data = prepare_heatpump_data(heatpump_dataframe)
+    distributor_data = prepare_distributor(df_distributor)
 
-    fitness = prepare_fitness()
+    fitness_data = prepare_fitness()
 
     stop = timeit.default_timer()
     print('Time in seconds to prepare the data: ', stop - start, "\n")
-    return dict_d, dict_m, dict_i, fitness, dict_distributor
+    return workforce_data, heatpump_data, housing_data, fitness_data, distributor_data
 
 
 def prepare_fitness():
@@ -109,7 +108,7 @@ def prepare_fitness():
     return fitness
 
 
-def prepare_housing_data(df, RADIUS_OF_INTEREST=20):
+def prepare_housing_data(df, RADIUS_OF_INTEREST=20, max_entries=None):
     dict_i = {i:
               {
                   "district": df["Administrative district"][i],
