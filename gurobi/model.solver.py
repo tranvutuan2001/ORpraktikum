@@ -25,7 +25,7 @@ CO2_EMISSION_PRICE_2 = 698E-6
 BOILER_EFFICIENCY = 0.7
 
 
-def solve(OPERATING_RADIUS=20
+def solve(OPERATING_RADIUS=2000
           ):
     """Solves the heat pump problem.
 
@@ -130,16 +130,15 @@ def solve(OPERATING_RADIUS=20
     start = timeit.default_timer()
     # TODO: add correct cost function
 
-    obj = quicksum((x[m, i, t, distr] * hpinvestment[m]
-                    + quicksum(x[m, i, t_1, distr] * (hpcosts[m] * electr_timefactor[t_1] * electr_locationfactor[housing[i]['district']]
-                                                      + hpCO2[m] * CO2_EMISSION_PRICE_1 * CO2_timefactor[t_1])
-                               * heatdemand[i, t_1] for t_1 in range(t + 1))
-                    + (housing[i]['quantity'] - quicksum(x[m, i, t_1, distr]
-                       for t_1 in range(t + 1)))
+    obj = quicksum((x[m, i, t,d] * hpinvestment[m]
+                    + quicksum(x[m, i, t_1, d] * (hpcosts[m] * electr_timefactor[t_1] * electr_locationfactor[housing[i]['district']]
+                                                           + hpCO2[m] * CO2_EMISSION_PRICE_1 * CO2_timefactor[t_1])
+                                               * heatdemand[i, t_1] for t_1 in range(t + 1) )
+                     + (districts[i]['quantity'] - quicksum(x[m, i,  t_1,d] for t_1 in range(t + 1)))
                     * (boilercosts[i] * gas_timefactor[t] * gas_locationfactor[housing[i]['district']]
-                       + CO2_EMISSION_GAS / BOILER_EFFICIENCY * CO2_EMISSION_PRICE_1 * CO2_timefactor[t])
-                    * heatdemand[i, t])
-                   for m in heatpumps for i in housing for t in range(T) for distr in distributors)
+                                                          + CO2_EMISSION_GAS / BOILER_EFFICIENCY * CO2_EMISSION_PRICE_1 * CO2_timefactor[t] )
+                    * heatdemand[i, t])  
+                   for i in housing for m in heatpumps for d in distributors for t in range(T))
     model.setObjective(obj, GRB.MINIMIZE)
     stop = timeit.default_timer()
     print('Time in seconds to add the objective function: ', stop - start, "\n")
