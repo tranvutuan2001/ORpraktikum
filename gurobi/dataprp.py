@@ -14,7 +14,7 @@ ACOOLHEAD = os.path.join(
 DISTRIBUTOR = os.path.join(
     dirname, './data-sources/Distributor_data_with_coordinates.csv')
 HEAT_PUMPS = os.path.join(
-    dirname, './data-sources/heat_pumps_air_water_only.csv')
+    dirname, './data-sources/heat_pumps_air_water_price.csv')
 FPOWDATA = os.path.join(dirname, './data-sources/fpow.csv')
 
 # from https://www.globalpetrolprices.com/Germany/natural_gas_prices/
@@ -51,46 +51,18 @@ def data_preprocess():
     start = timeit.default_timer()
 
     housing_dataframe = pd.read_csv(ACOOLHEAD)
-    housing_dataframe = housing_dataframe.reset_index(drop=True)
-
     heatpump_dataframe = pd.read_csv(HEAT_PUMPS)
-    df_hp_s = heatpump_dataframe.sort_values(
-        ['COP A2/W35', 'Heat output A2/W35 (kW)'], ascending=[True, True])
-    heatpump_dataframe = df_hp_s.iloc[::10, :]
-    heatpump_dataframe = heatpump_dataframe.reset_index(drop=True)
-    # price can't be found
-    heatpump_dataframe.drop([0, 3, 10, 12], axis=0, inplace=True)
-    heatpump_dataframe = heatpump_dataframe.append(df_hp_s.iloc[-3])
-    heatpump_dataframe = heatpump_dataframe.reset_index(drop=True)
-
-    df_distributor = pd.read_csv(DISTRIBUTOR)
-
-    # # if there is discount, original price is taken
-    # # https://domotec.ch/wp-content/uploads/2022/06/1.1-pl-allgemein-06.2022-DE.pdf
-    # # https://heizung-billiger.de/69503-stiebel-eltron-luft-wasser-warmepumpe-wpl-09-ikcs-classic-stiebel-236377-4017212363775.html?hbdc=DE&utm_source=guenstiger&utm_medium=cpc&utm_campaign=guenstiger-de
-    # # https://www.heizungsdiscount24.de/waermepumpen/vaillant-versotherm-plus-vwl-775-luft-wasser-waermepumpe.html?gclid=CjwKCAjwnZaVBhA6EiwAVVyv9MQZvSx9QQuF56cGi9y1Cq8h1lNVzaH_q0FYiCaP7LpHmW8Vs_3EeBoCkU4QAvD_BwE&cq_cmp=13242830342&cq_plt=gp&cq_src=google_ads&cq_net=u
-    # # https://domotec.ch/wp-content/uploads/2022/06/1.1-pl-allgemein-06.2022-DE.pdfhttps://domotec.ch/wp-content/uploads/2022/06/1.1-pl-allgemein-06.2022-DE.pdf
-    # # https://www.heizungsdiscount24.de/waermepumpen/vaillant-flexotherm-exclusive-vwf-574-heizungswaermepumpe-solewasser.html?cq_src=google_ads&cq_net=u&cq_cmp=13242830342&cq_plt=gp&gclid=CjwKCAjwnZaVBhA6EiwAVVyv9LDV4ncrTDuayjy2mZ2XWxvqs-T0jg902k_jxM-pgcEy8--TXt17SRoCTbwQAvD_BwE
-    # # https://docplayer.org/82079403-Preisliste-waermepumpen-systeme-der-cta-ag.html
-    # # https://shop.smuk.at/shop/USER_ARTIKEL_HANDLING_AUFRUF.php?Kategorie_ID=9389&Ziel_ID=12271890
-
-    price = [13025, 14316.4, 14108.64, 15175, 9930.55,
-             17005.37, 19104.95, 12066.6, 17983.20, 28680]
-
-    #  installation + accessories from https://www.energieheld.de/heizung/waermepumpe/kosten
-    price = [x + 3000 for x in price]
-
-    heatpump_dataframe.insert(4, 'price', price, True)
+    distributors_dataframe = pd.read_csv(DISTRIBUTOR)
 
     housing_data = prepare_housing_data(housing_dataframe)
     workforce_data = prepare_workforce_data(housing_dataframe)
     heatpump_data = prepare_heatpump_data(heatpump_dataframe)
-    distributor_data = prepare_distributor(df_distributor)
-
+    distributor_data = prepare_distributor(distributors_dataframe)
     fitness_data = prepare_fitness()
 
     stop = timeit.default_timer()
-    print('Time in seconds to prepare the data: ', stop - start, "\n")
+    print('Time to prepare the data: ',round(stop - start,2), "s\n")
+
     return workforce_data, heatpump_data, housing_data, fitness_data, distributor_data
 
 
@@ -292,3 +264,33 @@ def calcFpow():
     return 
 calcFpow()
 """
+
+def add_price_to_heatpumps():
+    heatpump_dataframe = pd.read_csv(HEAT_PUMPS)
+    heatpump_dataframe = heatpump_dataframe.iloc[:, 1:]
+    df_hp_s = heatpump_dataframe.sort_values(
+        ['COP A2/W35', 'Heat output A2/W35 (kW)'], ascending=[True, True])
+    heatpump_dataframe = df_hp_s.iloc[::10, :]
+    heatpump_dataframe = heatpump_dataframe.reset_index(drop=True)
+    # price can't be found
+    heatpump_dataframe.drop([0, 3, 10, 12], axis=0, inplace=True)
+    heatpump_dataframe = heatpump_dataframe.append(df_hp_s.iloc[-3])
+    heatpump_dataframe = heatpump_dataframe.reset_index(drop=True)
+    price = [13025, 14316.4, 14108.64, 15175, 9930.55,
+             17005.37, 19104.95, 12066.6, 17983.20, 28680]
+
+    #  installation + accessories from https://www.energieheld.de/heizung/waermepumpe/kosten
+    price = [x + 3000 for x in price]
+    # # if there is discount, original price is taken
+    # # https://domotec.ch/wp-content/uploads/2022/06/1.1-pl-allgemein-06.2022-DE.pdf
+    # # https://heizung-billiger.de/69503-stiebel-eltron-luft-wasser-warmepumpe-wpl-09-ikcs-classic-stiebel-236377-4017212363775.html?hbdc=DE&utm_source=guenstiger&utm_medium=cpc&utm_campaign=guenstiger-de
+    # # https://www.heizungsdiscount24.de/waermepumpen/vaillant-versotherm-plus-vwl-775-luft-wasser-waermepumpe.html?gclid=CjwKCAjwnZaVBhA6EiwAVVyv9MQZvSx9QQuF56cGi9y1Cq8h1lNVzaH_q0FYiCaP7LpHmW8Vs_3EeBoCkU4QAvD_BwE&cq_cmp=13242830342&cq_plt=gp&cq_src=google_ads&cq_net=u
+    # # https://domotec.ch/wp-content/uploads/2022/06/1.1-pl-allgemein-06.2022-DE.pdfhttps://domotec.ch/wp-content/uploads/2022/06/1.1-pl-allgemein-06.2022-DE.pdf
+    # # https://www.heizungsdiscount24.de/waermepumpen/vaillant-flexotherm-exclusive-vwf-574-heizungswaermepumpe-solewasser.html?cq_src=google_ads&cq_net=u&cq_cmp=13242830342&cq_plt=gp&gclid=CjwKCAjwnZaVBhA6EiwAVVyv9LDV4ncrTDuayjy2mZ2XWxvqs-T0jg902k_jxM-pgcEy8--TXt17SRoCTbwQAvD_BwE
+    # # https://docplayer.org/82079403-Preisliste-waermepumpen-systeme-der-cta-ag.html
+    # # https://shop.smuk.at/shop/USER_ARTIKEL_HANDLING_AUFRUF.php?Kategorie_ID=9389&Ziel_ID=12271890
+
+    heatpump_dataframe.insert(3, 'price', price, True)
+
+    heatpump_dataframe.to_csv(os.path.join(
+        dirname, './data-sources/heat_pumps_air_water_price.csv'), index=False)
