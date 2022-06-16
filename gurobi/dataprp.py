@@ -54,9 +54,9 @@ def data_preprocess():
     heatpump_dataframe = pd.read_csv(HEAT_PUMPS)
     distributors_dataframe = pd.read_csv(DISTRIBUTOR)
 
-    housing_data = prepare_housing_data(housing_dataframe)
+    housing_data = prepare_housing_data(housing_dataframe, max_entries=1000)
     workforce_data = prepare_workforce_data(housing_dataframe)
-    heatpump_data = prepare_heatpump_data(heatpump_dataframe)
+    heatpump_data = prepare_heatpump_data(heatpump_dataframe,max_entries=5)
     distributor_data = prepare_distributor(distributors_dataframe)
     fitness_data = prepare_fitness()
 
@@ -81,7 +81,7 @@ def prepare_fitness():
 
 
 def prepare_housing_data(df, RADIUS_OF_INTEREST=20, max_entries=None):
-    dict_i = {i:
+    housing_data = {i:
               {
                   "district": df["Administrative district"][i],
                   "type of building": df["Type of building"][i],
@@ -101,14 +101,16 @@ def prepare_housing_data(df, RADIUS_OF_INTEREST=20, max_entries=None):
               for i in range(len(df["long"])) if cal_dist(FIX_POINT, (df['lat'][i], df['long'][i])) < RADIUS_OF_INTEREST
               }
 
-    result = {i: list(dict_i.values())[i] for i in range(
-        len(dict_i.values())) if i < 100}
+    if max_entries is None:
+        return {i: list(housing_data.values())[i] for i in range(
+            len(housing_data.values()))}
+    else:
+        return {i: list(housing_data.values())[i] for i in range(
+            len(housing_data.values())) if i < max_entries}
 
-    return result
 
-
-def prepare_heatpump_data(df_hp):
-    dict_m = {i:
+def prepare_heatpump_data(df_hp, max_entries=None):
+    heatpump_data = {i:
               {
                   'brand_name': df_hp['hp_name'][i],
                   'cop': df_hp['COP A2/W35'][i],
@@ -116,8 +118,10 @@ def prepare_heatpump_data(df_hp):
                   'price': df_hp['price'][i]
               }
               for i in range(len(df_hp['hp_name']))}
-
-    return dict_m
+    if max_entries is not None:
+        return {i: list(heatpump_data.values())[i] for i in range(
+            len(heatpump_data.values())) if i< max_entries}
+    return heatpump_data
 
 
 def prepare_workforce_data(df):
