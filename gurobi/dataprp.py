@@ -68,12 +68,28 @@ def data_preprocess():
     distributor_data = prepare_distributor(
         distributors_dataframe, zipcodes_of_interest="^(5[0-3])", max_entries=10
     )
-    fitness_data = prepare_fitness()
+    # fitness_data = prepare_fitness()
+    fitness_data = prepare_fitness_on_run_time(heatpump_data, housing_data)
 
     stop = timeit.default_timer()
     print('Time to prepare the data: ', round(stop - start, 2), "s\n")
 
     return districts, heatpump_data, housing_data, fitness_data, distributor_data
+
+
+def prepare_fitness_on_run_time(M, I):
+    res = {}
+    for i in I:
+        for m in M:
+            produced_heat = M[m]['produced heat']
+            max_heat_demand = I[i]['max_heat_demand_Patrick']
+
+            if max_heat_demand <= produced_heat:
+                # this means the heatpump matches our heat demand
+                res[(i, m)] = 1
+            else:
+                res[(i, m)] = 0
+    return res
 
 
 def prepare_fitness():

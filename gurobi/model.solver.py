@@ -13,7 +13,7 @@ from utilities import cal_dist
 dirname = os.path.dirname(__file__)
 
 NUMBER_OF_YEARS = 9  # number of years
-MIN_PERCENTAGE = 0.8  # minimum required share of houses that receive HP
+MIN_PERCENTAGE = 0.3  # minimum required share of houses that receive HP
 # from https://www.volker-quaschning.de/datserv/CO2-spez/index_e.php
 CO2_EMISSION_GAS = 433  # gramm/ kwh
 # from https://www.eon.de/de/gk/strom/oekostrom.html#:~:text=Im%20Jahr%201990%20lag%20der,der%20CO%202%2DEmissionen%20leisten.
@@ -25,8 +25,7 @@ CO2_EMISSION_PRICE_2 = 698E-6
 BOILER_EFFICIENCY = 0.7
 
 
-def solve(OPERATING_RADIUS=2000
-          ):
+def solve(OPERATING_RADIUS=2000):
     """Solves the heat pump problem.
 
     T (int): number of years to be considered
@@ -96,11 +95,10 @@ def solve(OPERATING_RADIUS=2000
 
     # Constraint 3: Only install as many heatpumps in a house category as the total quantity of houses of that type
     for i in housing:
-        # if housing[i]['quantity'] >= 0:
-            model.addConstr(
-                quicksum(x[m, i, t, d] for m in heatpumps for t in range(T)
-                         for d in distributors) <= housing[i]['quantity'], name="C3"
-            )
+        model.addConstr(
+            quicksum(x[m, i, t, d] for m in heatpumps for t in range(T)
+                     for d in distributors) <= housing[i]['quantity'], name="C3"
+        )
 
     # Constraint 4: Only install up to the current expected sales volume
     for t in range(T):
