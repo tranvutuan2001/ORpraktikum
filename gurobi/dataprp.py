@@ -64,7 +64,7 @@ def data_preprocess():
         housing_dataframe, max_entries=None, zipcodes_of_interest="^(5[0-3])"
     )
     districts = get_districts(housing_dataframe)
-    heatpump_data = prepare_heatpump_data(heatpump_dataframe, max_entries=5)
+    heatpump_data = prepare_heatpump_data(heatpump_dataframe, max_entries=4)
     distributor_data = prepare_distributor(
         distributors_dataframe, zipcodes_of_interest="^(5[0-3])", max_entries=10
     )
