@@ -132,7 +132,7 @@ def solve(OPERATING_RADIUS=2000):
                                                   + hpCO2[m] * CO2_EMISSION_PRICE_1 * CO2_timefactor[t_1])
                                * heatdemand[i, t_1] for t_1 in range(t + 1))
                     + (housing[i]['quantity'] - quicksum(x[m, i, t_1, d] for t_1 in range(t + 1)))
-                    * (boilercosts[i] * gas_timefactor[t] * gas_locationfactor[housing[i]['district']]
+                    * (boilercosts * gas_timefactor[t] * gas_locationfactor[housing[i]['district']]
                        + CO2_EMISSION_GAS / BOILER_EFFICIENCY * CO2_EMISSION_PRICE_1 * CO2_timefactor[t])
                     * heatdemand[i, t])
                    for i in housing for m in heatpumps for d in distributors for t in range(T))
