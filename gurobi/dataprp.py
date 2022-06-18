@@ -15,7 +15,7 @@ HEAT_PUMPS = os.path.join(
 FPOWDATA = os.path.join(dirname, './data-sources/fpow.csv')
 
 # from https://www.globalpetrolprices.com/Germany/natural_gas_prices/
-AVERAGE_BOILER_COST_PER_UNIT = 0.071  # euro per kWh for private household
+AVERAGE_BOILER_COST_PER_UNIT = 0.13#0.071  # euro per kWh for private household
 # AVERAGE_BOILER_COST_PER_UNIT = 0.17
 BOILER_EFFICIENCY = 0.7
 # electricity price taken from: https://www.eon.de/de/pk/strom/stromanbieter/guenstiger-stromanbieter.html
@@ -210,7 +210,7 @@ def prepare_params(T, I, M, D):
     """
 
     heatdemand = np.empty(shape=(len(I), T))
-    boilercosts = np.empty(shape=(len(I)))
+    #boilercosts = np.empty(shape=(len(I)))
     hpcosts = np.empty(shape=(len(M)))
     hpinvestment = np.empty(shape=(len(M)))
     max_sales = []
@@ -227,8 +227,10 @@ def prepare_params(T, I, M, D):
         for t in range(T):
             heatdemand[i, t] = I[i]["average heat demand"]
 
-    for i in I:
-        boilercosts[i] = AVERAGE_BOILER_COST_PER_UNIT / BOILER_EFFICIENCY
+    #for i in I:
+    #    boilercosts[i] = AVERAGE_BOILER_COST_PER_UNIT / BOILER_EFFICIENCY
+    boilercosts = AVERAGE_BOILER_COST_PER_UNIT / BOILER_EFFICIENCY
+    
 
     for m in M:
         # hpcost is multiplied with heatdemand in obj function, so it should be cost/kwh.
