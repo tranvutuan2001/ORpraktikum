@@ -239,7 +239,7 @@ def prepare_params(T, I, M, D):
 
     # there is a base cost per year to sign EON contract
     # https://www.eon.de/de/pk/strom/stromanbieter/guenstiger-stromanbieter.html
-    hpcosts = [x + 134.36 / 12 for x in hpcosts]
+    #hpcosts = [x + 134.36 / 12 for x in hpcosts]
 
     # price of those terms are currently asummed to be constant over time
     electr_timefactor = np.ones(T)
