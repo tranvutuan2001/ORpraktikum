@@ -62,7 +62,6 @@ def data_preprocess():
     housing_dataframe = pd.read_csv(ACOOLHEAD)
     heatpump_dataframe = pd.read_csv(HEAT_PUMPS)
     distributors_dataframe = pd.read_csv(DISTRIBUTOR)
-    scenario_dataframe = pd.read_csv(SCENARIOS)
 
     housing_data = prepare_housing_data(
         housing_dataframe, max_entries=None, zipcodes_of_interest="^(5[0-3])"
@@ -248,9 +247,9 @@ def prepare_params(T, I, M, D):
     #hpcosts = [x + 134.36 / 12 for x in hpcosts]
 
     # price of those terms are currently asummed to be constant over time
-    electr_timefactor = scenario_dataframe["linear_falling"].to_numpy()
-    gas_timefactor = scenario_dataframe["linear_rising"].to_numpy()
-    CO2_timefactor = scenario_dataframe["linear_rising"].to_numpy()
+    electr_timefactor = np.linspace(st,lb,no))
+    gas_timefactor = np.linspace(st,ub,no))
+    CO2_timefactor = np.linspace(st,ub,no))
 
     # price of those terms are currently assumed to be the same over differenct districts
     for d in D:
