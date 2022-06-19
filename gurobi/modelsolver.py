@@ -150,7 +150,10 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     # model.computeIIS()
     # model.write(os.path.join(dirname, "solutions\model.ilp"))
     stop = timeit.default_timer()
-    write_solution_csv(model, districts, heatpumps, housing, T, distributors)
+    write_solution_csv(model, districts, heatpumps, housing, T, distributors,NUMBER_OF_YEARS, MIN_PERCENTAGE,
+                                CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY, 
+                                CO2_EMISSION_PRICE, max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
+                                electr_timefactor, gas_timefactor, CO2_timefactor)
     print('Time in seconds to solve the model: ', stop - start, "\n")
 
     return model
