@@ -13,6 +13,9 @@ DISTRIBUTOR = os.path.join(
 HEAT_PUMPS = os.path.join(
     dirname, './data-sources/heat_pumps_air_water_price.csv')
 FPOWDATA = os.path.join(dirname, './data-sources/fpow.csv')
+#FOR THE TIME FACTORS @joern
+SCENARIOS = os.path.join(
+    dirname, './data-sources/scenarios.csv')
 
 # from https://www.globalpetrolprices.com/Germany/natural_gas_prices/
 AVERAGE_BOILER_COST_PER_UNIT = 0.13#0.071  # euro per kWh for private household
@@ -59,6 +62,7 @@ def data_preprocess():
     housing_dataframe = pd.read_csv(ACOOLHEAD)
     heatpump_dataframe = pd.read_csv(HEAT_PUMPS)
     distributors_dataframe = pd.read_csv(DISTRIBUTOR)
+    scenario_dataframe = pd.read_csv(SCENARIOS)
 
     housing_data = prepare_housing_data(
         housing_dataframe, max_entries=None, zipcodes_of_interest="^(5[0-3])"
@@ -244,9 +248,9 @@ def prepare_params(T, I, M, D):
     #hpcosts = [x + 134.36 / 12 for x in hpcosts]
 
     # price of those terms are currently asummed to be constant over time
-    electr_timefactor = np.ones(T)
-    gas_timefactor = np.ones(T)
-    CO2_timefactor = np.ones(T)
+    electr_timefactor = scenario_dataframe["linear_falling"].to_numpy()
+    gas_timefactor = scenario_dataframe["linear_rising"].to_numpy()
+    CO2_timefactor = scenario_dataframe["linear_rising"].to_numpy()
 
     # price of those terms are currently assumed to be the same over differenct districts
     for d in D:
