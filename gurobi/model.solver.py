@@ -25,7 +25,7 @@ CO2_EMISSION_PRICE_2 = 698E-6
 BOILER_EFFICIENCY = 0.7
 
 
-def solve(OPERATING_RADIUS=2000):
+def solve(OPERATING_RADIUS=2000, T=NUMBER_OF_YEARS):
     """Solves the heat pump problem.
 
     T (int): number of years to be considered
@@ -48,7 +48,7 @@ def solve(OPERATING_RADIUS=2000):
     """
 
     # Preparation of Data and Parameters
-    T = NUMBER_OF_YEARS
+
     data, parameters = load_data_and_parameters(T)
 
     (districts, heatpumps, housing, fitness, distributors) = data
