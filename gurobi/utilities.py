@@ -116,7 +116,7 @@ def get_coordinates(location):
 
 from math import radians, cos, sin, asin, sqrt
 
-
+# from https://www.geeksforgeeks.org/program-distance-two-points-earth/#:~:text=For%20this%20divide%20the%20values,is%20the%20radius%20of%20Earth.
 def distance(lat1, lat2, lon1, lon2):
     # The math module contains a function named
     # radians which converts from degrees to radians.
