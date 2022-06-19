@@ -110,7 +110,7 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     obj = quicksum((x[m, i, t, d] * heatpumps[m]['price']*0
                     + quicksum(x[m, i, t_1, d] * (ELECTRICITY_COST_PER_UNIT * electr_timefactor[t_1]
                                                   + CO2_EMISSION_EON * CO2_EMISSION_PRICE * CO2_timefactor[t_1])
-                               * housing[i]['average heat demand'] / heatpumps[1]['cop'] for t_1 in range(t + 1))
+                               * housing[i]['average heat demand'] / heatpumps[m]['cop'] for t_1 in range(t + 1))
                     + (housing[i]['quantity'] - quicksum(x[m, i, t_1, d] for t_1 in range(t + 1)))
                     * (AVERAGE_BOILER_COST_PER_UNIT * gas_timefactor[t]
                        + CO2_EMISSION_GAS * CO2_EMISSION_PRICE * CO2_timefactor[t])
