@@ -33,7 +33,7 @@ def write_solution_csv(model, D, M, I, T, distributors):
                         p = var
                         percent = p / I[i]["quantity"]
                         row = [I[i]["district"], I[i]["year of construction"], I[i]["type of building"], I[i]["modernization status"], M[m]['brand_name'], t,
-                               int(p), I[i]["quantity"], percent, I[i]["max_heat_demand_Patrick"], distributors[d]['name']]
+                               int(p), I[i]["quantity"], percent, I[i]["max_heat_demand_W/m^2"], distributors[d]['name']]
                         writer.writerow(row)
     f.close()
     return
