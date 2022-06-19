@@ -1,4 +1,3 @@
-from this import d
 from utilities import get_driving_distance
 import pandas as pd
 import numpy as np
@@ -148,7 +147,7 @@ def get_operating_districts(districts, zipcode, op_radius=100, timeout=120, max_
 
         zipcode_of_district = '0' + \
                               str(z) if len(
-            str(z)) == 4 else str(z)  # add 0 to zipcode if only 4 digits
+                                  str(z)) == 4 else str(z)  # add 0 to zipcode if only 4 digits
 
         if zipcode_of_district == zipcode:
             # if zipcode is in district, set distance to 0

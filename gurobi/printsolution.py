@@ -5,7 +5,7 @@ Created on Mon Jun 13 17:23:47 2022
 @author: ciesl
 """
 
-from gurobipy import *
+from gurobipy import GRB
 import os
 import csv
 

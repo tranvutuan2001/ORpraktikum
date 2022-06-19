@@ -1,12 +1,10 @@
 #INSTANCES
-import pandas as pd
 from gurobipy import *
-import timeit
 import numpy as np
 import numpy_financial as npf
-import re
 import modelsolver
 from dataprp import data_preprocess
+import os
 
 #paths
 dirname = os.path.dirname(__file__)

@@ -1,9 +1,8 @@
 import pandas as pd
 from gurobipy import *
 import timeit
-import numpy as np
 import re
-
+import os
 
 dirname = os.path.dirname(__file__)
 ACOOLHEAD = os.path.join(dirname, './data-sources/data_from_Hannah_with_coordinates_zipcodes_heatcapacity_positive_building_count.csv')
