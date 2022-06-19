@@ -246,7 +246,12 @@ def prepare_params(T, I, M, D):
     # https://www.eon.de/de/pk/strom/stromanbieter/guenstiger-stromanbieter.html
     #hpcosts = [x + 134.36 / 12 for x in hpcosts]
 
-    # price of those terms are currently asummed to be constant over time
+    # price of those terms are currently asummed to rise/fall in a linear manner
+    st = 1
+    ub = 5
+    lb = 0.25
+    no = 100
+    
     electr_timefactor = np.linspace(st,lb,no)
     gas_timefactor = np.linspace(st,ub,no)
     CO2_timefactor = np.linspace(st,ub,no)
