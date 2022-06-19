@@ -25,12 +25,11 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     housing (dict) : dictionary of buildings each containing the keys:
         "type of building" (str) : building type
         "modernization_status" (str) : status of the building (i.e. whether it is modernized or not)
-        "max_heat_demand_W/m^2" (int)  : maximum heat demand of the building (in Wh/m^2)
+        "max_heat_demand_W/m^2" (int)  : Standard heating load according to DIN12831 in the form of standard values from technical literature/BWP w/m^2
         "district" (str) : district of the building
         "quantity" (int) : number of buildings of the same type in the district
         "Surface area" (float) : size of residental space
         "average heat demand" (float): demand kwh/m^2
-        "Heat capacity" (float): Standard heating load according to DIN12831 in the form of standard values from technical literature/BWP w/m^2
         "year of construction" (int): year of construction
         "long" (float): longitude of house
         "lat" (float): latitude of house
