@@ -3,7 +3,6 @@ from gurobipy import *
 import timeit
 import numpy as np
 import re
-import modelsolver
 
 
 dirname = os.path.dirname(__file__)
@@ -30,7 +29,7 @@ def data_preprocess():
     distributor_data = prepare_distributor(
         distributors_dataframe, zipcodes_of_interest="^(5[0-3])", max_entries=10
     )
-    # fitness_data = prepare_fitness()
+    
     fitness_data = prepare_fitness_on_run_time(heatpump_data, housing_data)
 
     stop = timeit.default_timer()
@@ -40,18 +39,18 @@ def data_preprocess():
 
 
 def prepare_fitness_on_run_time(M, I):
-    res = {}
+    fitness = {}
     for i in I:
         for m in M:
             produced_heat = M[m]['produced heat']
-            max_heat_demand = I[i]['max_heat_demand_Patrick']
+            max_heat_demand = I[i]['max_heat_demand_W/m^2']
 
             if max_heat_demand <= produced_heat:
                 # this means the heatpump matches our heat demand
-                res[(i, m)] = 1
+                fitness[(i, m)] = 1
             else:
-                res[(i, m)] = 0
-    return res
+                fitness[(i, m)] = 0
+    return fitness
 
 
 def prepare_housing_data(df, RADIUS_OF_INTEREST=None, max_entries=None, zipcodes_of_interest=None):
@@ -63,14 +62,13 @@ def prepare_housing_data(df, RADIUS_OF_INTEREST=None, max_entries=None, zipcodes
             "Surface area": int(df["Surface area [m^2]"][i]),
             "modernization status": df["modernization status"][i],
             "max heat demand [kWh/m^2]": df["max heat demand [kWh/m^2]"][i],
-            "average heat demand": df["average heat demand [kWh/m^2]"][i],
+            "average heat demand": df["average heat demand [kWh/m^2]"][i]*int(df["Surface area [m^2]"][i]) ,
             "Heatcapacity": df["Heatcapacity"][i],
-            "Klimazone": df["Klimazone"][i],
             "year of construction": df["Year of construction"][i],
-            "max_heat_demand_Patrick": round(int(df["Surface area [m^2]"][i]) * df["Heatcapacity"][i] / 1000, 2),
+            "max_heat_demand_W/m^2": round(int(df["Surface area [m^2]"][i]) * df["Heatcapacity"][i] / 1000, 2),
             'long': df['long'][i],
             'lat': df['lat'][i]
-            # "Floors": df["Floors"][i]
+           
         }
         for i in range(len(df["long"]))
         if len(str(df["zipcode"][i])) == 5 and re.match(zipcodes_of_interest, str(df["zipcode"][i]))
@@ -110,6 +108,7 @@ def prepare_distributor(df, RADIUS_OF_INTEREST=20, zipcodes_of_interest=None, ma
             'name': df['Distributors'][i],
             'long': df['long'][i],
             'lat': df['lat'][i]
+            #TODO: later add max_installations
         }
         for i in range(len(df))
         if len(str(df["zipcode"][i])) == 5 and re.match(zipcodes_of_interest, str(df["zipcode"][i]))
