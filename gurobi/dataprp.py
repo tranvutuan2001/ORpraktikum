@@ -4,6 +4,7 @@ import csv
 import timeit
 import numpy as np
 import re
+import os
 
 dirname = os.path.dirname(__file__)
 ACOOLHEAD = os.path.join(
