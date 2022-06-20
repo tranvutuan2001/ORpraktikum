@@ -84,9 +84,10 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
                         model.addConstr(x[m, i, t, d] == 0, name="C1")
     """
     # Constraint 2:  Install heat pumps in AT LEAST the specified percentage of all houses
+    house_count = quicksum(housing[i]['quantity'] for i in housing)
     model.addConstr(
         quicksum(x[m, i, t, d] for m in heatpumps for i in housing for t in range(
-            T) for d in distributors) >= MIN_PERCENTAGE * quicksum(housing[i]['quantity'] for i in housing), name="C2"
+            T) for d in distributors) >= MIN_PERCENTAGE * house_count, name="C2"
     )
 
     # Constraint 3: Only install as many heatpumps in a house category as the total quantity of houses of that type
