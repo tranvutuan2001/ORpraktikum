@@ -137,7 +137,7 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
                        for t_1 in range(t + 1)))
                     * (AVERAGE_BOILER_COST_PER_UNIT * gas_timefactor[t]
                        + CO2_EMISSION_GAS * CO2_EMISSION_PRICE * CO2_timefactor[t])
-                    * housing[i]['average heat demand']) / BOILER_EFFICIENCY
+                    * housing[i]['average heat demand'] / BOILER_EFFICIENCY) 
                    for i in housing for m in heatpumps for d in distributors for t in range(T))
     model.setObjective(obj, GRB.MINIMIZE)
 
