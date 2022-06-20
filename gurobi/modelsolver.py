@@ -74,7 +74,7 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
 
     print("Adding the constraints")
     start = timeit.default_timer()
-   """
+    """
     # Constraint 1: Consider Installability : never assign Heat Pump to a housetype if they do not fit to the house type
     for i in housing:
         for m in heatpumps:
