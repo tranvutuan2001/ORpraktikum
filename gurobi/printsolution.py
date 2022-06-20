@@ -60,7 +60,7 @@ def write_solution_csv(model, D, M, I, T, distributors,NUMBER_OF_YEARS, MIN_PERC
                         p = var
                         percent = p / I[i]["quantity"]
                         row = [I[i]["district"], I[i]["year of construction"], I[i]["type of building"], I[i]["modernization status"], M[m]['brand_name'], t,
-                               int(p), I[i]["quantity"], percent, I[i]["max_heat_demand_Patrick"], distributors[d]['name'],datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p"),
+                               int(p), I[i]["quantity"], percent, I[i]["max_heat_demand_W/m^2"], distributors[d]['name'],datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p"),
                                NUMBER_OF_YEARS, MIN_PERCENTAGE,
                                 CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY, 
                                 CO2_EMISSION_PRICE, max_sales[NUMBER_OF_YEARS-1], AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
