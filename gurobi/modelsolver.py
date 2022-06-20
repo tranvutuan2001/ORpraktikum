@@ -59,10 +59,14 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     # TODO: only add the variables for house/heatpump combinations that are feasible, do not add variables if fitness=0
     for m in heatpumps:
         for i in housing:
-            for t in range(T):
-                for d in distributors:
-                    x[m, i, t, d] = model.addVar(
-                        vtype='I',
+            if fitness[i,m]==0:
+                for t in range(T):
+                    for d in distributors:
+                        x[m,i,t,d]=0
+            else:
+                for t in range(T):
+                    for d in distributors:
+                        x[m, i, t, d] = model.addVar(vtype='I',
                         name=f'hp_type_{str(m)}_at_house_type_{str(i)}_in_year_{str(t)}_by_distributor_{str(distributors[d]["name"])}'
                     )
     stop = timeit.default_timer()
@@ -70,7 +74,7 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
 
     print("Adding the constraints")
     start = timeit.default_timer()
-
+   """
     # Constraint 1: Consider Installability : never assign Heat Pump to a housetype if they do not fit to the house type
     for i in housing:
         for m in heatpumps:
@@ -78,7 +82,7 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
                 for t in range(T):
                     for d in distributors:
                         model.addConstr(x[m, i, t, d] == 0, name="C1")
-
+    """
     # Constraint 2:  Install heat pumps in AT LEAST the specified percentage of all houses
     model.addConstr(
         quicksum(x[m, i, t, d] for m in heatpumps for i in housing for t in range(
