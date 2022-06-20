@@ -57,9 +57,9 @@ def write_solution_csv(model, D, M, I, T, distributors,NUMBER_OF_YEARS, MIN_PERC
                 for d in distributors:
                   try: var = model.getVarByName(
                         f'hp_type_{str(m)}_at_house_type_{str(i)}_in_year_{str(t)}_by_distributor_{str(distributors[d]["name"])}').X
-                    except: 
+                  except: 
                         continue
-                    if var != 0:
+                  if var != 0:
                         p = var
                         percent = p / I[i]["quantity"]
                         row = [I[i]["district"], I[i]["year of construction"], I[i]["type of building"], I[i]["modernization status"], M[m]['brand_name'], t,
