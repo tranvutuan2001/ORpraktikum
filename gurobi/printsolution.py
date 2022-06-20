@@ -17,6 +17,7 @@ def write_solution_csv(model, D, M, I, T, distributors,NUMBER_OF_YEARS, MIN_PERC
                                 CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY, 
                                 CO2_EMISSION_PRICE, max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
                                 electr_timefactor, gas_timefactor, CO2_timefactor):
+    model.printStats()
     status = model.Status
     if status != GRB.OPTIMAL:
         print("Current model is infeasible")
