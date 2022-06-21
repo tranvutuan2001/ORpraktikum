@@ -17,7 +17,6 @@ def write_solution_csv(model, D, M, I, T, distributors,NUMBER_OF_YEARS, MIN_PERC
                                 CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY, 
                                 CO2_EMISSION_PRICE, max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
                                 electr_timefactor, gas_timefactor, CO2_timefactor):
-    model.printStats()
     status = model.Status
     if status != GRB.OPTIMAL:
         print("Current model is infeasible")
@@ -50,24 +49,22 @@ def write_solution_csv(model, D, M, I, T, distributors,NUMBER_OF_YEARS, MIN_PERC
          "NUMBER_OF_YEARS", "MIN_PERCENTAGE",
         "CO2_EMISSION_GAS", "CO2_EMISSION_EON", "BOILER_EFFICIENCY", 
         "CO2_EMISSION_PRICE", "max_sales", "AVERAGE_BOILER_COST_PER_UNIT", "ELECTRICITY_COST_PER_UNIT",
-        "electr_timefactor", "gas_timefactor", "CO2_timefactor"])'''
+        "electr_timefactor", "gas_timefactor", "CO2_timefactor","ZIP"])'''
     for i in I:
         for m in M:
             for t in range(T):
                 for d in distributors:
-                  try: var = model.getVarByName(
+                    var = model.getVarByName(
                         f'hp_type_{str(m)}_at_house_type_{str(i)}_in_year_{str(t)}_by_distributor_{str(distributors[d]["name"])}').X
-                  except: 
-                        continue
-                  if var != 0:
+                    if var != 0:
                         p = var
                         percent = p / I[i]["quantity"]
                         row = [I[i]["district"], I[i]["year of construction"], I[i]["type of building"], I[i]["modernization status"], M[m]['brand_name'], t,
-                               int(p), I[i]["quantity"], percent, I[i]["max_heat_demand_W/m^2"], distributors[d]['name'],datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p"),
+                               int(p), I[i]["quantity"], percent, I[i]["max_heat_demand_Patrick"], distributors[d]['name'],datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p"),
                                NUMBER_OF_YEARS, MIN_PERCENTAGE,
                                 CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY, 
                                 CO2_EMISSION_PRICE, max_sales[NUMBER_OF_YEARS-1], AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
-                                electr_timefactor[NUMBER_OF_YEARS-1], gas_timefactor[NUMBER_OF_YEARS-1], CO2_timefactor[NUMBER_OF_YEARS-1]]
+                                electr_timefactor[NUMBER_OF_YEARS-1], gas_timefactor[NUMBER_OF_YEARS-1], CO2_timefactor[NUMBER_OF_YEARS-1], I[i]["zipcode"]]
                         writer.writerow(row)
     f.close()
     return
