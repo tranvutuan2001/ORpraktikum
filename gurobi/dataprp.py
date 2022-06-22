@@ -66,8 +66,8 @@ def prepare_housing_data(df, RADIUS_OF_INTEREST=None, max_entries=None, zipcodes
             "year of construction": df["Year of construction"][i],
             "max_heat_demand_W/m^2": round(int(df["Surface area [m^2]"][i]) * df["Heatcapacity"][i] / 1000, 2),
             'long': df['long'][i],
-            'lat': df['lat'][i]
-           
+            'lat': df['lat'][i],
+            'zipcode': df['zipcode'][i]
         }
         for i in range(len(df["long"]))
         if len(str(df["zipcode"][i])) == 5 and re.match(zipcodes_of_interest, str(df["zipcode"][i]))
