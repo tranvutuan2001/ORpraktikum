@@ -184,7 +184,7 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
 
 def get_configurations(heatpumps, housing, distributors, T, operating_radius=2000):
     """Generate the possible configurations for the model.
-       A configuration is possible only the heatpump can fulfill the demand of the house and the house is in the operating radius of the distributor.
+       A configuration is possible only if the heatpump can fulfill the demand of the house and the house is in the operating radius of the distributor.
 
     Args:
         heatpumps (dict)
