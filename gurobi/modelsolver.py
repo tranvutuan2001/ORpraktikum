@@ -66,7 +66,8 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     # time_index = list(dict.fromkeys(configuration[3] for configuration in configurations)) # an index of all possible times
 
     stop = timeit.default_timer()
-    print('Time to determine configurations: ', round(stop - start, 2), "s\n")
+    print('Time to determine configurations: ',
+          f"{round(stop - start, 2)} seconds\n")
 
     # Add Variables
     print("Adding variables")
@@ -83,7 +84,7 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
                                                  name=f'hp_type_{str(m)}_at_house_type_{str(i)}_in_year_{str(t)}_by_distributor_{str(distributors[d]["name"])}'
                                                  )
     stop = timeit.default_timer()
-    print('Time to add the variables: ',round(stop - start,2), "s\n")
+    print('Time to add the variables: ', f"{round(stop - start, 2)} seconds\n")
 
     print("Adding the constraints")
     start = timeit.default_timer()
@@ -97,37 +98,33 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
                         model.addConstr(x[m, i, t, d] == 0, name="C1")
     """
     # Constraint 2:  Install heat pumps in AT LEAST the specified percentage of all houses
-    house_count = quicksum(housing[i]['quantity'] for i in housing_index)
+    house_count = sum(housing[i]['quantity'] for i in housing_index)
     model.addConstr(
         quicksum(x[m, i, t, d] for m in heatpump_index for i in housing_index for t in range(
             T) for d in distributor_index) >= MIN_PERCENTAGE * house_count, name="C2"
     )
 
     # Constraint 3: Only install as many heatpumps in a house category as the total quantity of houses of that type
-    for i in housing_index:
-        model.addConstr(
-            quicksum(x[m, i, t, d] for m in heatpump_index for t in range(T)
-                     for d in distributor_index) <= housing[i]['quantity'], name="C3"
-        )
+
+    model.addConstrs(
+        (quicksum(x[m, i, t, d] for m in heatpump_index for t in range(T)
+                  for d in distributor_index) <= housing[i]['quantity'] for i in housing_index), name="C3"
+    )
 
     # Constraint 4: Only install up to the current expected sales volume
-    for t in range(T):
-        model.addConstr(quicksum(
-            x[m, i, t, d] for i in housing_index for m in heatpump_index for d in distributor_index) <= max_sales[t], name="C4")
+    model.addConstrs((quicksum(
+        x[m, i, t, d] for i in housing_index for m in heatpump_index for d in distributor_index) <= max_sales[t] for t in range(T)), name="C4")
 
     # Constraints 5: Respect the operation radius for each distributor
-    # TODO: add the constraint 5 as explained above
-    for d in distributor_index:
-        for i in housing_index:
-            for m in heatpump_index:
-                for t in range(T):
-                    model.addConstr(x[m, i, t, d] == 0, name="C5")
+    # not needed since we already have this in get configurations
+
 
     # Constraint 6: Respect max_installations capacity
     # TODO: implement the constraint "yearly workforce <= qty of heat pumps installed by the distributor"
 
     stop = timeit.default_timer()
-    print("Time to add the constraints: ",round(stop - start,2), "s\n")
+    print("Time to add the constraints: ",
+          f"{round(stop - start, 2)} seconds\n")
 
     # Add Objective
     print("Adding objective function")
@@ -154,7 +151,8 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     model.setObjective(obj, GRB.MINIMIZE)
 
     stop = timeit.default_timer()
-    print('Time to add the objective function: ',round( stop - start,2), "s\n")
+    print('Time to add the objective function: ',
+          f"{round(stop - start, 2)} seconds\n")
     model.update()
 
     # Solve Model
@@ -171,7 +169,8 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
                        CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY,
                        CO2_EMISSION_PRICE, max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
                        electr_timefactor, gas_timefactor, CO2_timefactor)
-    print('Time in seconds to solve the model: ', stop - start, "\n")
+    print('Time to solve the model: ',
+          f"{round(stop - start, 2)} seconds\n")
 
     return model
 
@@ -218,6 +217,6 @@ def get_configurations(heatpumps, housing, distributors, T, operating_radius=200
                         for t in range(T):
                             configurations.append((m, i, d, t))
     initial_count = len(heatpumps) * len(housing) * len(distributors) * T
-    print("Variable set reduced by", round(100 -
-          len(configurations)/initial_count * 100, 3), "%\n")
+    print("Variable set reduced to", round(
+        len(configurations)/initial_count * 100, 3), "%\n")
     return configurations
