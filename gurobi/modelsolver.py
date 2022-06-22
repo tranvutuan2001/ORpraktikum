@@ -54,14 +54,15 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     print("Determining possible configurations\n")
     start = timeit.default_timer()
 
-    configurations = get_configurations(heatpumps, housing, distributors, T) # list of all possible configurations
+    # list of all possible configurations
+    configurations = get_configurations(heatpumps, housing, distributors, T)
     print(f"{len(configurations)} possible configurations")
     heatpump_index = list(dict.fromkeys(
-        configuration[0] for configuration in configurations)) # an index of all possbile heat pumps
+        configuration[0] for configuration in configurations))  # an index of all possbile heat pumps
     housing_index = list(dict.fromkeys(
-        configuration[1] for configuration in configurations)) # an index of all possible housings
+        configuration[1] for configuration in configurations))  # an index of all possible housings
     distributor_index = list(dict.fromkeys(
-        configuration[2] for configuration in configurations)) # an index of all possible distributors
+        configuration[2] for configuration in configurations))  # an index of all possible distributors
     # currently no filtering done but maybe later there could be a time filter
     # time_index = list(dict.fromkeys(configuration[3] for configuration in configurations)) # an index of all possible times
 
@@ -88,15 +89,7 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
 
     print("Adding the constraints")
     start = timeit.default_timer()
-    """
-    # Constraint 1: Consider Installability : never assign Heat Pump to a housetype if they do not fit to the house type
-    for i in housing:
-        for m in heatpumps:
-            if fitness[i, m] == 0:
-                for t in range(T):
-                    for d in distributors:
-                        model.addConstr(x[m, i, t, d] == 0, name="C1")
-    """
+
     # Constraint 2:  Install heat pumps in AT LEAST the specified percentage of all houses
     house_count = sum(housing[i]['quantity'] for i in housing_index)
     model.addConstr(
@@ -118,7 +111,6 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     # Constraints 5: Respect the operation radius for each distributor
     # not needed since we already have this in get configurations
 
-
     # Constraint 6: Respect max_installations capacity
     # TODO: implement the constraint "yearly workforce <= qty of heat pumps installed by the distributor"
 
@@ -139,15 +131,15 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     obj = quicksum((
         x[m, i, t, d] * heatpumps[m]['price']
 
-                    + quicksum(x[m, i, t_1, d] * (ELECTRICITY_COST_PER_UNIT * electr_timefactor[t_1]
-                                                  + CO2_EMISSION_EON * CO2_EMISSION_PRICE * CO2_timefactor[t_1])
-                               * housing[i]['average heat demand'] / heatpumps[m]['cop'] for t_1 in range(t + 1))
+        + quicksum(x[m, i, t_1, d] * (ELECTRICITY_COST_PER_UNIT * electr_timefactor[t_1]
+                                      + CO2_EMISSION_EON * CO2_EMISSION_PRICE * CO2_timefactor[t_1])
+                   * housing[i]['average heat demand'] / heatpumps[m]['cop'] for t_1 in range(t + 1))
 
-                    + (housing[i]['quantity'] - quicksum(x[m, i, t_1, d]
-                       for t_1 in range(t + 1)))
+        + (housing[i]['quantity'] - quicksum(x[m, i, t_1, d]
+                                             for t_1 in range(t + 1)))
         * (AVERAGE_BOILER_COST_PER_UNIT * gas_timefactor[t] + CO2_EMISSION_GAS * CO2_EMISSION_PRICE * CO2_timefactor[t])
         * housing[i]['average heat demand'] / BOILER_EFFICIENCY)
-                   for i in housing_index for m in heatpump_index for d in distributor_index for t in range(T))
+        for i in housing_index for m in heatpump_index for d in distributor_index for t in range(T))
     model.setObjective(obj, GRB.MINIMIZE)
 
     stop = timeit.default_timer()
