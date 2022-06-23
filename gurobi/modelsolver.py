@@ -78,13 +78,10 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     # Quantity of installed heat pumps with given conditions
     x = {}
     # TODO: only add the variables for house/heatpump combinations that are feasible, do not add variables if fitness=0
-    for m in heatpump_index:
-        for i in housing_index:
-            for t in range(T):
-                for d in distributor_index:
-                    x[m, i, t, d] = model.addVar(vtype='I',
-                                                 name=f'hp_type_{str(m)}_at_house_type_{str(i)}_in_year_{str(t)}_by_distributor_{str(distributors[d]["name"])}'
-                                                 )
+    for (m, i, d, t) in configurations:
+        x[m, i, t, d] = model.addVar(vtype='I',
+                                     name=f'hp_type_{str(m)}_at_house_type_{str(i)}_in_year_{str(t)}_by_distributor_{str(distributors[d]["name"])}'
+                                     )
     stop = timeit.default_timer()
     print('Time to add the variables: ', f"{round(stop - start, 2)} seconds\n")
 
@@ -92,10 +89,9 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     start = timeit.default_timer()
 
     # Constraint 2:  Install heat pumps in AT LEAST the specified percentage of all houses
-    house_count = sum(housing[i]['quantity'] for i in housing_index)
+    house_count = sum(housing[i]['quantity'] for i in housing)
     model.addConstr(
-        quicksum(x[m, i, t, d] for m in heatpump_index for i in housing_index for t in range(
-            T) for d in distributor_index) >= MIN_PERCENTAGE * house_count, name="C2"
+        quicksum(x[m, i, t, d] for (m, i, d, t) in configurations) >= MIN_PERCENTAGE * house_count, name="C2"
     )
 
     # Constraint 3: Only install as many heatpumps in a house category as the total quantity of houses of that type
