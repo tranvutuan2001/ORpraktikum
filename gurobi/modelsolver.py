@@ -14,7 +14,7 @@ dirname = os.path.dirname(__file__)
 def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
           CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY, CO2_EMISSION_PRICE,
           max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
-          electr_timefactor, gas_timefactor, CO2_timefactor, operating_radius=2000):
+          electr_timefactor, gas_timefactor, CO2_timefactor):
     """Solves the heat pump problem.
 
     NUMBER OF YEARS (int): number of years to be considered for the model 
@@ -55,8 +55,7 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     start = timeit.default_timer()
 
     # list of all possible configurations
-    configurations = get_configurations(
-        heatpumps, housing, distributors, T, operating_radius)
+    configurations = get_configurations(heatpumps, housing, distributors, T)
     print(f"{len(configurations)} possible configurations")
     heatpump_index = list(dict.fromkeys(
         configuration[0] for configuration in configurations))  # an index of all possbile heat pumps
