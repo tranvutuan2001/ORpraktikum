@@ -70,7 +70,7 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
                         name=f'hp_type_{str(m)}_at_house_type_{str(i)}_in_year_{str(t)}_by_distributor_{str(distributors[d]["name"])}'
                     )
     stop = timeit.default_timer()
-    print('Time in seconds to add the variables: ', stop - start, "\n")
+    print('Time to add the variables: ', f"{round(stop - start, 2)} seconds\n")
 
     print("Adding the constraints")
     start = timeit.default_timer()
@@ -84,7 +84,7 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
                         model.addConstr(x[m, i, t, d] == 0, name="C1")
     """
     # Constraint 2:  Install heat pumps in AT LEAST the specified percentage of all houses
-    house_count = quicksum(housing[i]['quantity'] for i in housing)
+    house_count = sum(housing[i]['quantity'] for i in housing)
     model.addConstr(
         quicksum(x[m, i, t, d] for m in heatpumps for i in housing for t in range(
             T) for d in distributors) >= MIN_PERCENTAGE * house_count, name="C2"
@@ -117,7 +117,8 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     # TODO: implement the constraint "yearly workforce <= qty of heat pumps installed by the distributor"
 
     stop = timeit.default_timer()
-    print("Time in seconds to add the constraints: ", stop - start, "\n")
+    print("Time to add the constraints: ",
+          f"{round(stop - start, 2)} seconds\n")
 
     # Add Objective
     print("Adding objective function")
@@ -142,7 +143,8 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     model.setObjective(obj, GRB.MINIMIZE)
 
     stop = timeit.default_timer()
-    print('Time in seconds to add the objective function: ', stop - start, "\n")
+    print('Time to add the objective function: ',
+          f"{round(stop - start, 2)} seconds\n")
     model.update()
 
     # Solve Model
@@ -155,11 +157,9 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     # model.computeIIS()
     # model.write(os.path.join(dirname, "solutions\model.ilp"))
     stop = timeit.default_timer()
-    write_solution_csv(model, districts, heatpumps, housing, T, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
-                       CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY,
-                       CO2_EMISSION_PRICE, max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
-                       electr_timefactor, gas_timefactor, CO2_timefactor)
-    print('Time in seconds to solve the model: ', stop - start, "\n")
+
+    print('Time to solve the model: ',
+          f"{round(stop - start, 2)} seconds\n")
 
     return model
 
