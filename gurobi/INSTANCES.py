@@ -12,7 +12,7 @@ import sys
 class Logger(object):
     def __init__(self):
         self.terminal = sys.stdout
-        self.log = open("gurobi/logs/logfile.log", "w")
+        self.log = open("gurobi/logfile.log", "w")
 
     def write(self, message):
         self.terminal.write(message)
