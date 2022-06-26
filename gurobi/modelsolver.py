@@ -76,7 +76,7 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     # removed because this is handled by get_configurations
 
     # Constraint 2:  Install heat pumps in AT LEAST the specified percentage of all houses
-    house_count = sum(housing[i]['quantity'] for i in index_housing)
+    house_count = sum(housing[i]['quantity'] for i in housing)
     model.addConstr(
         quicksum(x[m, i, t, d] for m, i, t, d in P) >= MIN_PERCENTAGE * house_count, name="C2"
     )
