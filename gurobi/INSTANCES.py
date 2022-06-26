@@ -5,7 +5,7 @@ import numpy_financial as npf
 import modelsolver
 from dataprp import data_preprocess
 import os
-
+from printsolution import write_solution_csv
 #paths
 dirname = os.path.dirname(__file__)
 ACOOLHEAD = os.path.join(dirname, './data-sources/data_from_Hannah_with_coordinates_zipcodes_heatcapacity_positive_building_count.csv')
@@ -41,12 +41,16 @@ electr_timefactor = np.linspace(1,ELECTRICITY_PRICE_FACTOR ,NUMBER_OF_YEARS) #Th
 gas_timefactor = np.linspace(1,GAS_PRIZE_FACTOR ,NUMBER_OF_YEARS) #The second factor is the multiplying factor for the final value, so the price is x times the starting price
 CO2_timefactor = np.linspace(1,CO2_PRIZE_FACTOR ,NUMBER_OF_YEARS) #The second factor is the multiplying factor for the final value, so the price is x times the starting price
 max_sales = npf.fv(Max_Sales_Growth, np.linspace(0,NUMBER_OF_YEARS+1,NUMBER_OF_YEARS, dtype = int), 0, -Max_Sales_Initial) #Third value is fixed addition
-print(max_sales)
 # get prepared data
 (districts, heatpumps, housing, fitness, distributors) = data_preprocess()
 
 # solve model
-modelsolver.solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
+model = modelsolver.solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
           CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY, 
           CO2_EMISSION_PRICE, max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
           electr_timefactor, gas_timefactor, CO2_timefactor)
+
+write_solution_csv(model, districts, heatpumps, housing, NUMBER_OF_YEARS, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
+                   CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY,
+                   CO2_EMISSION_PRICE, max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
+                   electr_timefactor, gas_timefactor, CO2_timefactor)
