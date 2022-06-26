@@ -13,7 +13,7 @@ dirname = os.path.dirname(__file__)
 class Logger(object):
     def __init__(self):
         self.terminal = sys.stdout
-        if not os.path.exists(os.path.join(dirname, 'gurobi/logs')):
+        if not os.path.isdir(os.path.join(dirname,  'logs')):
             os.makedirs('gurobi/logs')
         self.log = open("gurobi/logs/logfile.log", "w")
 
