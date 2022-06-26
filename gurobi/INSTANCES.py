@@ -9,10 +9,13 @@ from printsolution import write_solution_csv
 import sys
 
 # This writes our console output to a log file
+dirname = os.path.dirname(__file__)
 class Logger(object):
     def __init__(self):
         self.terminal = sys.stdout
-        self.log = open("gurobi/logfile.log", "w")
+        if not os.path.exists(os.path.join(dirname, 'gurobi/logs')):
+            os.makedirs('gurobi/logs')
+        self.log = open("gurobi/logs/logfile.log", "w")
 
     def write(self, message):
         self.terminal.write(message)
@@ -28,7 +31,6 @@ class Logger(object):
 sys.stdout = Logger()
 
 #paths
-dirname = os.path.dirname(__file__)
 ACOOLHEAD = os.path.join(dirname, './data-sources/data_from_Hannah_with_coordinates_zipcodes_heatcapacity_positive_building_count.csv')
 DISTRIBUTOR = os.path.join(dirname, './data-sources/Distributor_data_with_coordinates.csv')
 HEAT_PUMPS = os.path.join(dirname, './data-sources/heat_pumps_air_water_price.csv')
