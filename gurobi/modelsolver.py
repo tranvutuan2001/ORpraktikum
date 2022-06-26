@@ -2,7 +2,7 @@
 # !/usr/bin/env python3
 # Template for our final model
 
-from gurobipy import Model, quicksum, GRB
+from gurobipy import Model, quicksum, GRB, tuplelist
 import os
 from printsolution import write_solution_csv
 import timeit
@@ -49,69 +49,50 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     # Create a new model
     print("Preparing the model\n")
     model = Model("Heatpumps")
+
+    P = get_configurations(heatpumps, housing, distributors, T)
+    index_heatpump = set(m for m, _, _, _ in P)
+    index_housing = set(i for _, i, _, _ in P)
+    index_distributor = set(d for _, _, _, d in P)
+    index_time = set(t for _, _, t, _ in P)
     # Add Variables
     print("Adding variables")
     start = timeit.default_timer()
-    print(len(heatpumps) * len(housing) * T *
-          len(distributors), "variables will be added")
+    print(len(P), "variables will be added")
     # Quantity of installed heat pumps with given conditions
     x = {}
-    # TODO: only add the variables for house/heatpump combinations that are feasible, do not add variables if fitness=0
-    for m in heatpumps:
-        for i in housing:
-            if fitness[i,m]==0:
-                for t in range(T):
-                    for d in distributors:
-                        x[m,i,t,d]=0
-            else:
-                for t in range(T):
-                    for d in distributors:
-                        x[m, i, t, d] = model.addVar(vtype='I',
-                        name=f'hp_type_{str(m)}_at_house_type_{str(i)}_in_year_{str(t)}_by_distributor_{str(distributors[d]["name"])}'
-                    )
+    for m, i, t, d in P:
+        x[m, i, t, d] = model.addVar(vtype='I',
+                                     name=f'hp_type_{str(m)}_at_house_type_{str(i)}_in_year_{str(t)}_by_distributor_{str(distributors[d]["name"])}'
+                                     )
+
     stop = timeit.default_timer()
     print('Time to add the variables: ', f"{round(stop - start, 2)} seconds\n")
 
     print("Adding the constraints")
     start = timeit.default_timer()
-    """
+
     # Constraint 1: Consider Installability : never assign Heat Pump to a housetype if they do not fit to the house type
-    for i in housing:
-        for m in heatpumps:
-            if fitness[i, m] == 0:
-                for t in range(T):
-                    for d in distributors:
-                        model.addConstr(x[m, i, t, d] == 0, name="C1")
-    """
+    # removed because this is handled by get_configurations
+
     # Constraint 2:  Install heat pumps in AT LEAST the specified percentage of all houses
-    house_count = sum(housing[i]['quantity'] for i in housing)
+    house_count = sum(housing[i]['quantity'] for i in index_housing)
     model.addConstr(
-        quicksum(x[m, i, t, d] for m in heatpumps for i in housing for t in range(
-            T) for d in distributors) >= MIN_PERCENTAGE * house_count, name="C2"
+        quicksum(x[m, i, t, d] for m, i, t, d in P) >= MIN_PERCENTAGE * house_count, name="C2"
     )
 
     # Constraint 3: Only install as many heatpumps in a house category as the total quantity of houses of that type
-    for i in housing:
-        model.addConstr(
-            quicksum(x[m, i, t, d] for m in heatpumps for t in range(T)
-                     for d in distributors) <= housing[i]['quantity'], name="C3"
-        )
+
+    model.addConstrs((quicksum(x[m, i, t, d] for m, _, t, d in P.select("*", i, "*", "*")) <= housing[i]['quantity']
+                     for i in index_housing), name="C3")
 
     # Constraint 4: Only install up to the current expected sales volume
-    for t in range(T):
-        model.addConstr(quicksum(
-            x[m, i, t, d] for i in housing for m in heatpumps for d in distributors) <= max_sales[t], name="C4")
+
+    model.addConstrs((quicksum(
+        x[m, i, t, d] for m, i, _, d in P.select("*", "*", t, "*")) <= max_sales[t] for t in index_time), name="C4")
 
     # Constraints 5: Respect the operation radius for each distributor
-    # TODO: add the constraint 5 as explained above
-    for d in distributors:
-        for i in housing:
-            dist = cal_dist((housing[i]['lat'], housing[i]['long']),
-                            (distributors[d]['lat'], distributors[d]['long']))
-            if dist > 2000:
-                for m in heatpumps:
-                    for t in range(T):
-                        model.addConstr(x[m, i, t, d] == 0, name="C5")
+    # removed because this is handled by get_configurations
 
     # Constraint 6: Respect max_installations capacity
     # TODO: implement the constraint "yearly workforce <= qty of heat pumps installed by the distributor"
@@ -131,15 +112,15 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     """
     # TODO: find a better cost function : lifespan of boiler/heatpumps, total cost of ownership
     obj = quicksum((x[m, i, t, d] * heatpumps[m]['price']
-                    + quicksum(x[m, i, t_1, d] * (ELECTRICITY_COST_PER_UNIT * electr_timefactor[t_1]
-                                                  + CO2_EMISSION_EON * CO2_EMISSION_PRICE * CO2_timefactor[t_1])
-                               * housing[i]['average heat demand'] / heatpumps[m]['cop'] for t_1 in range(t + 1))
-                    + (housing[i]['quantity'] - quicksum(x[m, i, t_1, d]
-                       for t_1 in range(t + 1)))
+                    + quicksum(x[m, i, t1, d] * (ELECTRICITY_COST_PER_UNIT * electr_timefactor[t1]
+                                                 + CO2_EMISSION_EON * CO2_EMISSION_PRICE * CO2_timefactor[t1])
+                               * housing[i]['average heat demand'] / heatpumps[m]['cop'] for t1 in range(t + 1))
+                    + (housing[i]['quantity'] - quicksum(x[m, i, t1, d]
+                       for t1 in range(t + 1)))
                     * (AVERAGE_BOILER_COST_PER_UNIT * gas_timefactor[t]
                        + CO2_EMISSION_GAS * CO2_EMISSION_PRICE * CO2_timefactor[t])
-                    * housing[i]['average heat demand'] / BOILER_EFFICIENCY) 
-                   for i in housing for m in heatpumps for d in distributors for t in range(T))
+                    * housing[i]['average heat demand'] / BOILER_EFFICIENCY)
+                   for m, i, t, d in P)
     model.setObjective(obj, GRB.MINIMIZE)
 
     stop = timeit.default_timer()
@@ -177,3 +158,35 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
    
     return
     """
+
+
+def get_configurations(heatpumps, housing, distributors, T, operating_radius=2000):
+    """Generate the possible configurations for the model.
+       A configuration is possible only if the heatpump can fulfill the demand of the house and the house is in the operating radius of the distributor.
+
+    Args:
+        heatpumps (dict)
+        housing (dict)
+        distributors (dict)
+        T (dict)
+        operating_radius (int, optional). Defaults to 2000.
+
+    Returns:
+        _type_: _description_
+    """
+    configurations = tuplelist()
+    for m in heatpumps:
+        for i in housing:
+            produced_heat = heatpumps[m]['produced heat']
+            max_heat_demand = housing[i]['max_heat_demand_W/m^2']
+            if produced_heat >= max_heat_demand:
+                for d in distributors:
+                    dist = cal_dist((housing[i]['lat'], housing[i]['long']),
+                                    (distributors[d]['lat'], distributors[d]['long']))
+                    if dist <= operating_radius:
+                        for t in range(T):
+                            configurations.append((m, i, t, d))
+    initial_count = len(heatpumps) * len(housing) * len(distributors) * T
+    print("Variable set reduced to", round(
+        len(configurations)/initial_count * 100, 3), "%\n")
+    return configurations
