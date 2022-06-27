@@ -123,12 +123,12 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     """
     # TODO: find a better cost function : lifespan of boiler/heatpumps, total cost of ownership/
     investcost= quicksum((x[p]-x[(p[0],p[1],p[2],p[3]-1)])* heatpumps[p[0]]['price'] for p in P if p[3]>=0)
-    hpcost= quicksum(x[p] * ((ELECTRICITY_COST_PER_UNIT * electr_timefactor[p[3]]+ CO2_EMISSION_EON * CO2_EMISSION_PRICE * CO2_timefactor[p[3]])/heatpumps[p[0]]['cop']) for p in P if p[3]>=0)   
-    gascost= quicksum((house_count-x[p])*((AVERAGE_BOILER_COST_PER_UNIT * gas_timefactor[p[3]]+ CO2_EMISSION_GAS * CO2_EMISSION_PRICE * CO2_timefactor[p[3]])/ BOILER_EFFICIENCY) for p in P if p[3]>=0)  
+    hpcost= quicksum(x[p] * ((ELECTRICITY_COST_PER_UNIT * electr_timefactor[p[3]]+ CO2_EMISSION_EON * CO2_EMISSION_PRICE * CO2_timefactor[p[3]])/heatpumps[p[0]]['cop']* housing[p[1]]['average heat demand']) for p in P if p[3]>=0)   
+    gascost= quicksum((house_count-x[p])*((AVERAGE_BOILER_COST_PER_UNIT * gas_timefactor[p[3]]+ CO2_EMISSION_GAS * CO2_EMISSION_PRICE * CO2_timefactor[p[3]])/ BOILER_EFFICIENCY* housing[p[1]]['average heat demand']) for p in P if p[3]>=0)  
 
 
                    
-    obj = investcost+(hpcost+gascost) * housing[p[1]]['average heat demand']
+    obj = investcost + hpcost + gascost
     model.setObjective(obj, GRB.MINIMIZE)
 #    for p in P:
 #        print(p[2])
