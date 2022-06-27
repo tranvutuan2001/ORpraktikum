@@ -156,7 +156,13 @@ def get_configurations(heatpumps, housing, distributors, T, operating_radius):
 
     for m in heatpumps:
         for i in housing:
-            for d in distributors:
-                configurations.append((m, i, d, -1))
+            produced_heat = heatpumps[m]['produced heat']
+            max_heat_demand = housing[i]['max_heat_demand_W/m^2']
+            if produced_heat >= max_heat_demand:
+                for d in distributors:
+                    dist = cal_dist((housing[i]['lat'], housing[i]['long']),
+                                    (distributors[d]['lat'], distributors[d]['long']))
+                    if dist <= operating_radius:
+                        configurations.append((m, i, d, -1))
 
     return configurations
