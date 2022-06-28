@@ -1,5 +1,5 @@
 import pandas as pd
-from gurobipy import *
+from gurobipy import tuplelist
 import timeit
 import re
 import os
