@@ -3,7 +3,7 @@
 Created on Mon Jun 13 17:23:47 2022
 @author: ciesl
 """
-from gurobipy import *
+from gurobipy import GRB
 from datetime import datetime
 import os
 import csv
@@ -38,26 +38,22 @@ def write_solution_csv(model, D, M, I, T, distributors, NUMBER_OF_YEARS, MIN_PER
     f = open(os.path.join(dirname, "solutions\solution.csv"), 'a', newline="")    
     writer = csv.writer(f, delimiter=";")
     
-    
-    for p in P:
-        if p[3]>=0:
+    for m, i, d, t in P:
+        if t >= 0:
             try:
-                var = model.getVarByName(
-                    f'hp_type_{str(p[0])}_at_house_type_{str(p[1])}_by_distributor_{str(distributors[p[2]]["name"])}_in_year_{str(p[3])}').X
+                curr = model.getVarByName(
+                    f'hp_type_{str(m)}_at_house_type_{str(i)}_by_distributor_{str(distributors[d]["name"])}_in_year_{str(t)}').X
             except:
                 continue
         
-            if var != 0:
+            if curr != 0:
                 try: 
-                    var2=model.getVarByName(f'hp_type_{str(p[0])}_at_house_type_{str(p[1])}_by_distributor_{str(distributors[p[2]]["name"])}_in_year_{str(p[3]-1)}').X
+                    new = model.getVarByName(
+                        f'hp_type_{str(m)}_at_house_type_{str(i)}_by_distributor_{str(distributors[d]["name"])}_in_year_{str(t-1)}').X
                 except:
                    continue 
-                newbuilds= var-var2
-                qty=var
-                i = p[1]
-                m = p[0]
-                d = p[2]
-                t = p[3]
+                newbuilds = curr-new
+                qty = curr
                 percent = qty / I[i]["quantity"]
                 row = [I[i]["district"], I[i]["year of construction"], I[i]["type of building"], I[i]["modernization status"], M[m]['brand_name'], t,newbuilds,qty, I[i]["quantity"], percent, str(I[i]["max_heat_demand_W/m^2"]), distributors[d]['name'], datetime.now(
                           ).strftime("%Y_%m_%d-%I_%M_%S_%p"),
