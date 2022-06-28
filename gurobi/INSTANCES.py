@@ -9,10 +9,13 @@ from printsolution import write_solution_csv
 import sys
 
 # This writes our console output to a log file
+dirname = os.path.dirname(__file__)
 class Logger(object):
     def __init__(self):
         self.terminal = sys.stdout
-        self.log = open("logfile.log", "w")
+        if not os.path.exists(os.path.join(dirname, 'logs')):
+            os.makedirs('gurobi/logs')
+        self.log = open("gurobi/logs/logfile.log", "w")
 
     def write(self, message):
         self.terminal.write(message)
@@ -28,7 +31,6 @@ class Logger(object):
 sys.stdout = Logger()
 
 #paths
-dirname = os.path.dirname(__file__)
 ACOOLHEAD = os.path.join(dirname, './data-sources/data_from_Hannah_with_coordinates_zipcodes_heatcapacity_positive_building_count.csv')
 DISTRIBUTOR = os.path.join(dirname, './data-sources/Distributor_data_with_coordinates.csv')
 HEAT_PUMPS = os.path.join(dirname, './data-sources/heat_pumps_air_water_price.csv')
@@ -37,7 +39,8 @@ PARAMETERS = os.path.join(dirname, './data-sources/parameters.xlsx')
 
 #Parameters
 NUMBER_OF_YEARS = 12
-MIN_PERCENTAGE = 0.8 #actually not percentage :)
+operating_radius= 2000
+MIN_PERCENTAGE = 0.05 #actually not percentage :)
 CO2_EMISSION_GAS = 433 #g/kWh
 CO2_EMISSION_EON = 266 #g/kwh
 BOILER_EFFICIENCY = 0.7 #between 0 and 1
@@ -46,6 +49,7 @@ ELECTRICITY_PRICE_FACTOR = 0.2 #Compared to Initial Value
 CO2_PRIZE_FACTOR = 5 #Compared to Initial Value
 Max_Sales_Growth = 0.05 #per year
 Max_Sales_Initial = 1100000000 #units per year
+
 
 #Emission Prices can be either static welfare based values, or on the CO2 prices. We decided to consider more than the certificat price
 #then balanced with the welfare losses caused by climate change for current and future generations, alternatively 698E-6
@@ -63,15 +67,15 @@ gas_timefactor = np.linspace(1,GAS_PRIZE_FACTOR ,NUMBER_OF_YEARS) #The second fa
 CO2_timefactor = np.linspace(1,CO2_PRIZE_FACTOR ,NUMBER_OF_YEARS) #The second factor is the multiplying factor for the final value, so the price is x times the starting price
 max_sales = npf.fv(Max_Sales_Growth, np.linspace(0,NUMBER_OF_YEARS+1,NUMBER_OF_YEARS, dtype = int), 0, -Max_Sales_Initial) #Third value is fixed addition
 # get prepared data
-(districts, heatpumps, housing, fitness, distributors) = data_preprocess()
+(districts, heatpumps, housing, fitness, distributors, configurations) = data_preprocess(NUMBER_OF_YEARS, operating_radius)
 
 # solve model
 model = modelsolver.solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
           CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY, 
           CO2_EMISSION_PRICE, max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
-          electr_timefactor, gas_timefactor, CO2_timefactor)
+          electr_timefactor, gas_timefactor, CO2_timefactor, configurations)
 
 write_solution_csv(model, districts, heatpumps, housing, NUMBER_OF_YEARS, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
                    CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY,
                    CO2_EMISSION_PRICE, max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
-                   electr_timefactor, gas_timefactor, CO2_timefactor)
+                   electr_timefactor, gas_timefactor, CO2_timefactor, configurations)

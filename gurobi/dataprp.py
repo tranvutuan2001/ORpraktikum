@@ -1,8 +1,10 @@
 import pandas as pd
-from gurobipy import *
+from gurobipy import tuplelist
 import timeit
 import re
 import os
+from utilities import cal_dist
+
 
 dirname = os.path.dirname(__file__)
 ACOOLHEAD = os.path.join(dirname, './data-sources/data_from_Hannah_with_coordinates_zipcodes_heatcapacity_positive_building_count.csv')
@@ -11,8 +13,10 @@ HEAT_PUMPS = os.path.join(dirname, './data-sources/heat_pumps_air_water_price.cs
 FPOWDATA = os.path.join(dirname, './data-sources/fpow.csv')
 PARAMETERS = os.path.join(dirname, './data-sources/parameters.xlsx')
 
+
+
 # function calls and combines all other function except for prepare_params
-def data_preprocess():
+def data_preprocess(T, operating_radius):
     print("Prepare the data")
     start = timeit.default_timer()
 
@@ -34,7 +38,9 @@ def data_preprocess():
     stop = timeit.default_timer()
     print('Time to prepare the data: ', round(stop - start, 2), "s\n")
 
-    return districts, heatpump_data, housing_data, fitness_data, distributor_data
+    configurations = get_configurations(heatpump_data, housing_data, distributor_data, T, operating_radius)
+
+    return districts, heatpump_data, housing_data, fitness_data, distributor_data, configurations
 
 
 def prepare_fitness_on_run_time(M, I):
@@ -117,3 +123,46 @@ def prepare_distributor(df, RADIUS_OF_INTEREST=20, zipcodes_of_interest=None, ma
     else:
         return {i: list(distributors.values())[i] for i in range(
             len(distributors.values())) if i < max_entries}
+
+def get_configurations(heatpumps, housing, distributors, T, operating_radius):
+    """Generate the possible configurations for the model.
+       A configuration is possible only if the heatpump can fulfill the demand of the house and the house is in the operating radius of the distributor.
+
+    Args:
+        heatpumps (dict)
+        housing (dict)
+        distributors (dict)
+        T (dict)
+        operating_radius (int, optional). Defaults to 2000.
+
+    Returns:
+        _type_: _description_
+    """
+    configurations = tuplelist()
+    for m in heatpumps:
+        for i in housing:
+            produced_heat = heatpumps[m]['produced heat']
+            max_heat_demand = housing[i]['max_heat_demand_W/m^2']
+            if produced_heat >= max_heat_demand:
+                for d in distributors:
+                    dist = cal_dist((housing[i]['lat'], housing[i]['long']),
+                                    (distributors[d]['lat'], distributors[d]['long']))
+                    if dist <= operating_radius:
+                        for t in range(T):
+                            configurations.append((m, i, d, t))
+    initial_count = len(heatpumps) * len(housing) * len(distributors) * T
+    print("Variable set reduced to", round(
+        len(configurations) / initial_count * 100, 3), "%\n")
+
+    for m in heatpumps:
+        for i in housing:
+            produced_heat = heatpumps[m]['produced heat']
+            max_heat_demand = housing[i]['max_heat_demand_W/m^2']
+            if produced_heat >= max_heat_demand:
+                for d in distributors:
+                    dist = cal_dist((housing[i]['lat'], housing[i]['long']),
+                                    (distributors[d]['lat'], distributors[d]['long']))
+                    if dist <= operating_radius:
+                        configurations.append((m, i, d, -1))
+
+    return configurations

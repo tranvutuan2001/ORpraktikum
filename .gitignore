@@ -1,2 +1,4 @@
 node_modules
 .idea
+gurobi/solutions/solution.csv
+gurobi/logs
