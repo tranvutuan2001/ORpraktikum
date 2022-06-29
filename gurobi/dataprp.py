@@ -76,7 +76,7 @@ def prepare_housing_data(df, RADIUS_OF_INTEREST=None, max_entries=None, zipcodes
             'zipcode': df['zipcode'][i]
         }
         for i in range(len(df["long"]))
-        if len(str(df["zipcode"][i])) == 5 and re.match(zipcodes_of_interest, str(df["zipcode"][i]))
+        if len(str(df["zipcode"][i])) == 5 and (zipcodes_of_interest == None or re.match(zipcodes_of_interest, str(df["zipcode"][i])))
     }
 
     if max_entries is None:
@@ -116,7 +116,7 @@ def prepare_distributor(df, RADIUS_OF_INTEREST=20, zipcodes_of_interest=None, ma
             #TODO: later add max_installations
         }
         for i in range(len(df))
-        if len(str(df["zipcode"][i])) == 5 and re.match(zipcodes_of_interest, str(df["zipcode"][i]))
+        if len(str(df["zipcode"][i])) == 5 and (zipcodes_of_interest == None or re.match(zipcodes_of_interest, str(df["zipcode"][i])))
     }
     if max_entries is None:
         return distributors
