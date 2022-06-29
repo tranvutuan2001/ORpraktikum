@@ -11,7 +11,7 @@ dirname = os.path.dirname(__file__)
 known_distances = {}  # {(zipcode1, zipcode2): distance}
 
 
-def add_operating_radius(distributor_data_file=None, default_radius=150):
+def add_operating_radius(distributor_data_file=None, default_radius=70):
     """Adds the operating radius to the csv file. The radius is set to have a default value of 150km for 65% of the rows. 
 
     Args:
@@ -19,7 +19,7 @@ def add_operating_radius(distributor_data_file=None, default_radius=150):
         default_radius (int, optional): The default radius to use. Defaults to 150.
     """
     DISTRIBUTERS_DATA = distributor_data_file if distributor_data_file is not None else os.path.join(
-        dirname, "data-sources/Distributor_data.csv")
+        dirname, "data-sources", "Distributor_data_with_coordinates.csv")
     df = pd.read_csv(DISTRIBUTERS_DATA)
 
     # this will potentially overwrite existing values
@@ -27,20 +27,20 @@ def add_operating_radius(distributor_data_file=None, default_radius=150):
     df['operating radius'] = df['operating radius'].fillna(default_radius)
 
     df.to_csv(os.path.join(
-        dirname, "data-sources/Distributor_data_with_radius.csv"), index=False)
+        dirname, "data-sources/Distributor_data_with_coordinates.csv"), index=False)
 
     df['operating radius'] = df['operating radius'].astype(int)
 
     for i in tqdm(range(len(df))):
-        if i <= round(5 * len(df) / 100):
-            df.iloc[i, df.columns.get_loc('operating radius')] = 800
-        elif i <= round(5 * len(df) / 100) + round(10 * len(df) / 100):
-            df.iloc[i, df.columns.get_loc('operating radius')] = 400
-        elif i <= round(20 * len(df) / 100) + round(5 * len(df) / 100) + round(10 * len(df) / 100):
-            df.iloc[i, df.columns.get_loc('operating radius')] = 200
+        if i <= round(1 * len(df) / 100):
+            df.iloc[i, df.columns.get_loc('operating radius')] = None
+        elif i <= round(1 * len(df) / 100) + round(10 * len(df) / 100):
+            df.iloc[i, df.columns.get_loc('operating radius')] = 150
+        elif i <= round(20 * len(df) / 100) + round(1 * len(df) / 100) + round(10 * len(df) / 100):
+            df.iloc[i, df.columns.get_loc('operating radius')] = 100
 
     df.to_csv(os.path.join(
-        dirname, "data-sources/Distributor_data_with_radius.csv"), index=False)
+        dirname, "data-sources/Distributor_data_with_coordinates.csv"), index=False)
 
     print("Generated operating radius")
     print_radius_distributions(df)
@@ -181,13 +181,14 @@ def print_radius_distributions(df):
     Args:
         df (DataFrame): dataframe to print the distribution of the radius column
     """
-    print(round(len(df[df['operating radius'] == 200]) / len(df)
-                * 100, 2), "% of distributors have operating radius of 200")
-    print(round(len(df[df['operating radius'] == 400]) / len(df)
-                * 100, 2), "% of distributors have operating radius of 400")
-    print(round(len(df[df['operating radius'] == 800]) / len(df)
-                * 100, 2), "% of distributors have operating radius of 800")
+    print('Distribution of operating radius:')
+    # list of unique operating radius
+    unique_radius = df['operating radius'].unique()
+    for radius in unique_radius:
+        print(
+            f"{round(len(df[df['operating radius'] == radius]) / len(df)* 100, 2)}% of distributors have operating radius of {radius}")
 
 
-#  add_operating_radius()
-add_operating_districts(max_districts=15, operating_radius=800, sample_size=1)
+add_operating_radius()
+# add_operating_districts(
+# max_districts=15, operating_radius=np.nan, sample_size=1)

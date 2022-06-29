@@ -25,12 +25,12 @@ def data_preprocess(T, operating_radius):
     distributors_dataframe = pd.read_csv(DISTRIBUTOR)
 
     housing_data = prepare_housing_data(
-        housing_dataframe, max_entries=None, zipcodes_of_interest="^(5[0-3])"
+        housing_dataframe, max_entries=None,
     )
     districts = get_districts(housing_dataframe)
     heatpump_data = prepare_heatpump_data(heatpump_dataframe, max_entries=4)
     distributor_data = prepare_distributor(
-        distributors_dataframe, zipcodes_of_interest="^(5[0-3])", max_entries=10
+        distributors_dataframe,  max_entries=None
     )
     
     fitness_data = prepare_fitness_on_run_time(heatpump_data, housing_data)

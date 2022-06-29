@@ -197,6 +197,6 @@ def add_coordinates_to_csv():
     df.to_csv(os.path.join(
         dirname, "data-sources/Distributor_data_with_coordinates.csv"), index=False)
 
-# add_coordinates_to_csv()
+
+add_coordinates_to_csv()
 # add_zipcodes_to_csv()
-# add_coordinates_to_csv()
