@@ -19,7 +19,7 @@ def add_operating_radius(distributor_data_file=None, default_radius=70):
         default_radius (int, optional): The default radius to use. Defaults to 150.
     """
     DISTRIBUTERS_DATA = distributor_data_file if distributor_data_file is not None else os.path.join(
-        dirname, "data-sources", "Distributor_data_with_coordinates.csv")
+        dirname, "data-sources", "Distributor_data.csv")
     df = pd.read_csv(DISTRIBUTERS_DATA)
 
     # this will potentially overwrite existing values
@@ -27,7 +27,7 @@ def add_operating_radius(distributor_data_file=None, default_radius=70):
     df['operating radius'] = df['operating radius'].fillna(default_radius)
 
     df.to_csv(os.path.join(
-        dirname, "data-sources/Distributor_data_with_coordinates.csv"), index=False)
+        dirname, "data-sources/Distributor_data.csv"), index=False)
 
     df['operating radius'] = df['operating radius'].astype(int)
 
@@ -40,7 +40,7 @@ def add_operating_radius(distributor_data_file=None, default_radius=70):
             df.iloc[i, df.columns.get_loc('operating radius')] = 100
 
     df.to_csv(os.path.join(
-        dirname, "data-sources/Distributor_data_with_coordinates.csv"), index=False)
+        dirname, "data-sources/Distributor_data.csv"), index=False)
 
     print("Generated operating radius")
     print_radius_distributions(df)
@@ -62,7 +62,7 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
     """
 
     DISTRIBUTERS_DATA = distributor_data_file if distributor_data_file is not None else os.path.join(
-        dirname, "data-sources/Distributor_data_with_radius.csv")
+        dirname, "data-sources/Distributor_data.csv")
     ACOOLHEAD = districts_file if districts_file is not None else os.path.join(
         dirname, "data-sources/data_from_Hannah_with_coordinates_and_zipcodes.csv")
     if not os.path.isfile(DISTRIBUTERS_DATA):
