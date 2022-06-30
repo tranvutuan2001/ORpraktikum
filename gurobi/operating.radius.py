@@ -11,9 +11,8 @@ dirname = os.path.dirname(__file__)
 
 known_distances = {}  # {(zipcode1, zipcode2): distance}
 
-# https://www.waermepumpe.de/ uses shows
-
-
+# https://www.waermepumpe.de/ shows distributors in a radius of ~70 km in most cases, so well take that as our default.
+# A raduis of None indicates a german-wide range. Those are crucial for our scenario to ensure that we have a good coverage of the districts.
 def add_operating_radius(distributor_data_file=None, default_radius=70):
     """Adds the operating radius to the csv file. The radius is set to have a default value of 150km for 65% of the rows. 
 
