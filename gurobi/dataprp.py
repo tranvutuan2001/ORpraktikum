@@ -144,10 +144,12 @@ def get_configurations(heatpumps, housing, distributors, T, operating_radius):
             produced_heat = heatpumps[m]['produced heat']
             max_heat_demand = housing[i]['max_heat_demand_W/m^2']
             if produced_heat >= max_heat_demand:
+                district_name = housing[i]['Administrative district']
                 for d in distributors:
-                    dist = cal_dist((housing[i]['lat'], housing[i]['long']),
-                                    (distributors[d]['lat'], distributors[d]['long']))
-                    if dist <= operating_radius:
+                    # dist = cal_dist((housing[i]['lat'], housing[i]['long']),
+                    #                 (distributors[d]['lat'], distributors[d]['long']))
+                    # german wide supplier or district name is in operating districts
+                    if np.isnan(distributors[d]['operating radius']) or district_name in distributors[d]['operating districts']:
                         for t in range(T):
                             configurations.append((m, i, d, t))
     initial_count = len(heatpumps) * len(housing) * len(distributors) * T
