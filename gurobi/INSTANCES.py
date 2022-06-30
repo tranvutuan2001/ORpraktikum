@@ -28,7 +28,7 @@ class Logger(object):
         pass
 
 
-#sys.stdout = Logger()
+sys.stdout = Logger()
 
 #paths
 ACOOLHEAD = os.path.join(dirname, './data-sources/data_from_Hannah_with_coordinates_zipcodes_heatcapacity_positive_building_count.csv')
