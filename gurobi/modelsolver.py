@@ -39,7 +39,7 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
         "long" (str): longitude of company location
         "lat" (str): latitude of company location
         "zipcode" (int) : zipcode
-        "max_installations" (int): #TODO amount of possible total heat pump installation by the company per year
+        "max_installations" (int):  amount of possible total heat pump installation by the company per year
 
     __________________________________________________________________________________________________________
 
@@ -101,7 +101,11 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     # removed because this is handled by get_configurations
 
     # Constraint 6: Respect max_installations capacity
-    # TODO: implement the constraint "yearly workforce <= qty of heat pumps installed by the distributor"
+    # yearly workforce <= qty of heat pumps installed by the distributor
+    for t in range(T):
+        for d in index_distributor:
+             model.addConstr( quicksum(
+                x[m, i, d, t] for m, i, _, _ in P.select("*", "*", d, t)) <= distributors[d]['max_installations'], name="C6")
 
     # Constraint 7: x[p] is a cumulative value
     for t in range(T):
