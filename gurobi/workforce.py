@@ -9,17 +9,17 @@ df_distributor = pd.read_csv(DISTRIBUTOR)
 
 # https://www.isoenergy.co.uk/latest-news/renewable-energy-news-from-isoenergy/how-long-will-it-take-to-have-a-heat-pump-installed#:~:text=A%20domestic%20air%20source%20heat,setting%20the%20system%20to%20work.
 # installation performed by 2 plumbers, 1 eletrician in the first week and then 2 tester in the second week. 
-# our assumption:  team of 3 workers can install 1 heat pump per week. 
+# our assumption:  team of 2 workers can install 1 heat pump per week. 
 
 
-N3 = 40
-N2 = 10
-N1= 5
-N0= 3
+N3 = 60
+N2 = 30
+N1= 10
+N0= 6
 
 n = df_distributor['operating radius'].value_counts(dropna=False).to_list()
 print(n)
-print( str( (N3*n[3] + N2*n[2]+N1*n[1] + N0*n[0])*3 ) +   "   employees for German heat pump (installation) sector in 2022")
+#print( str( (N3*n[3] + N2*n[2]+N1*n[1] + N0*n[0])*3 ) +   "   employees for German heat pump (installation) sector in 2022")
  
 
 
@@ -74,8 +74,8 @@ df_distributor.loc[df_distributor['operating radius'] == 70, 'workforce'] = N0
 # df_distributor['workforce_rv'] = df_distributor['workforce']+ df_distributor['rv']
 # df_distributor.drop(columns='rv',inplace=True)
 
-# 50 week /year for work
-df_distributor['max_installations'] = df_distributor['workforce'] * 50 
+# 50 weeks/year workweeks. Installation in a team of 2 workers with a capacity of 1 hp/week
+df_distributor['max_installations'] = df_distributor['workforce'] * 50 / 2
 #df_distributor['max_installations_rv'] = df_distributor['workforce_rv'] * 50 
 
 df_distributor.to_csv(os.path.join(
