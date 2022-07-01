@@ -111,6 +111,7 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
     # save the dataframe
     df.to_csv(os.path.join(
         dirname, "data-sources/test.csv"), index=False)
+    check_coverage(df, df_acoolhead)
 
 
 def get_operating_districts(districts, lat, lng, op_radius=100, timeout=120, max_districts=None, sample_size=1):
@@ -210,6 +211,23 @@ def print_radius_distributions(df):
         print(
             f"{round(len(df[df['operating radius'] == radius]) / len(df)* 100, 2)}% of distributors have operating radius of {radius}")
 
+
+def check_coverage(df, df_districts):
+    """Checks if how many districts are covered by the distributers that have an operating radius that is not None
+
+    """
+    df = df.notna()
+    # get the set of all operating districts
+    operating_districts = set()
+    for i in range(len(df)):
+        operating_districts.update(df.iloc[i, df.columns.get_loc(
+            'operating districts')].split(';'))
+
+    # get the unique Administrative districts
+    unique_districts = set(df_districts['Administrative District'].unique())
+    # missing districts
+    missing_districts = unique_districts - operating_districts
+    print(f"{len(missing_districts)} districts are not covered by the distributors")
 
 # add_operating_radius()
 add_operating_districts(sample_size=1)
