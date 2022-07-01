@@ -7,7 +7,6 @@ from dataprp import data_preprocess
 import os
 from printsolution import write_solution_csv
 import sys
-from datetime import datetime
 
 # This writes our console output to a log file
 dirname = os.path.dirname(__file__)
@@ -15,9 +14,8 @@ class Logger(object):
     def __init__(self):
         self.terminal = sys.stdout
         if not os.path.exists(os.path.join(dirname, 'logs')):
-            os.makedirs('./logs')
-        current_time = datetime.now()
-        self.log = open(f'./logs/{current_time.day}_{current_time.month}_{current_time.year}_{current_time.hour}h{current_time.minute}m{current_time.second}s.log', "w")
+            os.makedirs('gurobi/logs')
+        self.log = open("gurobi/logs/logfile.log", "w")
 
     def write(self, message):
         self.terminal.write(message)
@@ -30,11 +28,11 @@ class Logger(object):
         pass
 
 
-sys.stdout = Logger()
+#sys.stdout = Logger()
 
 #paths
 ACOOLHEAD = os.path.join(dirname, './data-sources/data_from_Hannah_with_coordinates_zipcodes_heatcapacity_positive_building_count.csv')
-DISTRIBUTOR = os.path.join(dirname, './data-sources/Distributor_data_with_coordinates.csv')
+DISTRIBUTOR = os.path.join(dirname, './data-sources/Distributor_data_with_workforce.csv')
 HEAT_PUMPS = os.path.join(dirname, './data-sources/heat_pumps_air_water_price.csv')
 FPOWDATA = os.path.join(dirname, './data-sources/fpow.csv')
 PARAMETERS = os.path.join(dirname, './data-sources/parameters.xlsx')
@@ -51,11 +49,12 @@ ELECTRICITY_PRICE_FACTOR = 0.2 #Compared to Initial Value
 CO2_PRIZE_FACTOR = 5 #Compared to Initial Value
 Max_Sales_Growth = 0.05 #per year
 Max_Sales_Initial = 1100000000 #units per year
-
+WORKFORCE_FACTOR = 1.29  # increased by at least 29% per year to meet the MIN_PERCENTAGE.
+ 
 
 #Emission Prices can be either static welfare based values, or on the CO2 prices. We decided to consider more than the certificat price
 #then balanced with the welfare losses caused by climate change for current and future generations, alternatively 698E-6
-CO2_EMISSION_PRICE = 201E-6  # euro/gramm,  suggestion by German Environment Agency euro/gram,
+CO2_EMISSION_PRICE = 201E-6  # euro/gramm,  suggestion by German Environment Agency euro/gram,  
 
 # from https://www.globalpetrolprices.com/Germany/natural_gas_prices/
 AVERAGE_BOILER_COST_PER_UNIT = 0.13
@@ -73,9 +72,9 @@ max_sales = npf.fv(Max_Sales_Growth, np.linspace(0,NUMBER_OF_YEARS+1,NUMBER_OF_Y
 
 # solve model
 model = modelsolver.solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
-          CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY,
+          CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY, 
           CO2_EMISSION_PRICE, max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
-          electr_timefactor, gas_timefactor, CO2_timefactor, configurations)
+          electr_timefactor, gas_timefactor, CO2_timefactor, configurations, WORKFORCE_FACTOR)
 
 write_solution_csv(model, districts, heatpumps, housing, NUMBER_OF_YEARS, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
                    CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY,
