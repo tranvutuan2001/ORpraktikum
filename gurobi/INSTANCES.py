@@ -17,11 +17,11 @@ class Logger(object):
         if not os.path.exists(os.path.join(dirname, 'logs')):
             os.makedirs('./logs')
         current_time = datetime.now()
-        self.log = open(f'./logs/{current_time.day}_{current_time.month}_{current_time.year}_{current_time.hour}h{current_time.minute}m{current_time.second}s.log', "w")
+        # self.log = open(f'./logs/{current_time.day}_{current_time.month}_{current_time.year}_{current_time.hour}h{current_time.minute}m{current_time.second}s.log', "w")
 
     def write(self, message):
         self.terminal.write(message)
-        self.log.write(message)
+        # self.log.write(message)
 
     def flush(self):
         # this flush method is needed for python 3 compatibility.

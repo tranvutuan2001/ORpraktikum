@@ -4,11 +4,12 @@ import timeit
 import re
 import os
 from utilities import cal_dist
+import numpy as np
 
 
 dirname = os.path.dirname(__file__)
 ACOOLHEAD = os.path.join(dirname, './data-sources/data_from_Hannah_with_coordinates_zipcodes_heatcapacity_positive_building_count.csv')
-DISTRIBUTOR = os.path.join(dirname, './data-sources/Distributor_data_with_workforce.csv')
+DISTRIBUTOR = os.path.join(dirname, './data-sources/Distributor_data.csv')
 HEAT_PUMPS = os.path.join(dirname, './data-sources/heat_pumps_air_water_price.csv')
 FPOWDATA = os.path.join(dirname, './data-sources/fpow.csv')
 PARAMETERS = os.path.join(dirname, './data-sources/parameters.xlsx')
@@ -114,7 +115,9 @@ def prepare_distributor(df, RADIUS_OF_INTEREST=20, zipcodes_of_interest=None, ma
             'long': df['long'][i],
             'lat':  df['lat'][i],
             'op_r': df['operating radius'][i],
-            'max_installations': df['max_installations'][i]
+            'max_installations': df['max_installations'][i],
+            'operating radius': df['operating radius'][i],
+            'operating districts': df['operating districts'][i]
         }
         for i in range(len(df))
         if len(str(df["zipcode"][i])) == 5 and (zipcodes_of_interest == None or re.match(zipcodes_of_interest, str(df["zipcode"][i])))
