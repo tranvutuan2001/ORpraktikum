@@ -342,7 +342,7 @@ RK-Haustechnik GmbH,"86343 Königsbrunn, Germany",86343,48.26094685,10.885834557
 Robert Frenzel Sanitärinstallations- und Heizungsbau GmbH,"27619 Schiffdorf-Spaden, Germany",27619,53.54569511658478,8.671585249027254,70.0,WittmundLand;StadeLand;AmmerlandLand;DiepholzLand
 Roland Gageur Elektrotechnik GmbH,"22399 Hamburg, Germany",22399,53.66383835400708,10.07222290568866,70.0,StadeLand;KielLandeshauptstadt
 Roland Hellmann GmbH,"42857 Remscheid, Germany",42857,51.17330656514413,7.163827766990149,70.0,Steinfurt;Euskirchen;LeverkusenStadt;Rhein_Erft_;Coesfeld
-Rose Elektrotechnik GmbH,"17094 Burg Stargard, Germany",17094,53.49269455620858,13.302271999205756,70.0,
+Rose Elektrotechnik GmbH,"17094 Burg Stargard, Germany",17094,53.49269455620858,13.302271999205756,70.0,nan
 Roter Kältetechnik GmbH,"30855 Langenhagen, Germany",30855,52.4581620272725,9.71211291325677,70.0,Minden_Luebbecke;BraunschweigStadt;GifhornLand
 ROTEX Heating Systems GmbH,"74363 Güglingen, Germany",74363,49.06806048803568,9.012564783491383,70.0,DonnersbergLand;BodenseeLand;BadKissingenLand;MannheimUniversitaetsstadt
 ROTH INDUSTRIES GMBH & CO. KG,"35232 Dautphetal, Germany",35232,50.85216556642339,8.578614910328774,70.0,KoblenzStadt;Kasseldocumenta_Stadt;Darmstadt_DieburgLand;AschaffenburgLand;Main_Taunus_Land
@@ -356,100 +356,100 @@ Sanitär- & Heizungstechnik Alfons Höke,"45527 Hattingen, Germany",45527,51.374
 Sanitär-Heizung-Solartechnik Inh. Peer Schreiner,"59071 Hamm, Germany",59071,51.672150099999996,7.901836743513671,70.0,Waldeck_FrankenbergLand;MuelheimanderRuhrStadt;Kasseldocumenta_Stadt;SchaumburgLand;HagenStadt
 Sanitärinstallation Hesse GmbH,"01277 Dresden, Germany",1277,51.03733328440829,13.798796977084224,70.0,ChemnitzStadt
 Sanitärtechnik- Großhandel Reinwald Wagner GmbH,"09514 Lengefeld, Germany",9514,50.731083246661996,13.20168972703138,70.0,ErzgebirgsLand;AltenburgerLandLand
-Schäffer Haustechnik GmbH,"86348 Kissing, Germany",86348,,,70.0,
-Scharf GmbH & Co.KG,"64291 Darmstadt, Germany",64291,49.91533383398797,8.657133269360619,70.0,Aschaffenburg;WiesbadenLandeshauptstadt;DonnersbergLand;Dingolfing_LandauLand;WetterauLand
-Scheffel GmbH & Co. KG,"71277 71277, Germany",71277,48.81094395,8.926513146569139,70.0,TuttlingenLand;Neu_UlmLand;Rhein_Neckar_Land;MannheimUniversitaetsstadt
-Scheimann Haustechnik GmbH & Co.KG,"12247 Berlin, Germany",12247,52.43894820000001,13.347686072403539,70.0,Potsdam_MittelmarkLand
-Schenk Sanitär- und Heizungstechnik GmbH,"13437 Berlin, Germany",13437,52.5920686,13.324557725803153,70.0,UckermarkLand
-"Schlecht Flaschnerei, Sanitär, Heizung","88471 Laupheim, Germany",88471,48.23717186769581,9.901195768848584,70.0,LindauBodenseeLand;HarburgLand;Memmingen;CalwLand
-Schlecht GmbH,"94234 Viechtach, Germany",94234,49.09077375,12.923882574101086,70.0,SchwandorfLand;VerdenLand
-"Schmidt Heizung, Sanitär, Solar Freiberg GmbH","09599 Freiberg, Germany",9599,50.91276817184097,13.339268253007527,70.0,MeißenLand;MittelsachsenLand
-Schmidt+Eger GmbH,"76227 Karlsruhe, Germany",76227,48.9952322662967,8.467449712324074,70.0,StuttgartLandeshauptstadt;ZollernalbLand;NeunkirchenLand;HeilbronnLandLand;BoeblingenLand
-SCHÖNECKER Gebäudetechnik GmbH,"79110 Freiburg, Germany",79110,48.01580443485866,7.816799330535133,70.0,KonstanzLand;Baden_BadenStadtStadt
-Schwedisches Wärmepumpen Center,"03042 Cottbus, Germany",3042,51.75595702317929,14.362796708649347,70.0,Oberspreewald_LausitzLand;CottbusStadt;MeißenLand
-Schwering GmbH,"46286 Dorsten-Rhade, Germany",46286,51.73752594820497,7.000307438813107,70.0,Heinsberg;BochumStadt;HagenStadt;OsnabrueckStadt;Ennepe_Ruhr_
-Schwuchow Sanitär- und Heizungs GmbH,"12107 Berlin, Germany",12107,52.42826875,13.396522187601605,70.0,BerlinBundesland;Teltow_FlaemingLand;Elbe_ElsterLand;BurgenlandLand;MagdeburgLandeshauptstadt
-seepex GmbH,"46240 Bottrop, Germany",46240,51.54250187454598,6.945389400523268,70.0,Coesfeld;AltenkirchenWesterwald;Mettmann;Ennepe_Ruhr_;KrefeldStadt
-Selz & Cie GmbH,"69126 Heidelberg, Germany",69126,49.376832133155354,8.690933393159426,70.0,LudwigshafenamRheinStadt;FrankfurtamMainStadt;MannheimUniversitaetsstadt;AschaffenburgLand;Rhein_Neckar_Land
-SH Siegerland -SHK Gebäudetechnik,"57258 Freudenberg, Germany",57258,50.89707618615618,7.896759030674017,70.0,OdenwaldLand;OberhausenStadt;WiesbadenLandeshauptstadt;MoenchengladbachStadt;Unna
-SHK Brodde,"48431 Rheine, Germany",48431,52.275526,7.4263621001627005,70.0,BielefeldStadt;OsnabrueckStadt
-Siebert Gebäudetechnik GmbH & Co. KG,"34376 Immenhausen, Germany",34376,51.43404365,9.481462955368736,70.0,GothaLand;Hameln_PyrmontLand;Unna;Herford
-Siegmund & Schulze GmbH,"12524 Berlin, Germany",12524,52.41179,13.548143876466167,70.0,Potsdam_MittelmarkLand;Oder_SpreeLand;CottbusStadt
-Silbereis GmbH,"69226 Nußloch, Germany",69226,49.32435271383889,8.688085713178133,70.0,LudwigsburgLand;RastattLand;NeustadtanderWeinstraße;PirmasensStadt
-SINA GmbH,"45239 Essen-Werden, Germany",45239,51.38590086342619,7.012700924034778,70.0,KoelnStadt;MoenchengladbachStadt;HammStadt;EmslandLand
-Solartec Röder GmbH,"63607 Wächtersbach, Germany",63607,50.264238515060605,9.296386317573523,70.0,MiltenbergLand;Main_SpessartLand;Rhein_Hunsrueck_Land;HeidelbergStadtStadt;Aschaffenburg
-Sparka Heizung-Sanitär-Klimatechnik,"46147 Oberhausen, Germany",46147,51.54270824966082,6.814471072802732,70.0,DortmundStadt;Olpe;OsnabrueckStadt;Rhein_Sieg_;EssenStadt
-Speck Gebäudetechnik GmbH,"31311 Uetze, Germany",31311,52.45807897943923,10.160032362671094,70.0,Herford;LueneburgLand
-Stenzel GmbH,"72760 Reutlingen, Germany",72760,48.51056055922193,9.204636901532034,70.0,ReutlingenLand;KarlsruheStadtStadt;Dingolfing_LandauLand
-Stephan Simon MEISTER Heizungsbau & Sanitärtechnik,"63073 Offenbach am Main, Germany",63073,50.087265350298175,8.807431052035156,70.0,Siegen_Wittgenstein;KoblenzStadt
-Stöckicht GmbH Inh. me. Gerald Schwalbach,"65201 Wiesbaden, Germany",65201,50.05297929511993,8.184961236413107,70.0,OffenbachamMainStadt;GrafschaftBentheimLand;Darmstadt;MainzStadt
-Stoltenberg Energie GmbH,"24217 Schönberg, Germany",24217,54.40152236160996,10.3726234421455,70.0,Ploen;Pinneberg
-Streicher GmbH - Heizung - Sanitär,"71720 Oberstenfeld, Germany",71720,49.02774327168206,9.330927250115398,70.0,GoeppingenLand;HaßbergeLand;SchwaebischHallLand;UlmUniversitaetsstadtStadt;Darmstadt_DieburgLand
-Strobel GmbH,"72654 Neckartenzlingen, Germany",72654,48.58466415,9.244140040439877,70.0,LudwigsburgLand;BirkenfeldLand;HeilbronnStadtStadt;GoeppingenLand
-STULZ GmbH,"22457 Hamburg, Germany",22457,53.63755925783188,9.911021378607174,70.0,Rendsburg_Eckernfoerde;FlensburgStadt
-Süwag Energie AG,"65929 Frankfurt am Main, Germany",65929,50.10733100329648,8.54034526315714,70.0,Rheingau_Taunus_Land;Aschaffenburg;MiltenbergLand;WormsStadt;Mayen_KoblenzLand
-Team Gruner,"32120 Hiddenhausen, Germany",32120,52.1558576,8.641268352486497,70.0,Unna;Hoexter;Steinfurt;VechtaLand;BielefeldStadt
-TECHMASTER GmbH,"72379 Hechingen, Germany",72379,48.35438889208323,8.966252713872871,70.0,Breisgau_Hochschwarzwald;BirkenfeldLand;KarlsruheStadtStadt;BiberachLand;Neckar_Odenwald_
-teraqsoltec solar,"12687 Berlin, Germany",12687,52.5566249,13.568686168250167,70.0,BarnimLand
-tetec thermo-technik Müller GmbH & Co. KG,"85386 Eching, Germany",85386,48.29873195,11.613584126603465,70.0,OstallgaeuLand;Saale_Holzland_Land;Pfaffenhofena.d.IlmLand;HarburgLand;Weißenburg_Gunzenhausen
-Teucher GmbH,"09456 Arnsfeld, Germany",9456,50.5773179,13.058480449557026,70.0,Hof
-tga-service gmbh,"64372 Ober-Ramstadt, Germany",64372,49.8191469,8.753831940856443,70.0,PforzheimStadtStadt;SuedwestpfalzLand;OffenbachLand;Main_Tauber_Land;MannheimUniversitaetsstadt
-Thomas Gerold GmbH,"83707 Bad Wiessee-Ringsee, Germany",83707,47.70540485,11.702358922769294,70.0,Weideni.d.OPf.;TraunsteinLand
-Thorsten Kißler Heizung & Sanitär,"67133 Maxdorf, Germany",67133,49.48710955,8.291270825110098,70.0,Dingolfing_LandauLand;LudwigshafenamRheinStadt
-Torsten Böres GmbH,"55606 Oberhausen, Germany",55606,49.778942222214546,7.508845865349758,70.0,Saarpfalz_Land;Merzig_WadernLand;AhrweilerLand;VulkaneifelLand;NeustadtanderWeinstraße
-Torsten Kühl Gas- und Wasserinstallateurmeister,"01640 Coswig, Germany",1640,51.13294032060414,13.574042778331284,70.0,NordsachsenLand;Groß_GerauLand;SaechsischeSchweiz_Osterz;BautzenLand;DresdenStadt
-Trane Klima- und Kältetechnisches Büro GmbH,"82152 Krailling, Germany",82152,48.0984515,11.427428224225945,70.0,LandsbergamLechLand;Muehldorfa.InnLand;RosenheimLandLand;Weilheim_SchongauLand
-TRAUB GmbH & Co. Haustechnik KG,"82031 Grunwald, Germany",82031,48.04628985,11.53037938457634,70.0,Rosenheim;Muehldorfa.InnLand;SaaleLand;AugsburgLandLand;Ingolstadt
-Ullmann Heizungsbau GmbH,"01844 Neustadt, OT Langburkersdorf, Germany",1844,51.03242570000001,14.224107597604851,70.0,MeißenLand
-Upmeyer Haustechnik GmbH,"49525 Lengerich, Germany",49525,52.16615925,7.837779570123027,70.0,EssenStadt;Herford;Borken;Soest;RemscheidStadt
-Uponor GmbH,"97437 Hassfurt, Germany",97437,50.042783,10.508615785843995,70.0,Bayreuth;KitzingenLand;SonnebergLand
-Uwe Felsmann GmbH,"64342 Seeheim, Germany",64342,49.76105295,8.664219196386396,70.0,RastattLand;WormsStadt;MiltenbergLand;AschaffenburgLand;KuselLand
-Uwe Zimmer Heizung - Sanitär - Dachklempnerarbeiten,"15295 Brieskow-Finkenheerd, Germany",15295,52.24081815,14.592811453849688,70.0,BerlinBundesland;OberhavelLand
-Versorgungstechnik BSK GmbH,"02625 Bautzen, Germany",2625,51.1812160437654,14.430411527013819,70.0,ChemnitzStadt
-Volker Blunck GmbH - Heizung - Sanitär - Elektro,"24306 Bösdorf, Germany",24306,54.16196437475096,10.422804842511788,70.0,Dithmarschen;LueneburgLand
-Volker Kosack - Installateur- & Heizungsbaumeister,"52080 Aachen, Germany",52080,50.7868709001491,6.1483466226711325,70.0,WuppertalStadt;Maerkischer;EssenStadt;GrafschaftBentheimLand;DuisburgStadt
-VWT Wärmetechnik GmbH,"55129 Mainz, Germany",55129,49.9516888822223,8.269561663076253,70.0,FrankfurtOderStadt;Limburg_WeilburgLand;AschaffenburgLand;Rhein_Pfalz_Land;RegionalverbandSaarbruecken
-W. Förster GmbH,"99198 Erfurt-Büßleben, Germany",99198,51.0272819260234,11.130112980559664,70.0,Coburg;ErfurtStadt
-W. Köthe GmbH,"30519 Hanover, Germany",30519,52.33844672842099,9.779054788104089,70.0,Minden_Luebbecke;PeineLand;BoerdeLand;Hameln_PyrmontLand;Luechow_DannenbergLand
-Wagenhäuser GmbH,"97437 Haßfurt, Germany",97437,50.042783,10.508615785843995,70.0,HaßbergeLand;Wunsiedeli.Fichtelgebirge;Erlangen_HoechstadtLand;Neumarkti.d.OPf.Land
-Walter Falk GmbH,"73252 Lenningen, Germany",73252,48.54883220000001,9.509145861108367,70.0,Alb_Donau_Land;Main_Tauber_Land;EsslingenLand;PforzheimStadtStadt
-Walter Fehring GmbH,"33014 Bad Driburg, Germany",33014,51.723744247817905,9.028156820722128,70.0,Warendorf;Lippe;OsnabrueckLand;RegionHannoverLand;Kasseldocumenta_Stadt
-Walter Gräfenstein GmbH,"45473 Mülheim an der Ruhr, Germany",45473,51.44401451275198,6.898269913775183,70.0,LeverkusenStadt;SolingenStadt;Recklinghausen
-Walter Langen KG,"54294 Trier, Germany",54294,49.73826062390076,6.613071471223,70.0,Merzig_WadernLand;VulkaneifelLand;GrafschaftBentheimLand
-Wärme mit System.de Ltd.,"36341 Lauterbach (Hessen), Germany",36341,50.64090785,9.35525261380022,70.0,EisenachStadt;Schmalkalden_Meiningen
-Wärmetechnik Leickel GmbH,"44653 Herne, Germany",44653,51.54364638935319,7.1608512759869125,70.0,Mettmann;RemscheidStadt;Unna
-WätaS Wärmetauscher Sachsen GmbH,"09526 Olbernhau, Germany",9526,50.672133380046816,13.344070529384586,70.0,SaechsischeSchweiz_Osterz
-"Weber GmbH, Elektro- und Solaranlagen","74078 Heilbronn-Kirchhausen, Germany",74078,49.17503491101242,9.162449312278756,70.0,HohenloheLand;KaiserslauternStadt;FreudenstadtLand;AhrweilerLand;Wuerzburg
-Weisky & Co. GmbH,"83352 Altenmarkt, Germany",83352,47.99844605,12.511632684539794,70.0,MuenchenLandLand;TraunsteinLand
-Wenzel & Herzog GmbH,"15890 Schlaubetal / OT Fünfeichen, Germany",15890,52.16005045,14.571117922279706,70.0,Oberspreewald_LausitzLand;Maerkisch_OderlandLand
-Werner Peters GmbH,"46485 Wesel, Germany",46485,51.665973765835005,6.644380459407362,70.0,BonnStadt;BochumStadt;LeverkusenStadt;Heinsberg;Mettmann
-Werner Wallraff GmbH & Co.KG,"48157 Munster, Germany",48157,51.995986400171915,7.680717235070642,70.0,BochumStadt;MuensterStadt;CloppenburgLand;DiepholzLand
-Werrlein GmbH & Co.KG,"91443 Scheinfeld, Germany",91443,49.67021355,10.4684880696984,70.0,Schweinfurt;Neumarkti.d.OPf.Land;BayreuthLandLand;KulmbachLand
-Wessel & Tyc Haustechnik GmbH,"28279 Bremen, Germany",28279,53.04047020894537,8.847183565260249,70.0,RotenburgWuemmeLand;HamburgBundesland;DiepholzLand
-Weyher Haustechnik GmbH,"28844 Weyhe, Germany",28844,52.98475952927596,8.845120708002035,70.0,DiepholzLand;OsterholzLand;CuxhavenLand;AmmerlandLand;OldenburgOldenburgStadt
-Willi Hammer GmbH - Sanitär Heizung Solar,"75181 Pforzheim-Eutingen, Germany",75181,48.8738261,8.765233532673923,70.0,LandauinderPfalzStadt;MannheimUniversitaetsstadt;GoeppingenLand;HeilbronnStadtStadt;Darmstadt_DieburgLand
-Willig Gas - Wasser - Wärme,"64283 Darmstadt, Germany",64283,49.870095674067706,8.653086493313005,70.0,Neustadta.d.Waldnaab;DonnersbergLand;KarlsruheStadtStadt;Main_Tauber_Land;WetterauLand
-WILO SE,"44263 Dortmund, Germany",44263,51.48954256743802,7.503768132969682,70.0,DuesseldorfStadt;Waldeck_FrankenbergLand;Soest;DuisburgStadt;MoenchengladbachStadt
-Winfried Zahnen Gas- und Wasserinstallateurmeister,"54595 Watzerath, Germany",54595,50.21129084970681,6.419952873789955,70.0,SolingenStadt
-Wittemann GmbH,"76297 Stutensee-Friedrichstal, Germany",76297,49.08467320544047,8.481765478387326,70.0,SuedwestpfalzLand;FrankenthalPfalzStadt;Main_Kinzig_Land;FreiburgimBreisgauStadt;MiltenbergLand
-"Woermann & Söhne, sanitäre Anlagen und Heizung GmbH","14163 Berlin (Berlin-Zehlendorf), Germany",14163,52.4372333,13.241466027255047,70.0,AltmarkSalzwedelLand;Anhalt_BitterfeldLand;BarnimLand;BrandenburganderHavel;BurgenlandLand
-Wolfgang Kozian Heizungsbau GmbH,"63128 Dietzenbach, Germany",63128,50.01079975,8.790729524494951,70.0,AhrweilerLand;AltenkirchenWesterwald;Alzey_WormsLand;Aschaffenburg;BadDuerkheimLand
-Würth Elektrogroßhandel GmbH & Co. KG,"91522 Ansbach, Germany",91522,49.28887445,10.55976933809508,70.0,Aichach_FriedbergLand;Alb_Donau_Land;Amberg;Ansbach;AnsbachLandLand
-Wust & Heck GmbH,"55471 Reich / Hunsrück, Germany",55471,49.98638590590153,7.446717489006335,70.0,AhrweilerLand;AltenkirchenWesterwald;Alzey_WormsLand;Aschaffenburg;BadDuerkheimLand
-Zdoniak Elektrotechnik,"23936 Grevesmühlen, Germany",23936,53.83826208315358,11.195553764592443,70.0,Ostholstein
-Zinnenlauf Service GmbH,"40472 Düsseldorf, Germany",40472,51.272641027116244,6.807200021807968,70.0,AltenkirchenWesterwald;BochumStadt;BonnStadt;Borken;BottropStadt
-Zita Jacobs GmbH,"66740 Saarlouis, Germany",66740,49.31947657036562,6.75308444097593,70.0,Alzey_WormsLand;BadDuerkheimLand;Bernkastel_WittlichLand
-ZLE Ehrlich GmbH,"76532 Baden-Baden, Germany",76532,48.8031151,8.208848972746503,70.0,Alzey_WormsLand;Baden_BadenStadtStadt;BirkenfeldLand;BoeblingenLand
-ZOGEL GmbH,"38300 Wolfenbüttel, Germany",38300,52.15639204447906,10.554439097123396,70.0,AltmarkSalzwedelLand;BraunschweigStadt;BurgenlandLand
-ZWS Zukunftsorientierte Wärme Systeme GmbH,"47506 Neukirchen-Vluyn, Germany",47506,51.43527775,6.5506149917785335,70.0,AltenkirchenWesterwald;BochumStadt;BonnStadt;Borken;BottropStadt
-ELITEC Elektrische Industrietechnik GmbH,"64653 Lorsch, Germany",64653,49.6426967,8.556536015454096,70.0,AhrweilerLand;Alzey_WormsLand;Aschaffenburg;BadDuerkheimLand;BirkenfeldLand
-Kälte-Aktiv Team GmbH,"91154 Roth, Germany",91154,49.23688415,11.118101625557133,70.0,Aichach_FriedbergLand;Amberg;Ansbach;Augsburg;BadToelz_Wolfratshausen
-Remko GmbH & Co. KG,"32791 Lage, Germany",32791,51.98650021960944,8.784133580599393,70.0,BielefeldStadt;BochumStadt
-Carl Mettler Elektrogroßhandels-GmbH,"66117 Saarbrücken, Germany",66117,49.2279998876929,6.9756571483495655,70.0,AhrweilerLand;Alzey_WormsLand;BadDuerkheimLand;Bernkastel_WittlichLand
-H2 Umwelttechnik GbR,"52428 Jülich, Germany",52428,50.92898835,6.3602062087263205,70.0,AltenkirchenWesterwald;BochumStadt;BonnStadt;Borken;BottropStadt
-Nesseler + Esser GmbH & Co. KG,"50389 Wesseling, Germany",50389,50.81590634608205,6.977998337090839,70.0,AltenkirchenWesterwald;Bernkastel_WittlichLand;BochumStadt;BonnStadt;Borken
-Neukälte Kälte- Klima- und Wärmepumpen GmbH,"66292 Riegelsberg, Germany",66292,49.30878835158418,6.935701052781655,70.0,Alzey_WormsLand;BadDuerkheimLand;Bernkastel_WittlichLand
-Schalk GmbH secespol deutschland gmbh,"86500 Kutzenhausen, Germany",86500,48.3538739,10.679009437129745,70.0,Aichach_FriedbergLand;Alb_Donau_Land;Augsburg;BadToelz_Wolfratshausen;BergstraßeLand
-Secespol Deutschland gmbh,"45141 Essen, Germany",45141,51.47450091374141,7.0264283015827775,70.0,AltenkirchenWesterwald;BielefeldStadt;BochumStadt;BonnStadt;Borken
-Maxhütte Technologie GmbH & Co. KG,"92237 Sulzbach-Rosenberg, Germany",92237,49.51259165,11.728330663641984,70.0,Amberg;Ansbach;Bamberg;Bayreuth
-Viessmann Werke GmbH & Co. KG,"35108 Allendorf (Eder), Germany",35108,51.0383128,8.683138839169864,70.0,AltenkirchenWesterwald
+Schäffer Haustechnik GmbH,"86348 Kissing, Germany",86348,48.3027,10.9726,70.0,Aichach_FriedbergLand;Augsburg;FuerstenfeldbruckLand;DachauLand;LandsbergamLechLand;BadToelz_Wolfratshausen;Neuburg_Schrobenhausen;Pfaffenhofena.d.IlmLand;StarnbergLand;BergstraßeLand
+Scharf GmbH & Co.KG,"64291 Darmstadt, Germany",64291,49.91533383398797,8.657133269360619,70.0,Darmstadt;OdenwaldLand;FrankfurtamMainStadt;AhrweilerLand;MainzStadt;Rheingau_Taunus_Land;WiesbadenLandeshauptstadt;WormsStadt;AschaffenburgLand;MannheimUniversitaetsstadt
+Scheffel GmbH & Co. KG,"71277 71277, Germany",71277,48.81094395,8.926513146569139,70.0,PforzheimStadtStadt;BoeblingenLand;CalwLand;LudwigsburgLand;StuttgartLandeshauptstadt;BirkenfeldLand;Rems_Murr_Land;EsslingenLand;TuebingenLand;KarlsruheStadtStadt
+Scheimann Haustechnik GmbH & Co.KG,"12247 Berlin, Germany",12247,52.43894820000001,13.347686072403539,70.0,Teltow_FlaemingLand;BerlinBundesland;UckermarkLand;Spree_NeißeLand;Potsdam_MittelmarkLand
+Schenk Sanitär- und Heizungstechnik GmbH,"13437 Berlin, Germany",13437,52.5920686,13.324557725803153,70.0,UckermarkLand;BerlinBundesland;Teltow_FlaemingLand;Elbe_ElsterLand;PotsdamStadt
+"Schlecht Flaschnerei, Sanitär, Heizung","88471 Laupheim, Germany",88471,48.23717186769581,9.901195768848584,70.0,BiberachLand;BodenseeLand;UlmUniversitaetsstadtStadt;Memmingen;GuenzburgLand;RavensburgLand
+Schlecht GmbH,"94234 Viechtach, Germany",94234,49.09077375,12.923882574101086,70.0,RegenLand;ChamLand;DeggendorfLand;Straubing;Freyung_GrafenauLand
+"Schmidt Heizung, Sanitär, Solar Freiberg GmbH","09599 Freiberg, Germany",9599,50.91276817184097,13.339268253007527,70.0,VogtlandLand;ChemnitzStadt;DresdenStadt;SaechsischeSchweiz_Osterz
+Schmidt+Eger GmbH,"76227 Karlsruhe, Germany",76227,48.9952322662967,8.467449712324074,70.0,KarlsruheLandLand;BirkenfeldLand;RastattLand;PforzheimStadtStadt;GermersheimLand;Dingolfing_LandauLand;CalwLand;HeidelbergStadtStadt;SpeyerStadt;Neustadta.d.Aisch_BadW.
+SCHÖNECKER Gebäudetechnik GmbH,"79110 Freiburg, Germany",79110,48.01580443485866,7.816799330535133,70.0,Breisgau_Hochschwarzwald;EmmendingenLand;LoerrachLand
+Schwedisches Wärmepumpen Center,"03042 Cottbus, Germany",3042,51.75595702317929,14.362796708649347,70.0,CottbusStadt
+Schwering GmbH,"46286 Dorsten-Rhade, Germany",46286,51.73752594820497,7.000307438813107,70.0,Borken;Maerkischer;BottropStadt;GelsenkirchenStadt;Recklinghausen;Wesel;Coesfeld;EssenStadt;HerneStadt;OberhausenStadt
+Schwuchow Sanitär- und Heizungs GmbH,"12107 Berlin, Germany",12107,52.42826875,13.396522187601605,70.0,BerlinBundesland;Maerkisch_OderlandLand;Teltow_FlaemingLand;Oberspreewald_LausitzLand;Potsdam_MittelmarkLand
+seepex GmbH,"46240 Bottrop, Germany",46240,51.54250187454598,6.945389400523268,70.0,MuelheimanderRuhrStadt;BottropStadt;EssenStadt;GelsenkirchenStadt;OberhausenStadt;Recklinghausen;HerneStadt;DuisburgStadt;Wesel;BochumStadt
+Selz & Cie GmbH,"69126 Heidelberg, Germany",69126,49.376832133155354,8.690933393159426,70.0,HeidelbergStadtStadt;MannheimUniversitaetsstadt;LudwigshafenamRheinStadt;SpeyerStadt;WormsStadt;GermersheimLand;KarlsruheStadtStadt;Neustadta.d.Waldnaab;Darmstadt;Rhein_Neckar_Land
+SH Siegerland -SHK Gebäudetechnik,"57258 Freudenberg, Germany",57258,50.89707618615618,7.896759030674017,70.0,Siegen_Wittgenstein;Olpe;Oberbergischer;AltenkirchenWesterwald
+SHK Brodde,"48431 Rheine, Germany",48431,52.275526,7.4263621001627005,70.0,Steinfurt;EmslandLand;MuensterStadt;OsnabrueckLand;Coesfeld;Warendorf
+Siebert Gebäudetechnik GmbH & Co. KG,"34376 Immenhausen, Germany",34376,51.43404365,9.481462955368736,70.0,Hersfeld_RotenburgLand;Kasseldocumenta_Stadt;WartburgLand;FrieslandLand;Goettingen;Hoexter;NortheimLand;HolzmindenLand;Paderborn
+Siegmund & Schulze GmbH,"12524 Berlin, Germany",12524,52.41179,13.548143876466167,70.0,BerlinBundesland;Maerkisch_OderlandLand;Teltow_FlaemingLand;Spree_NeißeLand;Potsdam_MittelmarkLand
+Silbereis GmbH,"69226 Nußloch, Germany",69226,49.32435271383889,8.688085713178133,70.0,HeidelbergStadtStadt;SpeyerStadt;MannheimUniversitaetsstadt;LudwigshafenamRheinStadt;GermersheimLand;KarlsruheStadtStadt;Neustadta.d.Waldnaab;SchwaebischHallLand;HeilbronnLandLand;LandauinderPfalzStadt
+SINA GmbH,"45239 Essen-Werden, Germany",45239,51.38590086342619,7.012700924034778,70.0,EssenStadt;OberhausenStadt;BottropStadt;Mettmann;Hochsauerland;GelsenkirchenStadt;BochumStadt;DuisburgStadt;WuppertalStadt;HerneStadt
+Solartec Röder GmbH,"63607 Wächtersbach, Germany",63607,50.264238515060605,9.296386317573523,70.0,Main_Kinzig_Land;FuldaLand;FrankfurtOderStadt;Aschaffenburg
+Sparka Heizung-Sanitär-Klimatechnik,"46147 Oberhausen, Germany",46147,51.54270824966082,6.814471072802732,70.0,Maerkischer;OberhausenStadt;BottropStadt;DuisburgStadt;EssenStadt;GelsenkirchenStadt;Wesel;Recklinghausen;HerneStadt;DuesseldorfStadt
+Speck Gebäudetechnik GmbH,"31311 Uetze, Germany",31311,52.45807897943923,10.160032362671094,70.0,PeineLand;CelleLand;GifhornLand;RegionHannoverLand;BraunschweigStadt;HildesheimLand;WolfenbuettelLand;SalzgitterStadt
+Stenzel GmbH,"72760 Reutlingen, Germany",72760,48.51056055922193,9.204636901532034,70.0,ReutlingenLand;TuebingenLand;BoeblingenLand;EsslingenLand;StuttgartLandeshauptstadt;GoeppingenLand;CalwLand;LudwigsburgLand;SigmaringenLand;RottweilLand
+Stephan Simon MEISTER Heizungsbau & Sanitärtechnik,"63073 Offenbach am Main, Germany",63073,50.087265350298175,8.807431052035156,70.0,WetterauLand;FrankfurtOderStadt;AschaffenburgLand;Darmstadt;Rheingau_Taunus_Land;WiesbadenLandeshauptstadt;FrankenthalPfalzStadt;MainzStadt;MiltenbergLand
+Stöckicht GmbH Inh. me. Gerald Schwalbach,"65201 Wiesbaden, Germany",65201,50.05297929511993,8.184961236413107,70.0,Rheingau_Taunus_Land;WiesbadenLandeshauptstadt;MainzStadt;Rhein_Pfalz_Land;FrankfurtOderStadt;Darmstadt;GießenLand;Limburg_WeilburgLand;WormsStadt
+Stoltenberg Energie GmbH,"24217 Schönberg, Germany",24217,54.40152236160996,10.3726234421455,70.0,KielLandeshauptstadt;Ploen;Ostholstein;NeumuensterStadt;Rendsburg_Eckernfoerde;Segeberg
+Streicher GmbH - Heizung - Sanitär,"71720 Oberstenfeld, Germany",71720,49.02774327168206,9.330927250115398,70.0,Rems_Murr_Land;HohenloheLand;HeilbronnLandLand;LudwigsburgLand;StuttgartLandeshauptstadt;EsslingenLand;GoeppingenLand;BoeblingenLand;CalwLand;PforzheimStadtStadt
+Strobel GmbH,"72654 Neckartenzlingen, Germany",72654,48.58466415,9.244140040439877,70.0,ReutlingenLand;TuebingenLand;EsslingenLand;StuttgartLandeshauptstadt;BoeblingenLand;GoeppingenLand;LudwigsburgLand;CalwLand;PforzheimStadtStadt;Rems_Murr_Land
+STULZ GmbH,"22457 Hamburg, Germany",22457,53.63755925783188,9.911021378607174,70.0,Pinneberg;HamburgBundesland;Steinburg;NeumuensterStadt;StadeLand;Segeberg;LueneburgLand
+Süwag Energie AG,"65929 Frankfurt am Main, Germany",65929,50.10733100329648,8.54034526315714,70.0,FrankfurtOderStadt;Rheingau_Taunus_Land;WiesbadenLandeshauptstadt;Rhein_Hunsrueck_Land;Main_Taunus_Land;Mainz_BingenLand;Darmstadt;Aschaffenburg;Limburg_WeilburgLand
+Team Gruner,"32120 Hiddenhausen, Germany",32120,52.1558576,8.641268352486497,70.0,Herford;Lippe;BielefeldStadt;Minden_Luebbecke;Guetersloh;OsnabrueckStadt;SchaumburgLand;Paderborn;Hameln_PyrmontLand;DiepholzLand
+TECHMASTER GmbH,"72379 Hechingen, Germany",72379,48.35438889208323,8.966252713872871,70.0,TuebingenLand;ReutlingenLand;RottweilLand;SigmaringenLand;BoeblingenLand;TuttlingenLand;EsslingenLand;StuttgartLandeshauptstadt;FreudenstadtLand
+teraqsoltec solar,"12687 Berlin, Germany",12687,52.5566249,13.568686168250167,70.0,BerlinBundesland;UckermarkLand;Teltow_FlaemingLand;PrignitzLand;PotsdamStadt
+tetec thermo-technik Müller GmbH & Co. KG,"85386 Eching, Germany",85386,48.29873195,11.613584126603465,70.0,FreisingLand;DachauLand;MuenchenLandeshauptstadt;ErdingLand;Pfaffenhofena.d.IlmLand;FuerstenfeldbruckLand;EbersbergLand;Rheinisch_Bergischer;LandshutLandLand;StarnbergLand
+Teucher GmbH,"09456 Arnsfeld, Germany",9456,50.5773179,13.058480449557026,70.0,VogtlandLand;ChemnitzStadt;ZwickauLand
+tga-service gmbh,"64372 Ober-Ramstadt, Germany",64372,49.8191469,8.753831940856443,70.0,Darmstadt_DieburgLand;WormsStadt;BadKreuznachLand;MainzStadt;AschaffenburgLand;MiltenbergLand;FrankfurtamMainStadt;OffenbachLand;MannheimUniversitaetsstadt;LudwigshafenamRheinStadt
+Thomas Gerold GmbH,"83707 Bad Wiessee-Ringsee, Germany",83707,47.70540485,11.702358922769294,70.0,MiesbachLand;RosenheimLandLand;BergstraßeLand;Rottal_InnLand;Weilheim_SchongauLand;StarnbergLand
+Thorsten Kißler Heizung & Sanitär,"67133 Maxdorf, Germany",67133,49.48710955,8.291270825110098,70.0,LudwigshafenamRheinStadt;MannheimUniversitaetsstadt;Alzey_WormsLand;SpeyerStadt;Neustadta.d.Waldnaab;HeidelbergStadtStadt;Dingolfing_LandauLand;GermersheimLand;KaiserslauternStadt;VulkaneifelLand
+Torsten Böres GmbH,"55606 Oberhausen, Germany",55606,49.778942222214546,7.508845865349758,70.0,KuselLand;KaiserslauternStadt;SuedlicheWeinstraßeLand
+Torsten Kühl Gas- und Wasserinstallateurmeister,"01640 Coswig, Germany",1640,51.13294032060414,13.574042778331284,70.0,DresdenStadt;MeißenLand;BautzenLand
+Trane Klima- und Kältetechnisches Büro GmbH,"82152 Krailling, Germany",82152,48.0984515,11.427428224225945,70.0,OstallgaeuLand;FuerstenfeldbruckLand;StarnbergLand;BergstraßeLand;DachauLand;Weilheim_SchongauLand;LandsbergamLechLand;FreisingLand;MiesbachLand;Aichach_FriedbergLand
+TRAUB GmbH & Co. Haustechnik KG,"82031 Grunwald, Germany",82031,48.04628985,11.53037938457634,70.0,MuenchenLandeshauptstadt;StarnbergLand;Rheinisch_Bergischer;FuerstenfeldbruckLand;MiesbachLand;EbersbergLand;Weilheim_SchongauLand;ErdingLand;DachauLand;LandsbergamLechLand
+Ullmann Heizungsbau GmbH,"01844 Neustadt, OT Langburkersdorf, Germany",1844,51.03242570000001,14.224107597604851,70.0,SaechsischeSchweiz_Osterz;DresdenStadt;BautzenLand
+Upmeyer Haustechnik GmbH,"49525 Lengerich, Germany",49525,52.16615925,7.837779570123027,70.0,OsnabrueckLand;Warendorf;MuensterStadt;Steinfurt;EmslandLand
+Uponor GmbH,"97437 Hassfurt, Germany",97437,50.042783,10.508615785843995,70.0,SchweinfurtLandLand;Bamberg;CoburgLandLand;LichtenfelsLand;KitzingenLand;HildburghausenLand;ForchheimLand;BadKissingenLand;WuerzburgLandLand
+Uwe Felsmann GmbH,"64342 Seeheim, Germany",64342,49.76105295,8.664219196386396,70.0,Darmstadt;WormsStadt;MannheimUniversitaetsstadt;Rhein_Lahn_Land;MainzStadt;LudwigshafenamRheinStadt;FrankfurtOderStadt;OdenwaldLand;HeidelbergStadtStadt;Rheingau_Taunus_Land
+Uwe Zimmer Heizung - Sanitär - Dachklempnerarbeiten,"15295 Brieskow-Finkenheerd, Germany",15295,52.24081815,14.592811453849688,70.0,
+Versorgungstechnik BSK GmbH,"02625 Bautzen, Germany",2625,51.1812160437654,14.430411527013819,70.0,BautzenLand;GoerlitzLand;SaechsischeSchweiz_Osterz;DresdenStadt
+Volker Blunck GmbH - Heizung - Sanitär - Elektro,"24306 Bösdorf, Germany",24306,54.16196437475096,10.422804842511788,70.0,Ploen;Ostholstein;KielLandeshauptstadt;NeumuensterStadt;Segeberg;LuebeckHansestadt;Rendsburg_Eckernfoerde
+Volker Kosack - Installateur- & Heizungsbaumeister,"52080 Aachen, Germany",52080,50.7868709001491,6.1483466226711325,70.0,StaedteregionAachen;Dueren;Heinsberg;Rhein_Erft_;MoenchengladbachStadt;Rhein_Neuss;KoelnStadt
+VWT Wärmetechnik GmbH,"55129 Mainz, Germany",55129,49.9516888822223,8.269561663076253,70.0,MainzStadt;AhrweilerLand;Rheingau_Taunus_Land;WiesbadenLandeshauptstadt;Darmstadt_DieburgLand;FrankfurtOderStadt;OdenwaldLand;WormsStadt
+W. Förster GmbH,"99198 Erfurt-Büßleben, Germany",99198,51.0272819260234,11.130112980559664,70.0,EichsfeldLand;ErfurtStadt;SoemmerdaLand;WeimarerLandLand;GothaLand;JenaStadt;Saalfeld_RudolstadtLand
+W. Köthe GmbH,"30519 Hanover, Germany",30519,52.33844672842099,9.779054788104089,70.0,RegionHannoverLand;HildesheimLand;PeineLand;Hameln_PyrmontLand;CelleLand;SchaumburgLand;NienburgWeserLand;SalzgitterStadt;BraunschweigStadt;GifhornLand
+Wagenhäuser GmbH,"97437 Haßfurt, Germany",97437,50.042783,10.508615785843995,70.0,
+Walter Falk GmbH,"73252 Lenningen, Germany",73252,48.54883220000001,9.509145861108367,70.0,GoeppingenLand;EsslingenLand;ReutlingenLand;StuttgartLandeshauptstadt;TuebingenLand;BoeblingenLand;BodenseeLand;UlmUniversitaetsstadtStadt;HeidenheimLand
+Walter Fehring GmbH,"33014 Bad Driburg, Germany",33014,51.723744247817905,9.028156820722128,70.0,Paderborn;WartburgLand;Hoexter;HolzmindenLand;Hameln_PyrmontLand
+Walter Gräfenstein GmbH,"45473 Mülheim an der Ruhr, Germany",45473,51.44401451275198,6.898269913775183,70.0,OberhausenStadt;EssenStadt;BottropStadt;Hochsauerland;DuisburgStadt;GelsenkirchenStadt;BochumStadt;HerneStadt;WittenbergLand;DuesseldorfStadt
+Walter Langen KG,"54294 Trier, Germany",54294,49.73826062390076,6.613071471223,70.0,TrierStadt;Bernkastel_WittlichLand;Merzig_WadernLand;Dillingena.d.DonauLand;SaarlouisLand
+Wärme mit System.de Ltd.,"36341 Lauterbach (Hessen), Germany",36341,50.64090785,9.35525261380022,70.0,FuldaLand;Marburg_BiedenkopfLand
+Wärmetechnik Leickel GmbH,"44653 Herne, Germany",44653,51.54364638935319,7.1608512759869125,70.0,HerneStadt;GelsenkirchenStadt;BochumStadt;Recklinghausen;BottropStadt;WittenbergLand;EssenStadt;Maerkischer;DortmundStadt;OberhausenStadt
+WätaS Wärmetauscher Sachsen GmbH,"09526 Olbernhau, Germany",9526,50.672133380046816,13.344070529384586,70.0,ErzgebirgsLand;ChemnitzStadt
+"Weber GmbH, Elektro- und Solaranlagen","74078 Heilbronn-Kirchhausen, Germany",74078,49.17503491101242,9.162449312278756,70.0,Main_Tauber_Land;HeilbronnStadtStadt;Rems_Murr_Land;LudwigsburgLand;HeidelbergStadtStadt;PforzheimStadtStadt;SpeyerStadt;StuttgartLandeshauptstadt
+Weisky & Co. GmbH,"83352 Altenmarkt, Germany",83352,47.99844605,12.511632684539794,70.0,TraunsteinLand;AltoettingLand;Rosenheim;EbersbergLand;VerdenLand
+Wenzel & Herzog GmbH,"15890 Schlaubetal / OT Fünfeichen, Germany",15890,52.16005045,14.571117922279706,70.0,CottbusStadt
+Werner Peters GmbH,"46485 Wesel, Germany",46485,51.665973765835005,6.644380459407362,70.0,Wesel;Borken;MuelheimanderRuhrStadt;BottropStadt;OberhausenStadt;DuisburgStadt;GelsenkirchenStadt;EssenStadt;KrefeldStadt;Kleve
+Werner Wallraff GmbH & Co.KG,"48157 Munster, Germany",48157,51.995986400171915,7.680717235070642,70.0,MuensterStadt;Warendorf;Steinfurt;Coesfeld;OsnabrueckStadt;Guetersloh;HammStadt;Unna
+Werrlein GmbH & Co.KG,"91443 Scheinfeld, Germany",91443,49.67021355,10.4684880696984,70.0,KitzingenLand;Erlangen;Bamberg;HaßbergeLand;Fuerth;WuerzburgLandLand;Ansbach;ForchheimLand;Schweinfurt
+Wessel & Tyc Haustechnik GmbH,"28279 Bremen, Germany",28279,53.04047020894537,8.847183565260249,70.0,BremenBundesland;DelmenhorstStadt;OsterholzLand;RotenburgWuemmeLand;OldenburgOldenburgStadt;NienburgWeserLand;WesermarschLand;VechtaLand;CloppenburgLand
+Weyher Haustechnik GmbH,"28844 Weyhe, Germany",28844,52.98475952927596,8.845120708002035,70.0,BremenBundesland;DelmenhorstStadt;RotenburgWuemmeLand;OldenburgLand;OsterholzLand;NienburgWeserLand;WesermarschLand;VechtaLand;CloppenburgLand
+Willi Hammer GmbH - Sanitär Heizung Solar,"75181 Pforzheim-Eutingen, Germany",75181,48.8738261,8.765233532673923,70.0,PforzheimStadtStadt;BirkenfeldLand;CalwLand;BoeblingenLand;KarlsruheStadtStadt;LudwigsburgLand;StuttgartLandeshauptstadt;Rems_Murr_Land;EsslingenLand;RastattLand
+Willig Gas - Wasser - Wärme,"64283 Darmstadt, Germany",64283,49.870095674067706,8.653086493313005,70.0,Darmstadt_DieburgLand;Rhein_Lahn_Land;MainzStadt;FrankfurtamMainStadt;WetterauLand;WormsStadt;Rheingau_Taunus_Land;WiesbadenLandeshauptstadt;AschaffenburgLand;MannheimUniversitaetsstadt
+WILO SE,"44263 Dortmund, Germany",44263,51.48954256743802,7.503768132969682,70.0,DortmundStadt;Unna;WittenbergLand;BochumStadt;HagenStadt;HerneStadt;Recklinghausen;GelsenkirchenStadt;EssenStadt;WuppertalStadt
+Winfried Zahnen Gas- und Wasserinstallateurmeister,"54595 Watzerath, Germany",54595,50.21129084970681,6.419952873789955,70.0,Bernkastel_WittlichLand;Trier_SaarburgLand;Euskirchen
+Wittemann GmbH,"76297 Stutensee-Friedrichstal, Germany",76297,49.08467320544047,8.481765478387326,70.0,KarlsruheStadtStadt;GermersheimLand;BirkenfeldLand;RastattLand;PforzheimStadtStadt;SpeyerStadt;HeidelbergStadtStadt;LandauinderPfalzStadt;NeustadtanderWeinstraße;MannheimUniversitaetsstadt
+"Woermann & Söhne, sanitäre Anlagen und Heizung GmbH","14163 Berlin (Berlin-Zehlendorf), Germany",14163,52.4372333,13.241466027255047,70.0,Teltow_FlaemingLand;BerlinBundesland;UckermarkLand;Dahme_SpreewaldLand;PotsdamStadt;BrandenburganderHavel
+Wolfgang Kozian Heizungsbau GmbH,"63128 Dietzenbach, Germany",63128,50.01079975,8.790729524494951,70.0,VogelsbergLand;FrankfurtamMainStadt;Darmstadt_DieburgLand;AschaffenburgLand;Rheingau_Taunus_Land;WiesbadenLandeshauptstadt;AhrweilerLand;Mainz_BingenLand;MiltenbergLand
+Würth Elektrogroßhandel GmbH & Co. KG,"91522 Ansbach, Germany",91522,49.28887445,10.55976933809508,70.0,AnsbachLandLand;Weißenburg_Gunzenhausen;Schwabach;FuerthLandLand;RothLand
+Wust & Heck GmbH,"55471 Reich / Hunsrück, Germany",55471,49.98638590590153,7.446717489006335,70.0,Cochem_ZellLand;Bernkastel_WittlichLand
+Zdoniak Elektrotechnik,"23936 Grevesmühlen, Germany",23936,53.83826208315358,11.195553764592443,70.0,SchwerinLandeshauptstadt;Nordwestmecklenburg;HerzogtumLauenburg;LuebeckHansestadt
+Zinnenlauf Service GmbH,"40472 Düsseldorf, Germany",40472,51.272641027116244,6.807200021807968,70.0,DuesseldorfStadt;Rhein_Neuss;Mettmann;DuisburgStadt;KrefeldStadt;EssenStadt;OberhausenStadt;MoenchengladbachStadt;SolingenStadt;Viersen
+Zita Jacobs GmbH,"66740 Saarlouis, Germany",66740,49.31947657036562,6.75308444097593,70.0,SaarlouisLand;Dillingena.d.DonauLand;Merzig_WadernLand;Saarpfalz_Land;NeunkirchenLand;ZweibrueckenStadt;Trier_SaarburgLand
+ZLE Ehrlich GmbH,"76532 Baden-Baden, Germany",76532,48.8031151,8.208848972746503,70.0,RastattLand;KarlsruheLandLand;BirkenfeldLand;PforzheimStadtStadt;GermersheimLand;FreudenstadtLand;LandauinderPfalzStadt
+ZOGEL GmbH,"38300 Wolfenbüttel, Germany",38300,52.15639204447906,10.554439097123396,70.0,WolfenbuettelLand;BraunschweigStadt;SalzgitterStadt;GoslarLand;WolfsburgStadt;PeineLand;GifhornLand;HildesheimLand;HelmstedtLand;CelleLand
+ZWS Zukunftsorientierte Wärme Systeme GmbH,"47506 Neukirchen-Vluyn, Germany",47506,51.43527775,6.5506149917785335,70.0,KrefeldStadt;DuisburgStadt;OberhausenStadt;Viersen;DuesseldorfStadt;EssenStadt;Rhein_Neuss;BottropStadt;Ennepe_Ruhr_;Wesel
+ELITEC Elektrische Industrietechnik GmbH,"64653 Lorsch, Germany",64653,49.6426967,8.556536015454096,70.0,Alzey_WormsLand;MannheimUniversitaetsstadt;LudwigshafenamRheinStadt;Darmstadt;HeidelbergStadtStadt;SpeyerStadt;FrankfurtamMainStadt;BadKreuznachLand;MainzStadt;HochtaunusLand
+Kälte-Aktiv Team GmbH,"91154 Roth, Germany",91154,49.23688415,11.118101625557133,70.0,RothLand;Schwabach;Neumarkti.d.OPf.Land;Fuerth;Weißenburg_Gunzenhausen;Ansbach;Erlangen_HoechstadtLand;EichstaettLand
+Remko GmbH & Co. KG,"32791 Lage, Germany",32791,51.98650021960944,8.784133580599393,70.0,Herford;BielefeldStadt;Lippe;Guetersloh;Paderborn;Minden_Luebbecke;Hameln_PyrmontLand;Hoexter;HolzmindenLand;SchaumburgLand
+Carl Mettler Elektrogroßhandels-GmbH,"66117 Saarbrücken, Germany",66117,49.2279998876929,6.9756571483495655,70.0,Saarpfalz_Land;NeunkirchenLand;SaarlouisLand;Dillingena.d.DonauLand;ZweibrueckenStadt;Merzig_WadernLand;PirmasensStadt
+H2 Umwelttechnik GbR,"52428 Jülich, Germany",52428,50.92898835,6.3602062087263205,70.0,Dueren;StaedteregionAachen;Heinsberg;Rhein_Erft_;MoenchengladbachStadt;Rhein_Neuss;Viersen;DuesseldorfStadt;KoelnStadt;Euskirchen
+Nesseler + Esser GmbH & Co. KG,"50389 Wesseling, Germany",50389,50.81590634608205,6.977998337090839,70.0,KoelnStadt;BonnStadt;LeverkusenStadt;Rhein_Sieg_;Euskirchen;Rhein_Erft_;GrafschaftBentheimLand;SolingenStadt;Dueren;Rhein_Neuss
+Neukälte Kälte- Klima- und Wärmepumpen GmbH,"66292 Riegelsberg, Germany",66292,49.30878835158418,6.935701052781655,70.0,Saarpfalz_Land;Dillingena.d.DonauLand;SaarlouisLand;NeunkirchenLand;ZweibrueckenStadt;Merzig_WadernLand;PirmasensStadt
+Schalk GmbH secespol deutschland gmbh,"86500 Kutzenhausen, Germany",86500,48.3538739,10.679009437129745,70.0,AugsburgLandLand;Aichach_FriedbergLand;GuenzburgLand;LandsbergamLechLand;Alb_Donau_Land;Neu_UlmLand;Memmingen
+Secespol Deutschland gmbh,"45141 Essen, Germany",45141,51.47450091374141,7.0264283015827775,70.0,EssenStadt;GelsenkirchenStadt;BottropStadt;Ennepe_Ruhr_;OberhausenStadt;BochumStadt;HerneStadt;DuisburgStadt;WittenbergLand;Recklinghausen
+Maxhütte Technologie GmbH & Co. KG,"92237 Sulzbach-Rosenberg, Germany",92237,49.51259165,11.728330663641984,70.0,Amberg_SulzbachLand;Neumarkti.d.OPf.Land;SchwandorfLand;Schwabach;BayreuthLandLand
+Viessmann Werke GmbH & Co. KG,"35108 Allendorf (Eder), Germany",35108,51.0383128,8.683138839169864,,
