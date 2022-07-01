@@ -49,7 +49,7 @@ ELECTRICITY_PRICE_FACTOR = 0.2 #Compared to Initial Value
 CO2_PRIZE_FACTOR = 5 #Compared to Initial Value
 Max_Sales_Growth = 0.05 #per year
 Max_Sales_Initial = 1100000000 #units per year
-WORKFORCE_FACTOR = 1.29  # increased by at least 29% per year to meet the MIN_PERCENTAGE.
+WORKFORCE_FACTOR = 1.2  # Compared to Initial value
  
 
 #Emission Prices can be either static welfare based values, or on the CO2 prices. We decided to consider more than the certificat price
