@@ -48,11 +48,11 @@ def write_solution_csv(model, D, M, I, T, distributors, NUMBER_OF_YEARS, MIN_PER
         
             if curr != 0:
                 try: 
-                    new = model.getVarByName(
+                    prev = model.getVarByName(
                         f'hp_type_{str(m)}_at_house_type_{str(i)}_by_distributor_{str(distributors[d]["name"])}_in_year_{str(t-1)}').X
                 except:
-                   continue 
-                newbuilds = curr-new
+                   prev=0 
+                newbuilds = curr-prev
                 qty = curr
                 percent = qty / I[i]["quantity"]
                 row = [I[i]["district"], I[i]["year of construction"], I[i]["type of building"], I[i]["modernization status"], M[m]['brand_name'], t,newbuilds,qty, I[i]["quantity"], percent, str(I[i]["max_heat_demand_W/m^2"]), distributors[d]['name'], datetime.now(
