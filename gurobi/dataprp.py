@@ -145,7 +145,7 @@ def get_configurations(heatpumps, housing, distributors, T, operating_radius):
             produced_heat = heatpumps[m]['produced heat']
             max_heat_demand = housing[i]['max_heat_demand_W/m^2']
             if produced_heat >= max_heat_demand:
-                district_name = housing[i]['Administrative district']
+                district_name = housing[i]['district']
                 for d in distributors:
                     # dist = cal_dist((housing[i]['lat'], housing[i]['long']),
                     #                 (distributors[d]['lat'], distributors[d]['long']))
