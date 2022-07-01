@@ -224,8 +224,7 @@ def check_coverage(df, df_districts):
     # get the set of all operating districts
     operating_districts = set()
     for i in range(len(df)):
-        operating_districts.update(df.iloc[i, df.columns.get_loc(
-            'operating districts')].split(';'))
+        operating_districts.update(df['operating districts'][i].split(';'))
 
     # get the unique Administrative districts
     unique_districts = set(df_districts['Administrative District'].unique())
