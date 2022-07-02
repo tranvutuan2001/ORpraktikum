@@ -51,11 +51,11 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     model = Model("Heatpumps")
 
     P = configurations
-    index_heatpump = set(m for m, _,_,_ in P)
-    index_housing = set(i for _, i,_,_ in P)
+    index_heatpump = set(m for m, _, _, _ in P)
+    index_housing = set(i for _, i, _, _ in P)
     # print("index_housing", index_housing)
-    index_distributor = set(d for _,_,d,_ in P)
-    index_time = set(t for _,_,_,t in P)
+    index_distributor = set(d for _, _, d, _ in P)
+    index_time = set(t for _, _, _, t in P)
     # Add Variables
     print("Adding variables")
     start = timeit.default_timer()
@@ -94,9 +94,8 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
 
     # Constraint 4: Only install up to the current expected sales volume
     for t in range(T):
-        if t >= 1:
-            model.addConstr(quicksum(x[m, i, d, t] - x[m, i, d, t-1]
-                        for m, i, d, _ in P.select("*", "*", "*", t)) <= max_sales[t], name="C4")
+        model.addConstr(quicksum(x[m, i, d, t] - x[m, i, d, t-1]
+                                 for m, i, d, _ in P.select("*", "*", "*", t)) <= max_sales[t], name="C4")
 
     # Constraints 5: Respect the operation radius for each distributor
     # removed because this is handled by get_configurations
@@ -105,13 +104,12 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     # yearly workforce <= qty of heat pumps installed by the distributor
     for t in range(T):
         for d in index_distributor:
-             model.addConstr( quicksum(
-                x[m, i, d, t] for m, i, _, _ in P.select("*", "*", d, t)) <= distributors[d]['max_installations']*pow(WORKFORCE_FACTOR,t) , name="C6")
+            model.addConstr(quicksum(
+                x[m, i, d, t] for m, i, _, _ in P.select("*", "*", d, t)) <= distributors[d]['max_installations']*pow(WORKFORCE_FACTOR, t), name="C6")
 
     # Constraint 7: x[p] is a cumulative value
     for t in range(T):
         for m, i, d, t in P.select("*", "*", "*", t):
-            # print(p,"und",p[0],p[1],p[2],p[3]-1)
             model.addConstr(
                 x[m, i, d, t]-x[m, i, d, t-1] >= 0, name="C7")
 
