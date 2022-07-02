@@ -35,7 +35,7 @@ def data_preprocess(T, operating_radius):
         distributors_dataframe,  max_entries=None
     )
 
-    fitness_data = prepare_fitness_on_run_time(heatpump_data, housing_data)
+    # fitness_data = prepare_fitness_on_run_time(heatpump_data, housing_data)
 
     stop = timeit.default_timer()
     print('Time to prepare the data: ', round(stop - start, 2), "s\n")
@@ -43,7 +43,7 @@ def data_preprocess(T, operating_radius):
     configurations = get_configurations(
         heatpump_data, housing_data, distributor_data, T, operating_radius)
 
-    return heatpump_data, housing_data, fitness_data, distributor_data, configurations
+    return heatpump_data, housing_data,  distributor_data, configurations
 
 
 def prepare_fitness_on_run_time(M, I):
