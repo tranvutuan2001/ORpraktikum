@@ -55,7 +55,7 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
 
     Args:
         distributor_data_file (str, optional): path to the distributor data file. Defaults to None. if None, the file is assumed to be data-sources/DISTRIBUTORS_with_radius.csv
-        districts_file (str, optional): path to the file contain the districts. Defaults to None. if None, the file is assumed to be data-sources/ACOOLHEAD.csv
+        districts_file (str, optional): path to the file contain the districts. Defaults to None. if None, the file is assumed to be data-sources/HOUSING.csv
         sample_size (float, optional): sample size between (0,1] for the districts to search in. Defaults to 0.3. Higher values will take longer to run.
         max_districts (int, optional): number of districts in radius after which the search should stop. Defaults to 5. Higher values will take longer to run.
         operating_radius (int, optional): filter distributers by only considering ones with the specified radius. Defaults to None. If None, all distributors are considered.
@@ -68,7 +68,7 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
     DISTRIBUTERS_DATA = distributor_data_file if distributor_data_file is not None else os.path.join(
         dirname, "data-sources/DISTRIBUTORS.csv")
     ACOOLHEAD = districts_file if districts_file is not None else os.path.join(
-        dirname, "data-sources/ACOOLHEAD.csv")
+        dirname, "data-sources/HOUSING.csv")
     if not os.path.isfile(DISTRIBUTERS_DATA):
         raise Exception(DISTRIBUTERS_DATA, "not found")
     if not os.path.isfile(ACOOLHEAD):
