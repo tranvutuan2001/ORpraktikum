@@ -157,10 +157,10 @@ def get_configurations(heatpumps, housing, distributors, T, operating_radius):
                 for d in distributors:
                     # dist = cal_dist((housing[i]['lat'], housing[i]['long']),
                     #                 (distributors[d]['lat'], distributors[d]['long']))
-                    # german wide supplier or district name is in operating districts
 
+                    # german wide supplier or district name is in operating districts
                     if np.isnan(distributors[d]['operating radius']) or district_name in distributors[d]['operating districts']:
-                        for t in range(T):
+                        for t in range(-1, T):
                             configurations.append((m, i, d, t))
     initial_count = len(heatpumps) * len(housing) * len(distributors) * T
     print("Variable set reduced to", round(
