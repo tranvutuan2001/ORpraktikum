@@ -14,6 +14,7 @@ charset = utf-8
 [*.{py,java,r,R}]
 indent_style = space
 indent_size = 4
+rulers = [140]
 
 # 2 space indentation
 [*.{js,json,y{a,}ml,html,cwl}]

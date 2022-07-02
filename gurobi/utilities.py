@@ -74,6 +74,40 @@ def get_driving_distance(origin, destination):
     raise Exception(f"Error: {r.status_code}")
 
 
+def get_driving_distance_by_coords(x, y):
+    """
+    Calculates the distance between two locations using the OSMR API. 
+    :param origin: The origin location (e.g. "London, UK")
+    :param destination: The destination location (e.g. "New York, US")
+    :return: The distance between the two locations (in km)
+    Examples:
+        - get_distance({'postalcode': '88279', 'country': 'Germany'}, {
+               'postalcode': '01067', 'country': 'Germany'})
+        - get_distance("Aachen", "Luxembourg")
+    """
+
+    # Get the coordinates of the origin and destination
+
+    origin_lat, origin_lng = x
+    destination_lat, destination_lng = y
+
+    if origin_lat is None or origin_lng is None or destination_lat is None or destination_lng is None:
+        return None
+    coordinates = f'{origin_lng},{origin_lat};{destination_lng},{destination_lat}'
+    r = requests.get(
+        f"http://router.project-osrm.org/route/v1/driving/{coordinates}?overview=false""")
+    if r.status_code == 200:
+        routes = json.loads(r.content)
+        if len(routes.get('routes')) > 0:
+            distance = routes.get("routes")[
+                0]['distance'] / 1000  # convert to km
+            time.sleep(1)
+            return distance
+        raise Exception("No routes found")
+    raise Exception(f"Error: {r.status_code}")
+
+
+
 def get_zipcode(location):
     """Get the zip code from a location
 

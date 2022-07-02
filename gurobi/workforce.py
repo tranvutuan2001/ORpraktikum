@@ -79,4 +79,4 @@ df_distributor['max_installations'] = df_distributor['workforce'] * 50 / 2
 #df_distributor['max_installations_rv'] = df_distributor['workforce_rv'] * 50 
 
 df_distributor.to_csv(os.path.join(
-        dirname, "data-sources/Distributor_data_with_workforce.csv"), index=False)
+    dirname, "data-sources/Distributor_data.csv"), index=False)

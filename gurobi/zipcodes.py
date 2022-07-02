@@ -175,7 +175,7 @@ def add_coordinates_to_csv():
 
 def add_coordinates_to_csv():
     DISTRIBUTERS_DATA = os.path.join(
-        dirname, "data-sources/Distributor_data_with_coordinates.csv")
+        dirname, "data-sources/Distributor_data.csv")
     df = pd.read_csv(DISTRIBUTERS_DATA)
 
     for i in tqdm(range(len(df))):
@@ -195,8 +195,8 @@ def add_coordinates_to_csv():
              'long', 'operating radius', 'operating districts']]
 
     df.to_csv(os.path.join(
-        dirname, "data-sources/Distributor_data_with_coordinates.csv"), index=False)
+        dirname, "data-sources/Distributor_data.csv"), index=False)
 
-# add_coordinates_to_csv()
+
+add_coordinates_to_csv()
 # add_zipcodes_to_csv()
-# add_coordinates_to_csv()

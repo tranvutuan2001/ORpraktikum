@@ -1,4 +1,5 @@
-from utilities import get_driving_distance
+
+from utilities import get_driving_distance, cal_dist, get_driving_distance_by_coords
 import pandas as pd
 import numpy as np
 import os
@@ -10,8 +11,11 @@ dirname = os.path.dirname(__file__)
 
 known_distances = {}  # {(zipcode1, zipcode2): distance}
 
+# https://www.waermepumpe.de/ shows distributors in a radius of ~70 km in most cases, so well take that as our default.
+# A raduis of None indicates a german-wide range. Those are crucial for our scenario to ensure that we have a good coverage of the districts.
 
-def add_operating_radius(distributor_data_file=None, default_radius=150):
+
+def add_operating_radius(distributor_data_file=None, default_radius=70):
     """Adds the operating radius to the csv file. The radius is set to have a default value of 150km for 65% of the rows. 
 
     Args:
@@ -19,7 +23,7 @@ def add_operating_radius(distributor_data_file=None, default_radius=150):
         default_radius (int, optional): The default radius to use. Defaults to 150.
     """
     DISTRIBUTERS_DATA = distributor_data_file if distributor_data_file is not None else os.path.join(
-        dirname, "data-sources/Distributor_data.csv")
+        dirname, "data-sources", "Distributor_data.csv")
     df = pd.read_csv(DISTRIBUTERS_DATA)
 
     # this will potentially overwrite existing values
@@ -27,26 +31,26 @@ def add_operating_radius(distributor_data_file=None, default_radius=150):
     df['operating radius'] = df['operating radius'].fillna(default_radius)
 
     df.to_csv(os.path.join(
-        dirname, "data-sources/Distributor_data_with_radius.csv"), index=False)
+        dirname, "data-sources/Distributor_data.csv"), index=False)
 
     df['operating radius'] = df['operating radius'].astype(int)
 
     for i in tqdm(range(len(df))):
-        if i <= round(5 * len(df) / 100):
-            df.iloc[i, df.columns.get_loc('operating radius')] = 800
-        elif i <= round(5 * len(df) / 100) + round(10 * len(df) / 100):
-            df.iloc[i, df.columns.get_loc('operating radius')] = 400
-        elif i <= round(20 * len(df) / 100) + round(5 * len(df) / 100) + round(10 * len(df) / 100):
-            df.iloc[i, df.columns.get_loc('operating radius')] = 200
+        if i <= round(1 * len(df) / 100):
+            df.iloc[i, df.columns.get_loc('operating radius')] = None
+        elif i <= round(1 * len(df) / 100) + round(10 * len(df) / 100):
+            df.iloc[i, df.columns.get_loc('operating radius')] = 150
+        elif i <= round(20 * len(df) / 100) + round(1 * len(df) / 100) + round(10 * len(df) / 100):
+            df.iloc[i, df.columns.get_loc('operating radius')] = 100
 
     df.to_csv(os.path.join(
-        dirname, "data-sources/Distributor_data_with_radius.csv"), index=False)
+        dirname, "data-sources/Distributor_data.csv"), index=False)
 
     print("Generated operating radius")
     print_radius_distributions(df)
 
 
-def add_operating_districts(distributor_data_file=None, districts_file=None, sample_size=0.3, max_districts=5, operating_radius=None):
+def add_operating_districts(distributor_data_file=None, districts_file=None, sample_size=0.3, max_districts=None, operating_radius=None):
     """Adds the operating districts to the csv file. The districts are sampled from the list of districts.
 
     Args:
@@ -62,7 +66,7 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
     """
 
     DISTRIBUTERS_DATA = distributor_data_file if distributor_data_file is not None else os.path.join(
-        dirname, "data-sources/Distributor_data_with_radius.csv")
+        dirname, "data-sources/Distributor_data.csv")
     ACOOLHEAD = districts_file if districts_file is not None else os.path.join(
         dirname, "data-sources/data_from_Hannah_with_coordinates_and_zipcodes.csv")
     if not os.path.isfile(DISTRIBUTERS_DATA):
@@ -78,37 +82,41 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
     df['operating districts'] = df['operating districts'].astype(
         str)
 
+    df_distributors = df
+
     if (operating_radius is not None):
         # if operating_radius is set then only work with distributors with that radius
         df_distributors = df[df['operating radius']
                              == operating_radius]
 
-    districts = df_acoolhead[['Administrative district', 'zipcode']].groupby(
-        'Administrative district').agg({'zipcode': 'first'}).reset_index()
+    districts = df_acoolhead[['Administrative district', 'lat', 'long']].groupby(
+        'Administrative district').agg({'lat': 'first', 'long': 'first'}).reset_index()
 
     # get the operating regions for each missing row
     for i in tqdm(df_distributors.index):
         # i = (len(df)-1) - j  # start at bottom of df
-        zipcode = df.loc[i, 'zipcode']
+        lat = df.loc[i, 'lat']
+        lng = df.loc[i, 'long']
         radius = df.loc[i, 'operating radius']
-        if (df.loc[i, 'operating districts'] is None or df.loc[i, 'operating districts'] is np.nan or len(
-                df.loc[i, 'operating districts'].split(';')) < max_districts):
-            regions = get_operating_districts(
-                districts, str(zipcode), radius, sample_size=sample_size, max_districts=max_districts).keys()
-            df.iloc[i, df.columns.get_loc(
-                'operating districts')] = ';'.join(regions)
 
-            # missing_operating_regions['operating districts'][i] = np.array([
-            #     key for key in regions.keys()], dtype=object)
-            df.to_csv(os.path.join(
-                dirname, "data-sources/test.csv"), index=False)
+        if np.isnan(radius):
+            continue
+
+        regions = get_operating_districts(
+            districts,  lat, lng, radius, sample_size=sample_size, max_districts=max_districts)
+        df.iloc[i, df.columns.get_loc(
+            'operating districts')] = ';'.join(regions)
+
+        df.to_csv(os.path.join(
+            dirname, "data-sources/test.csv"), index=False)
 
     # save the dataframe
     df.to_csv(os.path.join(
         dirname, "data-sources/test.csv"), index=False)
+    check_coverage(df, df_acoolhead)
 
 
-def get_operating_districts(districts, zipcode, op_radius=100, timeout=120, max_districts=5, sample_size=1):
+def get_operating_districts(districts, lat, lng, op_radius=100, timeout=120, max_districts=None, sample_size=1):
     """Find the districts that are within the operating radius of the zipcode.
 
     Args:
@@ -125,54 +133,73 @@ def get_operating_districts(districts, zipcode, op_radius=100, timeout=120, max_
     Returns:
         dict: dictionary of districts and their distances
     """
-    # add 0 to zipcode if it is 4 digits
-    zipcode = '0' + str(zipcode) if len(str(zipcode)) == 4 else str(zipcode)
+    # # add 0 to zipcode if it is 4 digits
+    # zipcode = '0' + str(zipcode) if len(str(zipcode)) == 4 else str(zipcode)
     operating_districts = {}  # {district: distance}
     districts = districts.values.tolist()
     districts = sample(districts, round(sample_size * len(districts))
                        )  # sample sample_size% of districts
 
+    if np.isnan(op_radius):
+        return operating_districts.keys()
+
     start = datetime.now()
     for i in tqdm(range(len(districts)), leave=False):
         diff_time = datetime.now() - start  # time since start
-        if diff_time.total_seconds() > timeout:  # stop search if execution time is exceeded
-            return operating_districts
+        # if diff_time.total_seconds() > timeout:  # stop search if execution time is exceeded
+        #     return operating_districts
 
-        district_name, z = districts[i]
-        if district_name in operating_districts.keys():
-            continue  # skip if already found
+        district_name, latitude, longitude = districts[i]
+        # if district_name in operating_districts.keys():
+        #     continue  # skip if already found
 
-        if len(operating_districts.keys()) >= max_districts:
-            return operating_districts  # return if max_districts regions found
+        # if max_districts is not None and len(operating_districts.keys()) >= max_districts:
+        #     return operating_districts  # return if max_districts regions found
 
-        zipcode_of_district = '0' + \
-                              str(z) if len(
-                                  str(z)) == 4 else str(z)  # add 0 to zipcode if only 4 digits
+        # zipcode_of_district = '0' + \
+        #                       str(z) if len(
+        #                           str(z)) == 4 else str(z)  # add 0 to zipcode if only 4 digits
 
-        if zipcode_of_district == zipcode:
+        if lat == latitude and lng == longitude:
             # if zipcode is in district, set distance to 0
             operating_districts[district_name] = 0
             continue
 
-        if (zipcode_of_district, zipcode) in known_distances.keys():  # if distance is already known
-            distance = known_distances[(zipcode_of_district, zipcode)]
-        elif (zipcode, zipcode_of_district) in known_distances.keys():  # if distance is already known
-            distance = known_distances[(zipcode, zipcode_of_district)]
+        if ((lat, lng), (latitude, longitude)) in known_distances.keys():  # if distance is already known
+            driving_distance = known_distances[(
+                (lat, lng), (latitude, longitude))]
+        elif ((latitude, longitude), (lat, lng)) in known_distances.keys():  # if distance is already known
+            driving_distance = known_distances[(
+                (latitude, longitude), (lat, lng))]
         else:
             # get distance between zipcodes if not known
-            distance = get_driving_distance({'postalcode': zipcode, 'country': 'Germany'}, {
-                'postalcode': zipcode_of_district, 'country': 'Germany'})
-            if distance == 0 and zipcode != zipcode_of_district:
-                raise Exception('Distance is 0 for zipcodes: ' +
-                                zipcode + ' and ' + zipcode_of_district)  # raise error if distance is 0 and zipcodes are not the same
-            if distance is not None:
-                known_distances[zipcode_of_district,
-                                zipcode] = distance  # save distance
-                if distance < op_radius:
-                    # add to district if distance is less than op_radius
-                    operating_districts[district_name] = distance
 
-    return operating_districts
+            # since driving distance takes longer to calculate, we first check if the air distance is less than the operating radius + 70km and only then check the driving distance
+            air_distance = cal_dist((lat, lng), (latitude, longitude))
+            if air_distance > op_radius + 70:
+                continue
+
+            driving_distance = get_driving_distance_by_coords(
+                (lat, lng), (latitude, longitude))
+            if driving_distance == 0:
+                # raise error if distance is 0 and zipcodes are not the same
+                raise Exception(
+                    'Distance is 0 for different coordinates: ', (lat, lng), (latitude, longitude))
+            if driving_distance is not None:
+                known_distances[((lat, lng), (latitude, longitude))
+                                ] = driving_distance  # save distance
+                if driving_distance < op_radius:
+                    # add to district if distance is less than op_radius
+                    operating_districts[district_name] = driving_distance
+
+    operating_districts = {k: v for k, v in sorted(  # sort by distance
+        operating_districts.items(), key=lambda item: item[1])}
+
+    # take the 10 first if operating radius is smaller or equal to 100. Else take the 15 first
+    if op_radius <= 100:
+        return list(operating_districts.keys())[:10]
+    else:
+        return list(operating_districts.keys())[:15]
 
 
 def print_radius_distributions(df):
@@ -181,13 +208,30 @@ def print_radius_distributions(df):
     Args:
         df (DataFrame): dataframe to print the distribution of the radius column
     """
-    print(round(len(df[df['operating radius'] == 200]) / len(df)
-                * 100, 2), "% of distributors have operating radius of 200")
-    print(round(len(df[df['operating radius'] == 400]) / len(df)
-                * 100, 2), "% of distributors have operating radius of 400")
-    print(round(len(df[df['operating radius'] == 800]) / len(df)
-                * 100, 2), "% of distributors have operating radius of 800")
+    print('Distribution of operating radius:')
+    # list of unique operating radius
+    unique_radius = df['operating radius'].unique()
+    for radius in unique_radius:
+        print(
+            f"{round(len(df[df['operating radius'] == radius]) / len(df)* 100, 2)}% of distributors have operating radius of {radius}")
 
 
-#  add_operating_radius()
-add_operating_districts(max_districts=15, operating_radius=800, sample_size=1)
+def check_coverage(df, df_districts):
+    """Checks if how many districts are covered by the distributers that have an operating radius that is not None
+
+    """
+    df = df.notna()
+    # get the set of all operating districts
+    operating_districts = set()
+    for i in range(len(df)):
+        operating_districts.update(df['operating districts'][i].split(';'))
+
+    # get the unique Administrative districts
+    unique_districts = set(df_districts['Administrative District'].unique())
+    # missing districts
+    missing_districts = unique_districts - operating_districts
+    print(f"{len(missing_districts)} districts are not covered by the distributors")
+
+
+# add_operating_radius()
+# add_operating_districts(sample_size=1)

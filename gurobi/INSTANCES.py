@@ -7,6 +7,7 @@ from dataprp import data_preprocess
 import os
 from printsolution import write_solution_csv
 import sys
+from datetime import datetime
 
 # This writes our console output to a log file
 dirname = os.path.dirname(__file__)
@@ -14,8 +15,11 @@ class Logger(object):
     def __init__(self):
         self.terminal = sys.stdout
         if not os.path.exists(os.path.join(dirname, 'logs')):
-            os.makedirs('gurobi/logs')
-        self.log = open("gurobi/logs/logfile.log", "w")
+            os.makedirs('logs')
+        current_time = datetime.now()
+        file_name = os.path.join(
+            dirname, 'logs/log_' + current_time.strftime("%Y-%m-%d_%H-%M-%S") + '.log')
+        self.log = open(file_name, "w")
 
     def write(self, message):
         self.terminal.write(message)
@@ -28,18 +32,18 @@ class Logger(object):
         pass
 
 
-#sys.stdout = Logger()
+sys.stdout = Logger()
 
 #paths
 ACOOLHEAD = os.path.join(dirname, './data-sources/data_from_Hannah_with_coordinates_zipcodes_heatcapacity_positive_building_count.csv')
-DISTRIBUTOR = os.path.join(dirname, './data-sources/Distributor_data_with_workforce.csv')
+DISTRIBUTOR = os.path.join(dirname, './data-sources/Distributor_data.csv')
 HEAT_PUMPS = os.path.join(dirname, './data-sources/heat_pumps_air_water_price.csv')
 FPOWDATA = os.path.join(dirname, './data-sources/fpow.csv')
 PARAMETERS = os.path.join(dirname, './data-sources/parameters.xlsx')
 
 #Parameters
 NUMBER_OF_YEARS = 12
-operating_radius= 2000
+operating_radius = 70
 MIN_PERCENTAGE = 0.05 #actually not percentage :)
 CO2_EMISSION_GAS = 433 #g/kWh
 CO2_EMISSION_EON = 266 #g/kwh
