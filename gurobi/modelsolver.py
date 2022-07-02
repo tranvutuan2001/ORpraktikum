@@ -94,7 +94,8 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
 
     # Constraint 4: Only install up to the current expected sales volume
     for t in range(T):
-        model.addConstr(quicksum(x[m,i,d,t] - x[m, i, d, t-1]
+        if t >= 1:
+            model.addConstr(quicksum(x[m, i, d, t] - x[m, i, d, t-1]
                         for m, i, d, _ in P.select("*", "*", "*", t)) <= max_sales[t], name="C4")
 
     # Constraints 5: Respect the operation radius for each distributor
