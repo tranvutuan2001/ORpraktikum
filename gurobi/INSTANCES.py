@@ -46,14 +46,17 @@ NUMBER_OF_YEARS = 12
 operating_radius = 70
 MIN_PERCENTAGE = 0.05 #actually not percentage :)
 CO2_EMISSION_GAS = 433 #g/kWh
-CO2_EMISSION_EON = 266 #g/kwh
+CO2_EMISSION_EON = 366 #g/kwh
 BOILER_EFFICIENCY = 0.7 #between 0 and 1
 GAS_PRIZE_FACTOR = 5 #Compared to Initial Value
 ELECTRICITY_PRICE_FACTOR = 0.2 #Compared to Initial Value
+ELECTRICITY_SUBS = 0
+HEATPUMP_SUBS = 0
 CO2_PRIZE_FACTOR = 5 #Compared to Initial Value
 Max_Sales_Growth = 0.05 #per year
 Max_Sales_Initial = 1100000000 #units per year
 WORKFORCE_FACTOR = 1.2  # Compared to Initial value
+
  
 
 #Emission Prices can be either static welfare based values, or on the CO2 prices. We decided to consider more than the certificat price
@@ -78,7 +81,7 @@ max_sales = npf.fv(Max_Sales_Growth, np.linspace(0,NUMBER_OF_YEARS+1,NUMBER_OF_Y
 model = modelsolver.solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
           CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY, 
           CO2_EMISSION_PRICE, max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
-          electr_timefactor, gas_timefactor, CO2_timefactor, configurations, WORKFORCE_FACTOR)
+          electr_timefactor, gas_timefactor, CO2_timefactor, configurations, WORKFORCE_FACTOR, ELECTRICITY_SUBS, HEATPUMP_SUBS)
 
 write_solution_csv(model, districts, heatpumps, housing, NUMBER_OF_YEARS, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
                    CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY,
