@@ -13,7 +13,7 @@ dirname = os.path.dirname(__file__)
 def write_solution_csv(model, D, M, I, T, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
                        CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY,
                        CO2_EMISSION_PRICE, max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
-                       electr_timefactor, gas_timefactor, CO2_timefactor, P):
+                       electr_timefactor, gas_timefactor, CO2_timefactor, P, ELECTRICITY_SUBS, HEATPUMP_SUBS):
     model.printStats()
     status = model.Status
     if status != GRB.OPTIMAL:
@@ -30,7 +30,7 @@ def write_solution_csv(model, D, M, I, T, distributors, NUMBER_OF_YEARS, MIN_PER
          "NUMBER_OF_YEARS", "MIN_PERCENTAGE",
         "CO2_EMISSION_GAS", "CO2_EMISSION_EON", "BOILER_EFFICIENCY", 
         "CO2_EMISSION_PRICE", "max_sales", "AVERAGE_BOILER_COST_PER_UNIT", "ELECTRICITY_COST_PER_UNIT",
-        "electr_timefactor", "gas_timefactor", "CO2_timefactor","zipcode"]
+        "electr_timefactor", "gas_timefactor", "CO2_timefactor","zipcode", "ELECTRICITY_SUBS", "HEATPUMP_SUBS"]
         writer = csv.writer(f, delimiter=";")
         writer.writerow(header)
         f.close()
@@ -61,7 +61,7 @@ def write_solution_csv(model, D, M, I, T, distributors, NUMBER_OF_YEARS, MIN_PER
                       CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY,
                       CO2_EMISSION_PRICE, max_sales[NUMBER_OF_YEARS -
                                               1], AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
-                      electr_timefactor[NUMBER_OF_YEARS-1], gas_timefactor[NUMBER_OF_YEARS-1], CO2_timefactor[NUMBER_OF_YEARS-1], I[i]["zipcode"]]
+                      electr_timefactor[NUMBER_OF_YEARS-1], gas_timefactor[NUMBER_OF_YEARS-1], CO2_timefactor[NUMBER_OF_YEARS-1], I[i]["zipcode"]], ELECTRICITY_SUBS, HEATPUMP_SUBS
                 writer.writerow([str(r) for r in row])
     f.close()
     return
