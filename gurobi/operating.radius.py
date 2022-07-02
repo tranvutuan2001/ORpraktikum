@@ -19,11 +19,11 @@ def add_operating_radius(distributor_data_file=None, default_radius=70):
     """Adds the operating radius to the csv file. The radius is set to have a default value of 150km for 65% of the rows. 
 
     Args:
-        origin (str, optional): Location of the original data file. Defaults to None. If None, the file is assumed to be data-sources/Distributor_data.csv
+        origin (str, optional): Location of the original data file. Defaults to None. If None, the file is assumed to be data-sources/DISTRIBUTORS.csv
         default_radius (int, optional): The default radius to use. Defaults to 150.
     """
     DISTRIBUTERS_DATA = distributor_data_file if distributor_data_file is not None else os.path.join(
-        dirname, "data-sources", "Distributor_data.csv")
+        dirname, "data-sources", "DISTRIBUTORS.csv")
     df = pd.read_csv(DISTRIBUTERS_DATA)
 
     # this will potentially overwrite existing values
@@ -31,7 +31,7 @@ def add_operating_radius(distributor_data_file=None, default_radius=70):
     df['operating radius'] = df['operating radius'].fillna(default_radius)
 
     df.to_csv(os.path.join(
-        dirname, "data-sources/Distributor_data.csv"), index=False)
+        dirname, "data-sources/DISTRIBUTORS.csv"), index=False)
 
     df['operating radius'] = df['operating radius'].astype(int)
 
@@ -44,7 +44,7 @@ def add_operating_radius(distributor_data_file=None, default_radius=70):
             df.iloc[i, df.columns.get_loc('operating radius')] = 100
 
     df.to_csv(os.path.join(
-        dirname, "data-sources/Distributor_data.csv"), index=False)
+        dirname, "data-sources/DISTRIBUTORS.csv"), index=False)
 
     print("Generated operating radius")
     print_radius_distributions(df)
@@ -54,8 +54,8 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
     """Adds the operating districts to the csv file. The districts are sampled from the list of districts.
 
     Args:
-        distributor_data_file (str, optional): path to the distributor data file. Defaults to None. if None, the file is assumed to be data-sources/Distributor_data_with_radius.csv
-        districts_file (str, optional): path to the file contain the districts. Defaults to None. if None, the file is assumed to be data-sources/data_from_Hannah_with_coordinates_and_zipcodes.csv
+        distributor_data_file (str, optional): path to the distributor data file. Defaults to None. if None, the file is assumed to be data-sources/DISTRIBUTORS_with_radius.csv
+        districts_file (str, optional): path to the file contain the districts. Defaults to None. if None, the file is assumed to be data-sources/ACOOLHEAD.csv
         sample_size (float, optional): sample size between (0,1] for the districts to search in. Defaults to 0.3. Higher values will take longer to run.
         max_districts (int, optional): number of districts in radius after which the search should stop. Defaults to 5. Higher values will take longer to run.
         operating_radius (int, optional): filter distributers by only considering ones with the specified radius. Defaults to None. If None, all distributors are considered.
@@ -66,9 +66,9 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
     """
 
     DISTRIBUTERS_DATA = distributor_data_file if distributor_data_file is not None else os.path.join(
-        dirname, "data-sources/Distributor_data.csv")
+        dirname, "data-sources/DISTRIBUTORS.csv")
     ACOOLHEAD = districts_file if districts_file is not None else os.path.join(
-        dirname, "data-sources/data_from_Hannah_with_coordinates_and_zipcodes.csv")
+        dirname, "data-sources/ACOOLHEAD.csv")
     if not os.path.isfile(DISTRIBUTERS_DATA):
         raise Exception(DISTRIBUTERS_DATA, "not found")
     if not os.path.isfile(ACOOLHEAD):

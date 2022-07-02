@@ -35,9 +35,10 @@ class Logger(object):
 sys.stdout = Logger()
 
 #paths
-ACOOLHEAD = os.path.join(dirname, './data-sources/data_from_Hannah_with_coordinates_zipcodes_heatcapacity_positive_building_count.csv')
-DISTRIBUTOR = os.path.join(dirname, './data-sources/Distributor_data.csv')
-HEAT_PUMPS = os.path.join(dirname, './data-sources/heat_pumps_air_water_price.csv')
+ACOOLHEAD = os.path.join(
+    dirname, './data-sources/ACOOLHEAD.csv')
+DISTRIBUTOR = os.path.join(dirname, './data-sources/DISTRIBUTORS.csv')
+HEAT_PUMPS = os.path.join(dirname, './data-sources/HEATPUMPS.csv')
 FPOWDATA = os.path.join(dirname, './data-sources/fpow.csv')
 PARAMETERS = os.path.join(dirname, './data-sources/parameters.xlsx')
 
@@ -75,15 +76,16 @@ gas_timefactor = np.linspace(1,GAS_PRIZE_FACTOR ,NUMBER_OF_YEARS) #The second fa
 CO2_timefactor = np.linspace(1,CO2_PRIZE_FACTOR ,NUMBER_OF_YEARS) #The second factor is the multiplying factor for the final value, so the price is x times the starting price
 max_sales = npf.fv(Max_Sales_Growth, np.linspace(0,NUMBER_OF_YEARS+1,NUMBER_OF_YEARS, dtype = int), 0, -Max_Sales_Initial) #Third value is fixed addition
 # get prepared data
-(districts, heatpumps, housing, fitness, distributors, configurations) = data_preprocess(NUMBER_OF_YEARS, operating_radius)
+heatpumps, housing, distributors, configurations = data_preprocess(
+    NUMBER_OF_YEARS, operating_radius)
 
 # solve model
-model = modelsolver.solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
+model = modelsolver.solve(heatpumps, housing, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
           CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY, 
           CO2_EMISSION_PRICE, max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
           electr_timefactor, gas_timefactor, CO2_timefactor, configurations, WORKFORCE_FACTOR, ELECTRICITY_SUBS, HEATPUMP_SUBS)
 
-write_solution_csv(model, districts, heatpumps, housing, NUMBER_OF_YEARS, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
+write_solution_csv(model, heatpumps, housing, NUMBER_OF_YEARS, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
                    CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY,
                    CO2_EMISSION_PRICE, max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
                    electr_timefactor, gas_timefactor, CO2_timefactor, configurations)

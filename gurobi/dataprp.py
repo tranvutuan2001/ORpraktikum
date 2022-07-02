@@ -9,10 +9,10 @@ import numpy as np
 
 dirname = os.path.dirname(__file__)
 ACOOLHEAD = os.path.join(
-    dirname, './data-sources/data_from_Hannah_with_coordinates_zipcodes_heatcapacity_positive_building_count.csv')
-DISTRIBUTOR = os.path.join(dirname, './data-sources/Distributor_data.csv')
+    dirname, './data-sources/ACOOLHEAD.csv')
+DISTRIBUTOR = os.path.join(dirname, './data-sources/DISTRIBUTORS.csv')
 HEAT_PUMPS = os.path.join(
-    dirname, './data-sources/heat_pumps_air_water_price.csv')
+    dirname, './data-sources/HEATPUMPS.csv')
 FPOWDATA = os.path.join(dirname, './data-sources/fpow.csv')
 PARAMETERS = os.path.join(dirname, './data-sources/parameters.xlsx')
 
@@ -29,7 +29,7 @@ def data_preprocess(T, operating_radius):
     housing_data = prepare_housing_data(
         housing_dataframe, max_entries=None,
     )
-    districts = get_districts(housing_dataframe)
+    # districts = get_districts(housing_dataframe)
     heatpump_data = prepare_heatpump_data(heatpump_dataframe, max_entries=4)
     distributor_data = prepare_distributor(
         distributors_dataframe,  max_entries=None
@@ -43,7 +43,7 @@ def data_preprocess(T, operating_radius):
     configurations = get_configurations(
         heatpump_data, housing_data, distributor_data, T, operating_radius)
 
-    return districts, heatpump_data, housing_data, fitness_data, distributor_data, configurations
+    return heatpump_data, housing_data, fitness_data, distributor_data, configurations
 
 
 def prepare_fitness_on_run_time(M, I):

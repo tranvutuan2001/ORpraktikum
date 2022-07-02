@@ -30,20 +30,20 @@ def add_zipcodes_to_csv():
 
     # if file exists, load it
     if os.path.isfile(os.path.join(
-            dirname, "data-sources/data_from_Hannah_with_coordinates_and_zipcodes.csv")):
+            dirname, "data-sources/ACOOLHEAD.csv")):
         ACOOLHEAD = os.path.join(
-            dirname, "data-sources/data_from_Hannah_with_coordinates_and_zipcodes.csv")
+            dirname, "data-sources/ACOOLHEAD.csv")
         df = pd.read_csv(ACOOLHEAD)
         if (not 'zipcode' in df.columns):
             df['zipcode'] = None
-    # if not, create it from data_from_Hannah_with_coordinates.csv
+    # if not, create it from ACOOLHEAD.csv
     else:
         ACOOLHEAD = os.path.join(
-            dirname, "data-sources\data_from_Hannah_with_coordinates.csv")
+            dirname, "data-sources\ACOOLHEAD.csv")
         df = pd.read_csv(ACOOLHEAD)
         df['zipcode'] = None
         df.to_csv(os.path.join(
-            dirname, "data-sources/data_from_Hannah_with_coordinates_and_zipcodes.csv"))
+            dirname, "data-sources/ACOOLHEAD.csv"))
 
     # fill all null values with 0
     df['zipcode'] = df['zipcode'].fillna(value=0)
@@ -61,7 +61,7 @@ def add_zipcodes_to_csv():
         if (change_count % 100 == 0 and change_count != last_save):
             last_save = change_count
             df.to_csv(os.path.join(
-                dirname, "data-sources/data_from_Hannah_with_coordinates_and_zipcodes.csv"), index=False)
+                dirname, "data-sources/ACOOLHEAD.csv"), index=False)
         # check if the zipcode is unknown.
         if df['zipcode'][i] == 0:
             # get the zipcode from the dataframe
@@ -89,7 +89,7 @@ def add_zipcodes_to_csv():
             change_count += 1
     print("Done filling in zipcodes")
     df.to_csv(os.path.join(
-        dirname, "data-sources/data_from_Hannah_with_coordinates_and_zipcodes.csv"), index=False)  # save the csv
+        dirname, "data-sources/ACOOLHEAD.csv"), index=False)  # save the csv
     # there might be some zipcodes that are still 0
     # missing_zipcodes = df[df['zipcode'].eq(0)].drop_duplicates()
     # print(str(missing_zipcodes.sum()) +
@@ -106,9 +106,9 @@ def add_coordinates_to_csv():
     """
     # ckeck if file exists
     if os.path.isfile(os.path.join(
-            dirname, "data-sources/data_from_Hannah_with_coordinates.csv")):
+            dirname, "data-sources/ACOOLHEAD.csv")):
         ACOOLHEAD = os.path.join(
-            dirname, "data-sources/data_from_Hannah_with_coordinates.csv")
+            dirname, "data-sources/ACOOLHEAD.csv")
         df = pd.read_csv(ACOOLHEAD)
         if (not 'long' in df.columns):
             df['long'] = None  # add longitude column
@@ -137,7 +137,7 @@ def add_coordinates_to_csv():
         if (change_count % 100 == 0 and change_count != last_save):
             last_save = change_count
             df.to_csv(os.path.join(
-                dirname, "data-sources/data_from_Hannah_with_coordinates.csv"), index=False)
+                dirname, "data-sources/ACOOLHEAD.csv"), index=False)
         # get the coordinates from the weather file name column
         coords = df['weather file names'][i].split(
             '_')[1]  # will be smth like 543288101350
@@ -155,7 +155,7 @@ def add_coordinates_to_csv():
         if (change_count % 100 == 0 and change_count != last_save):
             last_save = change_count
             df.to_csv(os.path.join(
-                dirname, "data-sources/data_from_Hannah_with_coordinates.csv"), index=False)
+                dirname, "data-sources/ACOOLHEAD.csv"), index=False)
         if not df['long'][i] == 0:
             continue
         coords = df['weather file names'][i].split('_')[1]
@@ -166,7 +166,7 @@ def add_coordinates_to_csv():
     print("Done filling in longitudes")
 
     df.to_csv(os.path.join(
-        dirname, "data-sources/data_from_Hannah_with_coordinates.csv"), index=False)
+        dirname, "data-sources/ACOOLHEAD.csv"), index=False)
     # assert that all latitudes are filled in
     assert df['lat'].eq(0).sum() == 0
     # assert that all longitudes are filled in
@@ -175,7 +175,7 @@ def add_coordinates_to_csv():
 
 def add_coordinates_to_csv():
     DISTRIBUTERS_DATA = os.path.join(
-        dirname, "data-sources/Distributor_data.csv")
+        dirname, "data-sources/DISTRIBUTORS.csv")
     df = pd.read_csv(DISTRIBUTERS_DATA)
 
     for i in tqdm(range(len(df))):
@@ -195,7 +195,7 @@ def add_coordinates_to_csv():
              'long', 'operating radius', 'operating districts']]
 
     df.to_csv(os.path.join(
-        dirname, "data-sources/Distributor_data.csv"), index=False)
+        dirname, "data-sources/DISTRIBUTORS.csv"), index=False)
 
 
 add_coordinates_to_csv()

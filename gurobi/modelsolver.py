@@ -11,7 +11,7 @@ import timeit
 dirname = os.path.dirname(__file__)
 
 
-def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
+def solve( heatpumps, housing,  distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
           CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY, CO2_EMISSION_PRICE,
           max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
           electr_timefactor, gas_timefactor, CO2_timefactor, configurations, WORKFORCE_FACTOR, ELECTRICITY_SUBS, HEATPUMP_SUBS):

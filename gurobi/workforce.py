@@ -4,7 +4,7 @@ import os
 
 
 dirname = os.path.dirname(__file__)
-DISTRIBUTOR = os.path.join(dirname, './data-sources/Distributor_data.csv')
+DISTRIBUTOR = os.path.join(dirname, './data-sources/DISTRIBUTORS.csv')
 df_distributor = pd.read_csv(DISTRIBUTOR)
 
 # https://www.isoenergy.co.uk/latest-news/renewable-energy-news-from-isoenergy/how-long-will-it-take-to-have-a-heat-pump-installed#:~:text=A%20domestic%20air%20source%20heat,setting%20the%20system%20to%20work.
@@ -79,4 +79,4 @@ df_distributor['max_installations'] = df_distributor['workforce'] * 50 / 2
 #df_distributor['max_installations_rv'] = df_distributor['workforce_rv'] * 50 
 
 df_distributor.to_csv(os.path.join(
-    dirname, "data-sources/Distributor_data.csv"), index=False)
+    dirname, "data-sources/DISTRIBUTORS.csv"), index=False)

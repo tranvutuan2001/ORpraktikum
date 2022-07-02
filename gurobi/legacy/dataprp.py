@@ -5,9 +5,9 @@ import re
 import os
 
 dirname = os.path.dirname(__file__)
-ACOOLHEAD = os.path.join(dirname, './data-sources/data_from_Hannah_with_coordinates_zipcodes_heatcapacity_positive_building_count.csv')
-DISTRIBUTOR = os.path.join(dirname, './data-sources/Distributor_data.csv')
-HEAT_PUMPS = os.path.join(dirname, './data-sources/heat_pumps_air_water_price.csv')
+ACOOLHEAD = os.path.join(dirname, './data-sources/ACOOLHEAD.csv')
+DISTRIBUTOR = os.path.join(dirname, './data-sources/DISTRIBUTORS.csv')
+HEAT_PUMPS = os.path.join(dirname, './data-sources/HEATPUMPS.csv')
 FPOWDATA = os.path.join(dirname, './data-sources/fpow.csv')
 PARAMETERS = os.path.join(dirname, './data-sources/parameters.xlsx')
 
@@ -29,12 +29,10 @@ def data_preprocess():
         distributors_dataframe, zipcodes_of_interest="^(5[0-3])", max_entries=10
     )
     
-    fitness_data = prepare_fitness_on_run_time(heatpump_data, housing_data)
-
     stop = timeit.default_timer()
     print('Time to prepare the data: ', round(stop - start, 2), "s\n")
 
-    return districts, heatpump_data, housing_data, fitness_data, distributor_data
+    return districts, heatpump_data, housing_data,  distributor_data
 
 
 def prepare_fitness_on_run_time(M, I):

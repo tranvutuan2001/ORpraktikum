@@ -10,7 +10,7 @@ import csv
 dirname = os.path.dirname(__file__)
 
 
-def write_solution_csv(model, D, M, I, T, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
+def write_solution_csv(model,  M, I, T, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
                        CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY,
                        CO2_EMISSION_PRICE, max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
                        electr_timefactor, gas_timefactor, CO2_timefactor, P, ELECTRICITY_SUBS, HEATPUMP_SUBS):
