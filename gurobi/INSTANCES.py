@@ -39,7 +39,6 @@ ACOOLHEAD = os.path.join(
     dirname, './data-sources/HOUSING.csv')
 DISTRIBUTOR = os.path.join(dirname, './data-sources/DISTRIBUTORS.csv')
 HEAT_PUMPS = os.path.join(dirname, './data-sources/HEATPUMPS.csv')
-FPOWDATA = os.path.join(dirname, './data-sources/fpow.csv')
 PARAMETERS = os.path.join(dirname, './data-sources/parameters.xlsx')
 
 #Parameters
