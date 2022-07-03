@@ -6,7 +6,6 @@ import os
 from tqdm import tqdm
 from random import sample
 from datetime import datetime
-
 dirname = os.path.dirname(__file__)
 
 known_distances = {}  # {(zipcode1, zipcode2): distance}
@@ -108,11 +107,11 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
             'operating districts')] = ';'.join(regions)
 
         df.to_csv(os.path.join(
-            dirname, "data-sources/test.csv"), index=False)
+            dirname, "data-sources/HOUSING.csv"), index=False)
 
     # save the dataframe
     df.to_csv(os.path.join(
-        dirname, "data-sources/test.csv"), index=False)
+        dirname, "data-sources/HOUSING.csv"), index=False)
     check_coverage(df, df_acoolhead)
 
 
@@ -151,6 +150,7 @@ def get_operating_districts(districts, lat, lng, op_radius=100, timeout=None, ma
             return operating_districts
 
         zipcode, latitude, longitude = districts[i]
+        zipcode = str(int(zipcode))
 
         if max_districts is not None and len(operating_districts.keys()) >= max_districts:
             return operating_districts  # return if max_districts regions found
@@ -232,5 +232,26 @@ def check_coverage(df, df_districts):
     print(f"{len(missing_districts)} districts are not covered by the distributors")
 
 
+def prepend_zipcodes():
+    """ Ajusts the zipcode column to have zipcodes of lenght 5.
+    The ones with lenght 4 get a 0 prepended (e.g. 8056->08056)
+    """
+    df = pd.read_csv(os.path.join(dirname, "data-sources", "HOUSING.csv"))
+    df['zipcode'] = df['zipcode'].astype(str)
+    df['zipcode'] = df['zipcode'].apply(lambda x: '0' + x if len(x) == 4 else x)
+    
+    print(df['zipcode'].apply(lambda x: len(str(x)) < 5).sum())
+    assert df['zipcode'].apply(lambda x: len(str(x)) < 5).sum(
+    ) == 0, 'Some zipcodes are not of lenght 5'
+
+    df.to_csv(os.path.join(dirname, "data-sources","HOUSING.csv"), index=False)
+
+    # check the csv if all zipcode are of lenght 5#
+    df = pd.read_csv(os.path.join(dirname, "data-sources", "HOUSING.csv"))
+    print(df['zipcode'].apply(lambda x: len(str(x)) < 5).sum())
+    assert df['zipcode'].apply(lambda x: len(str(x)) < 5).sum() == 0 , 'Some zipcodes are not of lenght 5'
+
+
 # add_operating_radius()
+# prepend_zipcodes()
 add_operating_districts(sample_size=1)
