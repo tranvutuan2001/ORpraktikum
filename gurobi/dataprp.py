@@ -175,4 +175,8 @@ def distributor_serves_zipcode(distributor, zipcode):
     Returns:
         bool 
     """
-    return np.isnan(distributor['operating radius']) or zipcode in distributor['operating districts']
+    if np.isnan(distributor['operating radius']):
+        return True
+    else:
+        zipcodes = distributor['operating districts'].split(';')
+        return str(zipcode) in zipcodes

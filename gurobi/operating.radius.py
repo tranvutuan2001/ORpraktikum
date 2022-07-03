@@ -107,11 +107,11 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
             'operating districts')] = ';'.join(regions)
 
         df.to_csv(os.path.join(
-            dirname, "data-sources/HOUSING.csv"), index=False)
+            dirname, "data-sources","Distributor_data.csv"), index=False)
 
     # save the dataframe
     df.to_csv(os.path.join(
-        dirname, "data-sources/HOUSING.csv"), index=False)
+        dirname, "data-sources", "Distributor_data.csv"), index=False)
     check_coverage(df, df_acoolhead)
 
 
