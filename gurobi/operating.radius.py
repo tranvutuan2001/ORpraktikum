@@ -89,8 +89,8 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
         df_distributors = df[df['operating radius']
                              == operating_radius]
 
-    districts = df_acoolhead[['Administrative district', 'lat', 'long']].groupby(
-        'Administrative district').agg({'lat': 'first', 'long': 'first'}).reset_index()
+    districts = df_acoolhead[['zipcode', 'lat', 'long']].groupby(
+        'zipcode').agg({'lat': 'first', 'long': 'first'}).reset_index()
 
     # get the operating regions for each missing row
     for i in tqdm(df_distributors.index):
@@ -116,7 +116,7 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
     check_coverage(df, df_acoolhead)
 
 
-def get_operating_districts(districts, lat, lng, op_radius=100, timeout=120, max_districts=None, sample_size=1):
+def get_operating_districts(districts, lat, lng, op_radius=100, timeout=None, max_districts=None, sample_size=1):
     """Find the districts that are within the operating radius of the zipcode.
 
     Args:
@@ -137,8 +137,9 @@ def get_operating_districts(districts, lat, lng, op_radius=100, timeout=120, max
     # zipcode = '0' + str(zipcode) if len(str(zipcode)) == 4 else str(zipcode)
     operating_districts = {}  # {district: distance}
     districts = districts.values.tolist()
-    districts = sample(districts, round(sample_size * len(districts))
-                       )  # sample sample_size% of districts
+    if sample_size < 1:
+        # sample sample_size% of districts
+        districts = sample(districts, round(sample_size * len(districts)))
 
     if np.isnan(op_radius):
         return operating_districts.keys()
@@ -146,15 +147,13 @@ def get_operating_districts(districts, lat, lng, op_radius=100, timeout=120, max
     start = datetime.now()
     for i in tqdm(range(len(districts)), leave=False):
         diff_time = datetime.now() - start  # time since start
-        # if diff_time.total_seconds() > timeout:  # stop search if execution time is exceeded
-        #     return operating_districts
+        if timeout is not None and diff_time.total_seconds() > timeout:  # stop search if execution time is exceeded
+            return operating_districts
 
-        district_name, latitude, longitude = districts[i]
-        # if district_name in operating_districts.keys():
-        #     continue  # skip if already found
+        zipcode, latitude, longitude = districts[i]
 
-        # if max_districts is not None and len(operating_districts.keys()) >= max_districts:
-        #     return operating_districts  # return if max_districts regions found
+        if max_districts is not None and len(operating_districts.keys()) >= max_districts:
+            return operating_districts  # return if max_districts regions found
 
         # zipcode_of_district = '0' + \
         #                       str(z) if len(
@@ -162,7 +161,7 @@ def get_operating_districts(districts, lat, lng, op_radius=100, timeout=120, max
 
         if lat == latitude and lng == longitude:
             # if zipcode is in district, set distance to 0
-            operating_districts[district_name] = 0
+            operating_districts[zipcode] = 0
             continue
 
         if ((lat, lng), (latitude, longitude)) in known_distances.keys():  # if distance is already known
@@ -190,7 +189,7 @@ def get_operating_districts(districts, lat, lng, op_radius=100, timeout=120, max
                                 ] = driving_distance  # save distance
                 if driving_distance < op_radius:
                     # add to district if distance is less than op_radius
-                    operating_districts[district_name] = driving_distance
+                    operating_districts[zipcode] = driving_distance
 
     operating_districts = {k: v for k, v in sorted(  # sort by distance
         operating_districts.items(), key=lambda item: item[1])}
@@ -234,4 +233,4 @@ def check_coverage(df, df_districts):
 
 
 # add_operating_radius()
-# add_operating_districts(sample_size=1)
+add_operating_districts(sample_size=1)
