@@ -68,7 +68,7 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
     DISTRIBUTERS_DATA = distributor_data_file if distributor_data_file is not None else os.path.join(
         dirname, "data-sources/Distributor_data.csv")
     ACOOLHEAD = districts_file if districts_file is not None else os.path.join(
-        dirname, "data-sources/data_from_Hannah_with_coordinates_and_zipcodes.csv")
+        dirname, "data-sources/HOUSING.csv")
     if not os.path.isfile(DISTRIBUTERS_DATA):
         raise Exception(DISTRIBUTERS_DATA, "not found")
     if not os.path.isfile(ACOOLHEAD):
