@@ -61,7 +61,7 @@ def prepare_fitness_on_run_time(M, I):
     return fitness
 
 
-def prepare_housing_data(df, RADIUS_OF_INTEREST=None, max_entries=None, zipcodes_of_interest=None):
+def prepare_housing_data(df,  max_entries=None, zipcodes_of_interest=None):
     housing_data = {i:
                     {
                         "district": df["Administrative district"][i],
@@ -166,15 +166,5 @@ def get_configurations(heatpumps, housing, distributors, T, operating_radius):
     print("Variable set reduced to", round(
         len(configurations) / initial_count * 100, 3), "%\n")
 
-    for m in heatpumps:
-        for i in housing:
-            produced_heat = heatpumps[m]['produced heat']
-            max_heat_demand = housing[i]['max_heat_demand_W/m^2']
-            if produced_heat >= max_heat_demand:
-                for d in distributors:
-                    dist = cal_dist((housing[i]['lat'], housing[i]['long']),
-                                    (distributors[d]['lat'], distributors[d]['long']))
-                    if dist <= operating_radius:
-                        configurations.append((m, i, d, -1))
 
     return configurations
