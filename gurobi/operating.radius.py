@@ -11,7 +11,7 @@ dirname = os.path.dirname(__file__)
 
 known_distances = {}  # {(zipcode1, zipcode2): distance}
 
-# https://www.waermepumpe.de/ shows distributors in a radius of ~70 km in most cases, so well take that as our default.
+# https://www.waermepumpe.de/fachpartnersuche shows distributors in a radius of ~70 km in most cases, so well take that as our default.
 # A raduis of None indicates a german-wide range. Those are crucial for our scenario to ensure that we have a good coverage of the districts.
 
 
