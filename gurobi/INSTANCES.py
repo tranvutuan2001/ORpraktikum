@@ -84,7 +84,7 @@ model = modelsolver.solve(heatpumps, housing, distributors, NUMBER_OF_YEARS, MIN
           CO2_EMISSION_PRICE, max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
           electr_timefactor, gas_timefactor, CO2_timefactor, configurations, WORKFORCE_FACTOR, ELECTRICITY_SUBS, HEATPUMP_SUBS)
 
-write_solution_csv(model, heatpumps, housing, NUMBER_OF_YEARS, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
+write_solution_csv(model, heatpumps, housing, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
                    CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY,
                    CO2_EMISSION_PRICE, max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
-                   electr_timefactor, gas_timefactor, CO2_timefactor, configurations)
+                   electr_timefactor, gas_timefactor, CO2_timefactor, configurations, ELECTRICITY_SUBS, HEATPUMP_SUBS)
