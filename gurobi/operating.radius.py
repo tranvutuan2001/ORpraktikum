@@ -92,7 +92,8 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
         'zipcode').agg({'lat': 'first', 'long': 'first'}).reset_index()
 
     # get the operating regions for each missing row
-    for i in tqdm(df_distributors.index):
+    check_coverage(df, df_acoolhead)
+    for i in tqdm(0):
         # i = (len(df)-1) - j  # start at bottom of df
         lat = df.loc[i, 'lat']
         lng = df.loc[i, 'long']
@@ -107,12 +108,12 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
             'operating districts')] = ';'.join(regions)
 
         df.to_csv(os.path.join(
-            dirname, "data-sources","Distributor_data.csv"), index=False)
+            dirname, "data-sources", "Distributor_data.csv"), index=False)
 
     # save the dataframe
+    check_coverage(df, df_acoolhead)
     df.to_csv(os.path.join(
         dirname, "data-sources", "Distributor_data.csv"), index=False)
-    check_coverage(df, df_acoolhead)
 
 
 def get_operating_districts(districts, lat, lng, op_radius=100, timeout=None, max_districts=None, sample_size=1):
@@ -180,10 +181,11 @@ def get_operating_districts(districts, lat, lng, op_radius=100, timeout=None, ma
 
             driving_distance = get_driving_distance_by_coords(
                 (lat, lng), (latitude, longitude))
-            if driving_distance == 0:
-                # raise error if distance is 0 and zipcodes are not the same
-                raise Exception(
-                    'Distance is 0 for different coordinates: ', (lat, lng), (latitude, longitude))
+            # commented out because in some cases the driving distance is 0 for coordinates that are only slightly different
+            # if driving_distance == 0:
+            #     # raise error if distance is 0 and zipcodes are not the same
+            #     raise Exception(
+            #         'Distance is 0 for different coordinates: ', (lat, lng), (latitude, longitude))
             if driving_distance is not None:
                 known_distances[((lat, lng), (latitude, longitude))
                                 ] = driving_distance  # save distance
@@ -238,18 +240,20 @@ def prepend_zipcodes():
     """
     df = pd.read_csv(os.path.join(dirname, "data-sources", "HOUSING.csv"))
     df['zipcode'] = df['zipcode'].astype(str)
-    df['zipcode'] = df['zipcode'].apply(lambda x: '0' + x if len(x) == 4 else x)
-    
+    df['zipcode'] = df['zipcode'].apply(
+        lambda x: '0' + x if len(x) == 4 else x)
+
     print(df['zipcode'].apply(lambda x: len(str(x)) < 5).sum())
     assert df['zipcode'].apply(lambda x: len(str(x)) < 5).sum(
     ) == 0, 'Some zipcodes are not of lenght 5'
 
-    df.to_csv(os.path.join(dirname, "data-sources","HOUSING.csv"), index=False)
+    df.to_csv(os.path.join(dirname, "data-sources", "HOUSING.csv"), index=False)
 
     # check the csv if all zipcode are of lenght 5#
     df = pd.read_csv(os.path.join(dirname, "data-sources", "HOUSING.csv"))
     print(df['zipcode'].apply(lambda x: len(str(x)) < 5).sum())
-    assert df['zipcode'].apply(lambda x: len(str(x)) < 5).sum() == 0 , 'Some zipcodes are not of lenght 5'
+    assert df['zipcode'].apply(lambda x: len(str(x)) < 5).sum(
+    ) == 0, 'Some zipcodes are not of lenght 5'
 
 
 # add_operating_radius()
