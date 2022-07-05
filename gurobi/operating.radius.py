@@ -93,7 +93,7 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
 
     # get the operating regions for each missing row
     check_coverage(df, df_acoolhead)
-    for i in tqdm(0):
+    for i in tqdm(range(len(df_distributors))):
         # i = (len(df)-1) - j  # start at bottom of df
         lat = df.loc[i, 'lat']
         lng = df.loc[i, 'long']
