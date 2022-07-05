@@ -9,7 +9,7 @@ import numpy as np
 
 dirname = os.path.dirname(__file__)
 ACOOLHEAD = os.path.join(
-    dirname, './data-sources/data_from_Hannah_with_coordinates_zipcodes_heatcapacity_positive_building_count.csv')
+    dirname, './data-sources/HOUSING.csv')
 DISTRIBUTOR = os.path.join(dirname, './data-sources/Distributor_data.csv')
 HEAT_PUMPS = os.path.join(
     dirname, './data-sources/heat_pumps_air_water_price.csv')
@@ -153,18 +153,30 @@ def get_configurations(heatpumps, housing, distributors, T, operating_radius):
             produced_heat = heatpumps[m]['produced heat']
             max_heat_demand = housing[i]['max_heat_demand_W/m^2']
             if produced_heat >= max_heat_demand:
-                district_name = housing[i]['district']
+                zipcode = housing[i]['zipcode']
                 for d in distributors:
-                    # dist = cal_dist((housing[i]['lat'], housing[i]['long']),
-                    #                 (distributors[d]['lat'], distributors[d]['long']))
-
-                    # german wide supplier or district name is in operating districts
-                    if np.isnan(distributors[d]['operating radius']) or district_name in distributors[d]['operating districts']:
+                    if distributor_serves_zipcode(distributors[d], zipcode):
                         for t in range(-1, T):
                             configurations.append((m, i, d, t))
     initial_count = len(heatpumps) * len(housing) * len(distributors) * T
     print("Variable set reduced to", round(
         len(configurations) / initial_count * 100, 3), "%\n")
 
-
     return configurations
+
+
+def distributor_serves_zipcode(distributor, zipcode):
+    """Determines whether a particular distributor serves a particular district.
+       german wide suppliers supply all districts. They are identified by an operating radius of None 
+       distributors with an operating radius serve the district if that one is in its operating districts
+    Args:
+        distributor (dict)
+        zipcode (str)
+    Returns:
+        bool 
+    """
+    if np.isnan(distributor['operating radius']):
+        return True
+    else:
+        zipcodes = distributor['operating districts'].split(';')
+        return str(zipcode) in zipcodes

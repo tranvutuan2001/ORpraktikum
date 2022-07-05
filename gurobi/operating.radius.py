@@ -6,7 +6,6 @@ import os
 from tqdm import tqdm
 from random import sample
 from datetime import datetime
-
 dirname = os.path.dirname(__file__)
 
 known_distances = {}  # {(zipcode1, zipcode2): distance}
@@ -68,7 +67,7 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
     DISTRIBUTERS_DATA = distributor_data_file if distributor_data_file is not None else os.path.join(
         dirname, "data-sources/Distributor_data.csv")
     ACOOLHEAD = districts_file if districts_file is not None else os.path.join(
-        dirname, "data-sources/data_from_Hannah_with_coordinates_and_zipcodes.csv")
+        dirname, "data-sources/HOUSING.csv")
     if not os.path.isfile(DISTRIBUTERS_DATA):
         raise Exception(DISTRIBUTERS_DATA, "not found")
     if not os.path.isfile(ACOOLHEAD):
@@ -89,11 +88,12 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
         df_distributors = df[df['operating radius']
                              == operating_radius]
 
-    districts = df_acoolhead[['Administrative district', 'lat', 'long']].groupby(
-        'Administrative district').agg({'lat': 'first', 'long': 'first'}).reset_index()
+    districts = df_acoolhead[['zipcode', 'lat', 'long']].groupby(
+        'zipcode').agg({'lat': 'first', 'long': 'first'}).reset_index()
 
     # get the operating regions for each missing row
-    for i in tqdm(df_distributors.index):
+    check_coverage(df, df_acoolhead)
+    for i in tqdm(0):
         # i = (len(df)-1) - j  # start at bottom of df
         lat = df.loc[i, 'lat']
         lng = df.loc[i, 'long']
@@ -108,15 +108,15 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
             'operating districts')] = ';'.join(regions)
 
         df.to_csv(os.path.join(
-            dirname, "data-sources/test.csv"), index=False)
+            dirname, "data-sources", "Distributor_data.csv"), index=False)
 
     # save the dataframe
-    df.to_csv(os.path.join(
-        dirname, "data-sources/test.csv"), index=False)
     check_coverage(df, df_acoolhead)
+    df.to_csv(os.path.join(
+        dirname, "data-sources", "Distributor_data.csv"), index=False)
 
 
-def get_operating_districts(districts, lat, lng, op_radius=100, timeout=120, max_districts=None, sample_size=1):
+def get_operating_districts(districts, lat, lng, op_radius=100, timeout=None, max_districts=None, sample_size=1):
     """Find the districts that are within the operating radius of the zipcode.
 
     Args:
@@ -137,8 +137,9 @@ def get_operating_districts(districts, lat, lng, op_radius=100, timeout=120, max
     # zipcode = '0' + str(zipcode) if len(str(zipcode)) == 4 else str(zipcode)
     operating_districts = {}  # {district: distance}
     districts = districts.values.tolist()
-    districts = sample(districts, round(sample_size * len(districts))
-                       )  # sample sample_size% of districts
+    if sample_size < 1:
+        # sample sample_size% of districts
+        districts = sample(districts, round(sample_size * len(districts)))
 
     if np.isnan(op_radius):
         return operating_districts.keys()
@@ -146,15 +147,14 @@ def get_operating_districts(districts, lat, lng, op_radius=100, timeout=120, max
     start = datetime.now()
     for i in tqdm(range(len(districts)), leave=False):
         diff_time = datetime.now() - start  # time since start
-        # if diff_time.total_seconds() > timeout:  # stop search if execution time is exceeded
-        #     return operating_districts
+        if timeout is not None and diff_time.total_seconds() > timeout:  # stop search if execution time is exceeded
+            return operating_districts
 
-        district_name, latitude, longitude = districts[i]
-        # if district_name in operating_districts.keys():
-        #     continue  # skip if already found
+        zipcode, latitude, longitude = districts[i]
+        zipcode = str(int(zipcode))
 
-        # if max_districts is not None and len(operating_districts.keys()) >= max_districts:
-        #     return operating_districts  # return if max_districts regions found
+        if max_districts is not None and len(operating_districts.keys()) >= max_districts:
+            return operating_districts  # return if max_districts regions found
 
         # zipcode_of_district = '0' + \
         #                       str(z) if len(
@@ -162,7 +162,7 @@ def get_operating_districts(districts, lat, lng, op_radius=100, timeout=120, max
 
         if lat == latitude and lng == longitude:
             # if zipcode is in district, set distance to 0
-            operating_districts[district_name] = 0
+            operating_districts[zipcode] = 0
             continue
 
         if ((lat, lng), (latitude, longitude)) in known_distances.keys():  # if distance is already known
@@ -181,16 +181,17 @@ def get_operating_districts(districts, lat, lng, op_radius=100, timeout=120, max
 
             driving_distance = get_driving_distance_by_coords(
                 (lat, lng), (latitude, longitude))
-            if driving_distance == 0:
-                # raise error if distance is 0 and zipcodes are not the same
-                raise Exception(
-                    'Distance is 0 for different coordinates: ', (lat, lng), (latitude, longitude))
+            # commented out because in some cases the driving distance is 0 for coordinates that are only slightly different
+            # if driving_distance == 0:
+            #     # raise error if distance is 0 and zipcodes are not the same
+            #     raise Exception(
+            #         'Distance is 0 for different coordinates: ', (lat, lng), (latitude, longitude))
             if driving_distance is not None:
                 known_distances[((lat, lng), (latitude, longitude))
                                 ] = driving_distance  # save distance
                 if driving_distance < op_radius:
                     # add to district if distance is less than op_radius
-                    operating_districts[district_name] = driving_distance
+                    operating_districts[zipcode] = driving_distance
 
     operating_districts = {k: v for k, v in sorted(  # sort by distance
         operating_districts.items(), key=lambda item: item[1])}
@@ -233,5 +234,28 @@ def check_coverage(df, df_districts):
     print(f"{len(missing_districts)} districts are not covered by the distributors")
 
 
+def prepend_zipcodes():
+    """ Ajusts the zipcode column to have zipcodes of lenght 5.
+    The ones with lenght 4 get a 0 prepended (e.g. 8056->08056)
+    """
+    df = pd.read_csv(os.path.join(dirname, "data-sources", "HOUSING.csv"))
+    df['zipcode'] = df['zipcode'].astype(str)
+    df['zipcode'] = df['zipcode'].apply(
+        lambda x: '0' + x if len(x) == 4 else x)
+
+    print(df['zipcode'].apply(lambda x: len(str(x)) < 5).sum())
+    assert df['zipcode'].apply(lambda x: len(str(x)) < 5).sum(
+    ) == 0, 'Some zipcodes are not of lenght 5'
+
+    df.to_csv(os.path.join(dirname, "data-sources", "HOUSING.csv"), index=False)
+
+    # check the csv if all zipcode are of lenght 5#
+    df = pd.read_csv(os.path.join(dirname, "data-sources", "HOUSING.csv"))
+    print(df['zipcode'].apply(lambda x: len(str(x)) < 5).sum())
+    assert df['zipcode'].apply(lambda x: len(str(x)) < 5).sum(
+    ) == 0, 'Some zipcodes are not of lenght 5'
+
+
 # add_operating_radius()
-# add_operating_districts(sample_size=1)
+# prepend_zipcodes()
+add_operating_districts(sample_size=1)
