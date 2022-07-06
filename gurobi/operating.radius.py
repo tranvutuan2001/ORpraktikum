@@ -74,54 +74,54 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
         raise Exception(ACOOLHEAD, "not found")
 
     df_acoolhead = pd.read_csv(ACOOLHEAD)
-    df = pd.read_csv(DISTRIBUTERS_DATA)
-    if (not 'operating districts' in df.columns):
-        df['operating districts'] = None
+    df_distributors = pd.read_csv(DISTRIBUTERS_DATA)
+    if (not 'operating districts' in df_distributors.columns):
+        df_distributors['operating districts'] = None
 
-    df['operating districts'] = df['operating districts'].astype(
+    df_distributors['operating districts'] = df_distributors['operating districts'].astype(
         str)
-
-    df_distributors = df
 
     if (operating_radius is not None):
         # if operating_radius is set then only work with distributors with that radius
-        df_distributors = df[df['operating radius']
+        df_distributors = df_distributors[df_distributors['operating radius']
                              == operating_radius]
 
     districts = df_acoolhead[['zipcode', 'lat', 'long']].groupby(
         'zipcode').agg({'lat': 'first', 'long': 'first'}).reset_index()
 
     # get the operating regions for each missing row
-    check_coverage(df, df_acoolhead)
+    check_coverage(districts, df_acoolhead)
     for i in tqdm(range(len(df_distributors))):
         # i = (len(df)-1) - j  # start at bottom of df
-        lat = df.loc[i, 'lat']
-        lng = df.loc[i, 'long']
-        radius = df.loc[i, 'operating radius']
+        lat = df_distributors.loc[i, 'lat']
+        lng = df_distributors.loc[i, 'long']
+        radius = df_distributors.loc[i, 'operating radius']
 
         if np.isnan(radius):
             continue
 
         regions = get_operating_districts(
             districts,  lat, lng, radius, sample_size=sample_size, max_districts=max_districts)
-        df.iloc[i, df.columns.get_loc(
+        
+        df_distributors.iloc[i, df_distributors.columns.get_loc(
             'operating districts')] = ';'.join(regions)
 
-        df.to_csv(os.path.join(
+        df_distributors.to_csv(os.path.join(
             dirname, "data-sources", "Distributor_data.csv"), index=False)
 
     # save the dataframe
-    check_coverage(df, df_acoolhead)
-    df.to_csv(os.path.join(
+    check_coverage(df_distributors, df_acoolhead)
+    df_distributors.to_csv(os.path.join(
         dirname, "data-sources", "Distributor_data.csv"), index=False)
 
 
-def get_operating_districts(districts, lat, lng, op_radius=100, timeout=None, max_districts=None, sample_size=1):
+def get_operating_districts(districts, distributor_latitude, distributor_longitude, op_radius=100, timeout=None, max_districts=None, sample_size=1):
     """Find the districts that are within the operating radius of the zipcode.
 
     Args:
         districts (DataFrame): dataframe of district names and zipcodes
-        zipcode (int or str): zipcode of the distributor
+        distributor_latitude (float): latitude of the distributor
+        distributor_longitude (float): longitude of the distributor	
         op_radius (int, optional): the operating radius of the distributor. Defaults to 100.
         timeout (int, optional): time in seconds after which the search should stop. Defaults to 120.
         max_districts (int, optional): number of districts in radius after which the search should stop. Defaults to 5.
@@ -142,7 +142,7 @@ def get_operating_districts(districts, lat, lng, op_radius=100, timeout=None, ma
         districts = sample(districts, round(sample_size * len(districts)))
 
     if np.isnan(op_radius):
-        return operating_districts.keys()
+        return []
 
     start = datetime.now()
     for i in tqdm(range(len(districts)), leave=False):
@@ -160,34 +160,34 @@ def get_operating_districts(districts, lat, lng, op_radius=100, timeout=None, ma
         #                       str(z) if len(
         #                           str(z)) == 4 else str(z)  # add 0 to zipcode if only 4 digits
 
-        if lat == latitude and lng == longitude:
+        if distributor_latitude == latitude and distributor_longitude == longitude:
             # if zipcode is in district, set distance to 0
             operating_districts[zipcode] = 0
             continue
 
-        if ((lat, lng), (latitude, longitude)) in known_distances.keys():  # if distance is already known
+        if ((distributor_latitude, distributor_longitude), (latitude, longitude)) in known_distances.keys():  # if distance is already known
             driving_distance = known_distances[(
-                (lat, lng), (latitude, longitude))]
-        elif ((latitude, longitude), (lat, lng)) in known_distances.keys():  # if distance is already known
+                (distributor_latitude, distributor_longitude), (latitude, longitude))]
+        elif ((latitude, longitude), (distributor_latitude, distributor_longitude)) in known_distances.keys():  # if distance is already known
             driving_distance = known_distances[(
-                (latitude, longitude), (lat, lng))]
+                (latitude, longitude), (distributor_latitude, distributor_longitude))]
         else:
             # get distance between zipcodes if not known
 
             # since driving distance takes longer to calculate, we first check if the air distance is less than the operating radius + 70km and only then check the driving distance
-            air_distance = cal_dist((lat, lng), (latitude, longitude))
+            air_distance = cal_dist((distributor_latitude, distributor_longitude), (latitude, longitude))
             if air_distance > op_radius + 70:
                 continue
 
             driving_distance = get_driving_distance_by_coords(
-                (lat, lng), (latitude, longitude))
+                (distributor_latitude, distributor_longitude), (latitude, longitude))
             # commented out because in some cases the driving distance is 0 for coordinates that are only slightly different
             # if driving_distance == 0:
             #     # raise error if distance is 0 and zipcodes are not the same
             #     raise Exception(
             #         'Distance is 0 for different coordinates: ', (lat, lng), (latitude, longitude))
             if driving_distance is not None:
-                known_distances[((lat, lng), (latitude, longitude))
+                known_distances[((distributor_latitude, distributor_longitude), (latitude, longitude))
                                 ] = driving_distance  # save distance
                 if driving_distance < op_radius:
                     # add to district if distance is less than op_radius
