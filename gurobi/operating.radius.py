@@ -270,44 +270,41 @@ def create_distance_matrix():
     df_housing = pd.read_csv(HOUSING)
     df_distributors = pd.read_csv(DISTRIBUTERS)
 
-    housing_names = list(df_housing['Administrative district'].unique())
-
-    housing = df_housing[['Administrative district', 'lat', 'long']].groupby(
-        'Administrative district').agg({'lat': 'first', 'long': 'first'})
+    housing = df_housing[['zipcode', 'lat', 'long']].groupby(
+        'zipcode').agg({'lat': 'first', 'long': 'first'})
 
     distances = {}  # distances for each distributor to each housing
 
     for i in tqdm(range(len(df_distributors))):
         # get the lat, long from the distributor
-        lat = df_distributors['lat'][i]
-        lng = df_distributors['long'][i]
-        name = df_distributors['Distributors'][i]
+        distributor_lat = df_distributors['lat'][i]
+        distributor_lng = df_distributors['long'][i]
+        distributor_zipcode = df_distributors['zipcode'][i]
         op_radius = df_distributors['operating radius'][i]
-        if np.isnan(op_radius):
-            distances[name] = [None for _ in range(len(housing))]
-            continue
+
         for j in tqdm(range(len(housing)), leave=False):
             # get the lat, long from the housing
             lat_housing = df_housing['lat'][j]
             lng_housing = df_housing['long'][j]
 
-            if not name in distances:
-                distances[name] = []
-            housing_name = df_housing['Administrative district'][j]
+            if not distributor_zipcode in distances:
+                distances[distributor_zipcode] = []
+            housing_zipcode = df_housing['zipcode'][j]
             # get index in housing_names
             # index = housing_names.index(housing_name)
 
-            air_distance = cal_dist((lat, lng), (lat_housing, lng_housing))
-            if air_distance > op_radius + 70:
-                distances[name].append(None)
+            air_distance = cal_dist(
+                (distributor_lat, distributor_lng), (lat_housing, lng_housing))
+            if air_distance > op_radius + 100:
+                distances[distributor_zipcode].append(None)
                 continue
 
             try:
                 driving_distance = get_driving_distance_by_coords(
-                    (lat, lng), (lat_housing, lng_housing))
-                distances[name].append(driving_distance)
+                    (distributor_lat, distributor_lng), (lat_housing, lng_housing))
+                distances[distributor_zipcode].append(driving_distance)
             except:
-                distances[name].append(None)
+                distances[distributor_zipcode].append(None)
 
     df = pd.DataFrame(distances, index=list(
         housing['lat'].keys()))
