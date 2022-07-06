@@ -256,6 +256,67 @@ def prepend_zipcodes():
     ) == 0, 'Some zipcodes are not of lenght 5'
 
 
+def create_distance_matrix():
+    DISTRIBUTERS = os.path.join(
+        dirname, "data-sources/Distributor_data.csv")
+    HOUSING = os.path.join(
+        dirname, "data-sources/HOUSING.csv")
+
+    if not os.path.isfile(DISTRIBUTERS):
+        raise Exception(DISTRIBUTERS, "not found")
+    if not os.path.isfile(HOUSING):
+        raise Exception(HOUSING, "not found")
+
+    df_housing = pd.read_csv(HOUSING)
+    df_distributors = pd.read_csv(DISTRIBUTERS)
+
+    housing_names = list(df_housing['Administrative district'].unique())
+
+    housing = df_housing[['Administrative district', 'lat', 'long']].groupby(
+        'Administrative district').agg({'lat': 'first', 'long': 'first'})
+
+    distances = {}  # distances for each distributor to each housing
+
+    for i in tqdm(range(len(df_distributors))):
+        # get the lat, long from the distributor
+        lat = df_distributors['lat'][i]
+        lng = df_distributors['long'][i]
+        name = df_distributors['Distributors'][i]
+        op_radius = df_distributors['operating radius'][i]
+        if np.isnan(op_radius):
+            distances[name] = [None for _ in range(len(housing))]
+            continue
+        for j in tqdm(range(len(housing)), leave=False):
+            # get the lat, long from the housing
+            lat_housing = df_housing['lat'][j]
+            lng_housing = df_housing['long'][j]
+
+            if not name in distances:
+                distances[name] = []
+            housing_name = df_housing['Administrative district'][j]
+            # get index in housing_names
+            # index = housing_names.index(housing_name)
+
+            air_distance = cal_dist((lat, lng), (lat_housing, lng_housing))
+            if air_distance > op_radius + 70:
+                distances[name].append(None)
+                continue
+
+            try:
+                driving_distance = get_driving_distance_by_coords(
+                    (lat, lng), (lat_housing, lng_housing))
+                distances[name].append(driving_distance)
+            except:
+                distances[name].append(None)
+
+    df = pd.DataFrame(distances, index=list(
+        housing['lat'].keys()))
+
+    df.head()
+    df.to_csv(os.path.join(dirname, "data-sources", "DISTANCES.csv"))
+
+
 # add_operating_radius()
 # prepend_zipcodes()
-add_operating_districts(sample_size=1)
+# add_operating_districts(sample_size=1)
+# create_distance_matrix()
