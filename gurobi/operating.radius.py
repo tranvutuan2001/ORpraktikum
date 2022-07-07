@@ -63,7 +63,7 @@ def add_operating_districts(distributor_data_file=None, districts_file=None, sam
         Exception: If the distributors data file is not found.
         Exception: If the districts file is not found.
     """
-
+    print("Adding operating districts")
     DISTRIBUTERS_DATA = distributor_data_file if distributor_data_file is not None else os.path.join(
         dirname, "data-sources/Distributor_data.csv")
     ACOOLHEAD = districts_file if districts_file is not None else os.path.join(
@@ -257,6 +257,7 @@ def prepend_zipcodes():
 
 
 def create_distance_matrix():
+    print('Creating distance matrix')
     DISTRIBUTERS = os.path.join(
         dirname, "data-sources/Distributor_data.csv")
     HOUSING = os.path.join(
@@ -272,6 +273,8 @@ def create_distance_matrix():
 
     housing = df_housing[['zipcode', 'lat', 'long']].groupby(
         'zipcode').agg({'lat': 'first', 'long': 'first'})
+
+    housing_zipcodes = []
 
     distances = {}  # distances for each distributor to each housing
 
@@ -290,6 +293,7 @@ def create_distance_matrix():
             if not distributor_zipcode in distances:
                 distances[distributor_zipcode] = []
             housing_zipcode = df_housing['zipcode'][j]
+            housing_zipcodes.append(housing_zipcode)
             # get index in housing_names
             # index = housing_names.index(housing_name)
 
@@ -306,8 +310,8 @@ def create_distance_matrix():
             except:
                 distances[distributor_zipcode].append(None)
 
-    df = pd.DataFrame(distances, index=list(
-        housing['lat'].keys()))
+    df = pd.DataFrame(distances, index=housing_zipcodes,
+                      columns=list(distances.keys()))
 
     df.head()
     df.to_csv(os.path.join(dirname, "data-sources", "DISTANCES.csv"))
@@ -315,5 +319,5 @@ def create_distance_matrix():
 
 # add_operating_radius()
 # prepend_zipcodes()
-# add_operating_districts(sample_size=1)
+add_operating_districts(sample_size=1)
 # create_distance_matrix()
