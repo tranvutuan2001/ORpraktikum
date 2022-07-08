@@ -156,7 +156,7 @@ def get_configurations(heatpumps, housing, distributors, T, operating_radius):
                 zipcode = housing[i]['zipcode']
                 for d in distributors:
                     if distributor_serves_zipcode(distributors[d], zipcode):
-                        for t in range(-1, T):
+                        for t in range(0, T):
                             configurations.append((m, i, d, t))
     initial_count = len(heatpumps) * len(housing) * len(distributors) * T
     print("Variable set reduced to", round(
@@ -167,13 +167,13 @@ def get_configurations(heatpumps, housing, distributors, T, operating_radius):
 
 def distributor_serves_zipcode(distributor, zipcode):
     """Determines whether a particular distributor serves a particular district.
-       german wide suppliers supply all districts. They are identified by an operating radius of None 
+       german wide suppliers supply all districts. They are identified by an operating radius of None
        distributors with an operating radius serve the district if that one is in its operating districts
     Args:
         distributor (dict)
         zipcode (str)
     Returns:
-        bool 
+        bool
     """
     if np.isnan(distributor['operating radius']):
         return True
