@@ -42,7 +42,7 @@ FPOWDATA = os.path.join(dirname, './data-sources/fpow.csv')
 PARAMETERS = os.path.join(dirname, './data-sources/parameters.xlsx')
 
 #Parameters
-NUMBER_OF_YEARS = 12
+NUMBER_OF_YEARS = 20
 operating_radius = 70
 MIN_PERCENTAGE = 0.05 #actually not percentage :)
 CO2_EMISSION_GAS = 433 #g/kWh
@@ -55,7 +55,7 @@ HEATPUMP_SUBS = 1
 CO2_PRIZE_FACTOR = 5 #Compared to Initial Value
 Max_Sales_Growth = 0.05 #per year
 Max_Sales_Initial = 1100000000 #units per year
-WORKFORCE_FACTOR = 1.2  # Compared to Initial value
+WORKFORCE_FACTOR = 2  # Compared to Initial value
 
  
 
