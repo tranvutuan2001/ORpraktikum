@@ -10,12 +10,14 @@ df_distributor = pd.read_csv(DISTRIBUTOR)
 # https://www.isoenergy.co.uk/latest-news/renewable-energy-news-from-isoenergy/how-long-will-it-take-to-have-a-heat-pump-installed#:~:text=A%20domestic%20air%20source%20heat,setting%20the%20system%20to%20work.
 # installation performed by 2 plumbers, 1 eletrician in the first week and then 2 tester in the second week. 
 # our assumption:  team of 2 workers can install 1 heat pump per week. 
+# Starting point: around 6500 workers in total in 2022 according to: https://www.ehpa.org/fileadmin/red/07._Market_Data/2014/EHPA_European_Heat_Pump_Market_and_Statistics_Report_2015.pdf 
+#                                                               and https://www.ehi.eu/fileadmin/user_upload/user_upload/2021-12-03_EHI_Heat_Pump_Report_Final_.pdf
 
 
-N3 = 60
-N2 = 30
-N1= 10
-N0= 6
+N3 = 70  # 7 distributors (or 1%)
+N2 = 40 # 45 distributors (or 1o%)
+N1= 15 # 91 distributors (or 20%)
+N0= 6 # 311 distributors (or 69%)
 
 n = df_distributor['operating radius'].value_counts(dropna=False).to_list()
 print(n)
