@@ -44,7 +44,7 @@ PARAMETERS = os.path.join(dirname, './data-sources/parameters.xlsx')
 #Parameters
 NUMBER_OF_YEARS = 20
 operating_radius = 70
-MIN_PERCENTAGE = 0.05 #actually not percentage :)
+MIN_PERCENTAGE = 0.5 #actually not percentage :)
 CO2_EMISSION_GAS = 433 #g/kWh
 CO2_EMISSION_EON = 366 #g/kwh
 BOILER_EFFICIENCY = 0.7 #between 0 and 1
