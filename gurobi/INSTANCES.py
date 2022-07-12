@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #INSTANCES
 from gurobipy import *
 import numpy as np
@@ -54,7 +55,7 @@ ELECTRICITY_SUBS = 1
 HEATPUMP_SUBS = 1
 CO2_PRIZE_FACTOR = 5 #Compared to Initial Value
 Max_Sales_Growth = 0.05 #per year
-Max_Sales_Initial = 1100000000 #units per year
+Max_Sales_Initial = 11000000 #units per year
 WORKFORCE_FACTOR = 2  # Compared to Initial value
 
  
