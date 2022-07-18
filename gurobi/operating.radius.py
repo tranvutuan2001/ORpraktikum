@@ -271,6 +271,7 @@ def create_distance_matrix():
     df_housing = pd.read_csv(HOUSING)
     df_distributors = pd.read_csv(DISTRIBUTERS)
 
+
     housing = df_housing[['zipcode', 'lat', 'long']].groupby(
         'zipcode').agg({'lat': 'first', 'long': 'first'})
 
@@ -297,11 +298,11 @@ def create_distance_matrix():
             # get index in housing_names
             # index = housing_names.index(housing_name)
 
-            air_distance = cal_dist(
-                (distributor_lat, distributor_lng), (lat_housing, lng_housing))
-            if air_distance > op_radius + 100:
-                distances[distributor_zipcode].append(None)
-                continue
+            # air_distance = cal_dist(
+            #     (distributor_lat, distributor_lng), (lat_housing, lng_housing))
+            # if air_distance > op_radius + 100:
+            #     distances[distributor_zipcode].append(None)
+            #     continue
 
             try:
                 driving_distance = get_driving_distance_by_coords(
@@ -310,8 +311,7 @@ def create_distance_matrix():
             except:
                 distances[distributor_zipcode].append(None)
 
-    df = pd.DataFrame(distances, index=housing_zipcodes,
-                      columns=list(distances.keys()))
+    df = pd.DataFrame(distances, index=housing.index.unique(), columns=list(distances.keys()))
 
     df.head()
     df.to_csv(os.path.join(dirname, "data-sources", "DISTANCES.csv"))
@@ -319,5 +319,5 @@ def create_distance_matrix():
 
 # add_operating_radius()
 # prepend_zipcodes()
-add_operating_districts(sample_size=1)
-# create_distance_matrix()
+# add_operating_districts(sample_size=1)
+create_distance_matrix()
