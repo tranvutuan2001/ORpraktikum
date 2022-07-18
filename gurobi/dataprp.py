@@ -18,10 +18,12 @@ PARAMETERS = os.path.join(dirname, './data-sources/parameters.xlsx')
 
 
 # function calls and combines all other function except for prepare_params
+# Convert the dataframe of housing data and heat pump data to suitable format that is easier to work with
 def data_preprocess(T, operating_radius):
     print("Prepare the data")
     start = timeit.default_timer()
 
+    # Read input data from CSV files
     housing_dataframe = pd.read_csv(ACOOLHEAD)
     heatpump_dataframe = pd.read_csv(HEAT_PUMPS)
     distributors_dataframe = pd.read_csv(DISTRIBUTOR)
@@ -40,12 +42,14 @@ def data_preprocess(T, operating_radius):
     stop = timeit.default_timer()
     print('Time to prepare the data: ', round(stop - start, 2), "s\n")
 
+    # Prepare variables for the linear model beforehand
     configurations = get_configurations(
         heatpump_data, housing_data, distributor_data, T, operating_radius)
 
     return districts, heatpump_data, housing_data, fitness_data, distributor_data, configurations
 
 
+# Return a dictionary indicating whether a heatpump produces enough heat for a house
 def prepare_fitness_on_run_time(M, I):
     fitness = {}
     for i in I:
@@ -79,7 +83,7 @@ def prepare_housing_data(df,  max_entries=None, zipcodes_of_interest=None):
                         'zipcode': df['zipcode'][i]
                     }
                     for i in range(len(df["long"]))
-                    if len(str(df["zipcode"][i])) == 5 and (zipcodes_of_interest == None or re.match(zipcodes_of_interest, str(df["zipcode"][i])))
+                    if zipcodes_of_interest is None or re.match(zipcodes_of_interest, str(df["zipcode"][i]))
                     }
 
     if max_entries is None:
