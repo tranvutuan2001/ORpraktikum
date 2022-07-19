@@ -1,7 +1,10 @@
 hp_name,COP A2/W35,Heat output A2/W35 (kW),price
-SOLTOP Energie AG-WPLK 1030,2.87,31.0,60000.0
-Swisstherm AG-AWX 16 Dynamic,4.32,16.0,25340.0
+SOLTOP Energie AG-WPLK 1030,2.87,31.0,30000.0
+Viessmann Vitocal 350-A AWI 120, 3.2, 18.5, 14805.0
 Domotec AG-HPSU HT-BU 14,4.09,9.91,18175.0
+Swisstherm AG-AWX 16 Dynamic,4.32,16.0,25340.0
+Stiebel Eltron WPL 57 A, 3.3, 29.92, 21284.0
+Dimplex HPL 18S-TUW, 4.3, 7.3, 18249.8
 Vaillant GmbH-flexoTHERM exclusive VWF 57/4,4.1,5.6,12930.55
 Domotec AG-HPSU CU 304/04-P,3.66,5.46,16025.0
 Stiebel Eltron AG-WPL 09 IKCS classic,3.76,2.62,17316.4
