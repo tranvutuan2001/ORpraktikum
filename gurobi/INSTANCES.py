@@ -1,19 +1,18 @@
 #Parameters
-NUMBER_OF_YEARS = 15
-operating_radius = 70
-MIN_PERCENTAGE = 0 #actually not percentage :)
-CO2_EMISSION_GAS = 433 #g/kWh
-CO2_EMISSION_EON = 222 #g/kwh
-BOILER_EFFICIENCY = 0.7 #between 0 and 1
-GAS_PRIZE_FACTOR = 2.4 #Compared to Initial Value
-ELECTRICITY_PRICE_FACTOR = 1.21 #Compared to Initial Value
+NUMBER_OF_YEARS = 15 # also the average lifespan of a heat pump
+MIN_PERCENTAGE = 0 # actually not percentage :)
+CO2_EMISSION_GAS = 433 # g/kWh
+CO2_EMISSION_EON = 222 # g/kwh
+BOILER_EFFICIENCY = 0.7 # between 0 and 1
+GAS_PRIZE_FACTOR = 2.4 # Compared to Initial Value
+ELECTRICITY_PRICE_FACTOR = 1.21  #Compared to Initial Value
 CO2_EMISSION_FACTOR = 0.8
 ELECTRICITY_SUBS = 1
-HEATPUMP_SUBS = 1
-CO2_PRIZE_FACTOR = 6.25 #Compared to Initial Value
-Max_Sales_Growth = 0.05 #per year
-Max_Sales_Initial = 110000 #units per year
-WORKFORCE_FACTOR = 2  # Compared to Initial value
+HEATPUMP_SUBS = 0.55 # BEG funding 2021
+CO2_PRIZE_FACTOR = 6.25 # Compared to Initial Value
+Max_Sales_Growth = 0.05 # per year
+Max_Sales_Initial = 110000 # units per year
+WORKFORCE_FACTOR = 1.05  # Compared to Initial value
 
 #Emission Prices can be either static welfare based values, or on the CO2 prices. We decided to consider more than the certificat price
 #then balanced with the welfare losses caused by climate change for current and future generations, alternatively 698E-6
