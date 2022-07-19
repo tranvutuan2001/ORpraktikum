@@ -19,7 +19,7 @@ PARAMETERS = os.path.join(dirname, './data-sources/parameters.xlsx')
 
 # function calls and combines all other function except for prepare_params
 # Convert the dataframe of housing data and heat pump data to suitable format that is easier to work with
-def data_preprocess(T, operating_radius):
+def data_preprocess(T):
     print("Prepare the data")
     start = timeit.default_timer()
 
@@ -44,7 +44,7 @@ def data_preprocess(T, operating_radius):
 
     # Prepare variables for the linear model beforehand
     configurations = get_configurations(
-        heatpump_data, housing_data, distributor_data, T, operating_radius)
+        heatpump_data, housing_data, distributor_data, T)
 
     return districts, heatpump_data, housing_data, fitness_data, distributor_data, configurations
 
@@ -137,7 +137,7 @@ def prepare_distributor(df, RADIUS_OF_INTEREST=20, zipcodes_of_interest=None, ma
             len(distributors.values())) if i < max_entries}
 
 
-def get_configurations(heatpumps, housing, distributors, T, operating_radius):
+def get_configurations(heatpumps, housing, distributors, T):
     """Generate the possible configurations for the model.
        A configuration is possible only if the heatpump can fulfill the demand of the house and the house is in the operating radius of the distributor.
 

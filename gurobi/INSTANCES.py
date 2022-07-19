@@ -82,7 +82,8 @@ max_sales = npf.fv(Max_Sales_Growth, np.linspace(0,NUMBER_OF_YEARS+1,NUMBER_OF_Y
 # get prepared data
 
 
-(districts, heatpumps, housing, fitness, distributors, configurations) = data_preprocess(NUMBER_OF_YEARS, operating_radius)
+(districts, heatpumps, housing, fitness, distributors,
+ configurations) = data_preprocess(NUMBER_OF_YEARS)
 
 
 
