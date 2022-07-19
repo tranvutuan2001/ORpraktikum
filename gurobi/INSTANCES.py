@@ -76,7 +76,8 @@ PARAMETERS = os.path.join(dirname, './data-sources/parameters.xlsx')
 electr_timefactor = np.linspace(1,ELECTRICITY_PRICE_FACTOR ,NUMBER_OF_YEARS) #The second factor is the multiplying factor for the final value, so the price is x times the starting price
 gas_timefactor = np.linspace(1,GAS_PRIZE_FACTOR ,NUMBER_OF_YEARS) #The second factor is the multiplying factor for the final value, so the price is x times the starting price
 CO2_timefactor = np.linspace(1,CO2_PRIZE_FACTOR ,NUMBER_OF_YEARS) #The second factor is the multiplying factor for the final value, so the price is x times the starting price
-CO2EMIS_timefactor = = np.linspace(1,CO2_EMISSION_FACTOR ,NUMBER_OF_YEARS) #The second factor is the multiplying factor for the final value, so the emission is x times the starting emission
+# The second factor is the multiplying factor for the final value, so the emission is x times the starting emission
+CO2EMIS_timefactor = np.linspace(1, CO2_EMISSION_FACTOR, NUMBER_OF_YEARS)
 max_sales = npf.fv(Max_Sales_Growth, np.linspace(0,NUMBER_OF_YEARS+1,NUMBER_OF_YEARS, dtype = int), 0, -Max_Sales_Initial) #Third value is fixed addition
 # get prepared data
 
