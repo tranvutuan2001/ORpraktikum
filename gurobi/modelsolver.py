@@ -13,7 +13,7 @@ dirname = os.path.dirname(__file__)
 def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS, MIN_PERCENTAGE,
           CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY, CO2_EMISSION_PRICE,
           max_sales, AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
-          electr_timefactor, gas_timefactor, CO2_timefactor, configurations, WORKFORCE_FACTOR, ELECTRICITY_SUBS, HEATPUMP_SUBS):
+          electr_timefactor, gas_timefactor, CO2_timefactor, CO2EMIS_timefactor, configurations, WORKFORCE_FACTOR, ELECTRICITY_SUBS, HEATPUMP_SUBS):
     """Solves the heat pump problem.
 
     NUMBER OF YEARS (int): number of years to be considered for the model
@@ -138,7 +138,7 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
 
     hpcost = quicksum(
         x[m, i, d, t] * ((ELECTRICITY_COST_PER_UNIT * ELECTRICITY_SUBS * electr_timefactor[t] + CO2_EMISSION_EON * CO2_EMISSION_PRICE *
-                          CO2_timefactor[t]) / heatpumps[m]['cop'] * housing[i]['average heat demand']) for m, i, d, t in P if t >= 0)
+                          CO2_timefactor[t] * CO2EMIS_timefactor[t]) / heatpumps[m]['cop'] * housing[i]['average heat demand']) for m, i, d, t in P if t >= 0)
 
     gascost = quicksum((house_count - x[m, i, d, t]) * ((AVERAGE_BOILER_COST_PER_UNIT * gas_timefactor[t] + CO2_EMISSION_GAS *
                                                          CO2_EMISSION_PRICE * CO2_timefactor[t]) / BOILER_EFFICIENCY * housing[i][
