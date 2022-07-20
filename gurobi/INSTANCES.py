@@ -16,13 +16,13 @@ WORKFORCE_FACTOR = 1.05  # Compared to Initial value
 
 #Emission Prices can be either static welfare based values, or on the CO2 prices. We decided to consider more than the certificat price
 #then balanced with the welfare losses caused by climate change for current and future generations, alternatively 698E-6
-CO2_EMISSION_PRICE = 80E-6  # euro/gramm, 2021 nEHS
+CO2_EMISSION_PRICE = 80e-12  # (million)euro/g, 2021 nEHS
 
 # from https://www.globalpetrolprices.com/Germany/natural_gas_prices/
-AVERAGE_BOILER_COST_PER_UNIT = 0.13
+AVERAGE_BOILER_COST_PER_UNIT = 1.3e-7 # (million)euro/kwh
 
 # from https://www.finanztip.de/stromvergleich/strompreis/#:~:text=Strom%20hat%20in%20Deutschland%20einen,und%20Wasserwirtschaft%20(BDEW)%20hervor.
-ELECTRICITY_COST_PER_UNIT = 0.3714
+ELECTRICITY_COST_PER_UNIT = 3.714e-7 # (million)euro/kwh
 
 # -*- coding: utf-8 -*-
 #INSTANCES
