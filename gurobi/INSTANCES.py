@@ -15,8 +15,9 @@ Max_Sales_Initial = 110000 # units per year
 WORKFORCE_FACTOR = 1.05  # Compared to Initial value
 
 #Emission Prices can be either static welfare based values, or on the CO2 prices. We decided to consider more than the certificat price
-#then balanced with the welfare losses caused by climate change for current and future generations, alternatively 698E-6
-CO2_EMISSION_PRICE = 80e-12  # (million)euro/g, 2021 nEHS
+#then balanced with the welfare losses caused by climate change for current and future generations, alternatively 680E-6
+# https://www.umweltbundesamt.de/sites/default/files/medien/1410/publikationen/2020-12-21_methodenkonvention_3_1_kostensaetze.pdf
+CO2_EMISSION_PRICE = 195e-12  # (million)euro/g, 2021 nEHS
 
 # from https://www.globalpetrolprices.com/Germany/natural_gas_prices/
 AVERAGE_BOILER_COST_PER_UNIT = 1.3e-7 # (million)euro/kwh
