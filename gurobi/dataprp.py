@@ -29,12 +29,12 @@ def data_preprocess(T):
     distributors_dataframe = pd.read_csv(DISTRIBUTOR)
 
     housing_data = prepare_housing_data(
-        housing_dataframe, max_entries=None,
+        housing_dataframe, max_entries=None, zipcodes_of_interest=None
     )
     districts = get_districts(housing_dataframe)
     heatpump_data = prepare_heatpump_data(heatpump_dataframe, max_entries=4)
     distributor_data = prepare_distributor(
-        distributors_dataframe,  max_entries=None
+        distributors_dataframe,  max_entries=None, zipcodes_of_interest=None
     )
 
     fitness_data = prepare_fitness_on_run_time(heatpump_data, housing_data)
@@ -114,7 +114,7 @@ def get_districts(df):
     return df['Administrative district'].unique()
 
 
-def prepare_distributor(df, RADIUS_OF_INTEREST=20, zipcodes_of_interest=None, max_entries=None):
+def prepare_distributor(df, max_entries=None, zipcodes_of_interest=None):
     df['operating districts'] = df['operating districts'].astype(
         str)
     distributors = {
