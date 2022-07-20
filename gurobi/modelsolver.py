@@ -106,9 +106,13 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     # yearly workforce <= qty of heat pumps installed by the distributor
     for t in range(T):
         for d in index_distributor:
-            model.addConstr(quicksum(
-                x[m, i, d, t] - x[m, i, d, t - 1] for m, i, _, _ in P.select("*", "*", d, t)) <= distributors[d]['max_installations'] * pow(WORKFORCE_FACTOR,
+              if t > 0:
+                model.addConstr(quicksum(
+                    x[m, i, d, t] - x[m, i, d, t - 1] for m, i, _, _ in P.select("*", "*", d, t)) <= distributors[d]['max_installations'] * pow(WORKFORCE_FACTOR,
                                                                                                                         t), name="C6")
+              else:
+                model.addConstr(quicksum(
+                    x[m, i, d, t] for m, i, _, _ in P.select("*", "*", d, t)) <= distributors[d]['max_installations'] * pow(WORKFORCE_FACTOR,t), name = "C6")
 
     # Constraint 7: x[p] is a cumulative value
     for t in range(1, T):
