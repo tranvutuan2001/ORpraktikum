@@ -131,10 +131,10 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     """
     # TODO: find a better cost function : lifespan of boiler/heatpumps, total cost of ownership/
     investcost = quicksum((x[m, i, d, t] - x[m, i, d, t - 1])
-                          * heatpumps[m]['price'] * HEATPUMP_SUBS * (T - t) / T for m, i, d, t in P if t >= 1)
+                          * heatpumps[m]['price']* 1e-6 * HEATPUMP_SUBS * (T - t) / T for m, i, d, t in P if t >= 1)
 
     investcost += quicksum((x[m, i, d, t])
-                           * heatpumps[m]['price'] * HEATPUMP_SUBS * (T - t) / T for m, i, d, t in P.select("*", "*", "*", 0))
+                           * heatpumps[m]['price'] * 1e-6 * HEATPUMP_SUBS * (T - t) / T for m, i, d, t in P.select("*", "*", "*", 0))
 
     hpcost = quicksum(
         x[m, i, d, t] * ((ELECTRICITY_COST_PER_UNIT * ELECTRICITY_SUBS * electr_timefactor[t] + CO2_EMISSION_EON * CO2_EMISSION_PRICE *
