@@ -2,7 +2,7 @@
 NUMBER_OF_YEARS = 15 # also the average lifespan of a heat pump
 MIN_PERCENTAGE = 0 # actually not percentage :)
 CO2_EMISSION_GAS = 433 # g/kWh
-CO2_EMISSION_EON = 222 # g/kwh
+CO2_EMISSION_EON = 322 # g/kwh
 BOILER_EFFICIENCY = 0.7 # between 0 and 1
 GAS_PRIZE_FACTOR = 2.4 # Compared to Initial Value
 ELECTRICITY_PRICE_FACTOR = 1.21  #Compared to Initial Value
