@@ -19,7 +19,7 @@ PARAMETERS = os.path.join(dirname, './data-sources/parameters.xlsx')
 
 # function calls and combines all other function except for prepare_params
 # Convert the dataframe of housing data and heat pump data to suitable format that is easier to work with
-def data_preprocess(T):
+def data_preprocess(T, zipcodes_of_interest=None):
     print("Prepare the data")
     start = timeit.default_timer()
 
@@ -29,12 +29,12 @@ def data_preprocess(T):
     distributors_dataframe = pd.read_csv(DISTRIBUTOR)
 
     housing_data = prepare_housing_data(
-        housing_dataframe, max_entries=None, zipcodes_of_interest=None
+        housing_dataframe, zipcodes_of_interest, max_entries=None
     )
     districts = get_districts(housing_dataframe)
     heatpump_data = prepare_heatpump_data(heatpump_dataframe, max_entries=4)
     distributor_data = prepare_distributor(
-        distributors_dataframe,  max_entries=None, zipcodes_of_interest=None
+        distributors_dataframe, zipcodes_of_interest,  max_entries=None
     )
 
     fitness_data = prepare_fitness_on_run_time(heatpump_data, housing_data)
