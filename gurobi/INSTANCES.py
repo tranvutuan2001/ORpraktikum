@@ -13,6 +13,7 @@ CO2_PRIZE_FACTOR = 6.25 # Compared to Initial Value
 Max_Sales_Growth = 0.32 # per year
 Max_Sales_Initial = 110000 # units per year
 WORKFORCE_FACTOR = 1.05  # Compared to Initial value
+zipcodes_of_interest = "^([0-9])"
 
 #Emission Prices can be either static welfare based values, or on the CO2 prices. We decided to consider more than the certificat price
 #then balanced with the welfare losses caused by climate change for current and future generations, alternatively 680E-6
@@ -84,7 +85,7 @@ max_sales = npf.fv(Max_Sales_Growth, np.linspace(0,NUMBER_OF_YEARS+1,NUMBER_OF_Y
 
 
 (districts, heatpumps, housing, fitness, distributors,
- configurations) = data_preprocess(NUMBER_OF_YEARS)
+ configurations) = data_preprocess(NUMBER_OF_YEARS, zipcodes_of_interest)
 
 
 
