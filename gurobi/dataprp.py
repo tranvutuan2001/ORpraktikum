@@ -65,7 +65,7 @@ def prepare_fitness_on_run_time(M, I):
     return fitness
 
 
-def prepare_housing_data(df,  max_entries=None, zipcodes_of_interest=None):
+def prepare_housing_data(df, zipcodes_of_interest,  max_entries=None):
     housing_data = {i:
                     {
                         "district": df["Administrative district"][i],
@@ -114,7 +114,7 @@ def get_districts(df):
     return df['Administrative district'].unique()
 
 
-def prepare_distributor(df, max_entries=None, zipcodes_of_interest=None):
+def prepare_distributor(df, zipcodes_of_interest, max_entries=None):
     df['operating districts'] = df['operating districts'].astype(
         str)
     distributors = {
