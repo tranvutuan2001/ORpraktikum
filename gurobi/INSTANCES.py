@@ -10,7 +10,7 @@ CO2_EMISSION_FACTOR = 0.8
 ELECTRICITY_SUBS = 1
 HEATPUMP_SUBS = 0.55 # BEG funding 2021
 CO2_PRIZE_FACTOR = 6.25 # Compared to Initial Value
-Max_Sales_Growth = 0.05 # per year
+Max_Sales_Growth = 0.32 # per year
 Max_Sales_Initial = 110000 # units per year
 WORKFORCE_FACTOR = 1.05  # Compared to Initial value
 
