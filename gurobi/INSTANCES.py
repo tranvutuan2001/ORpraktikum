@@ -4,15 +4,15 @@ MIN_PERCENTAGE = 0 # actually not percentage :)
 CO2_EMISSION_GAS = 433 # g/kWh
 CO2_EMISSION_EON = 322 # g/kwh
 BOILER_EFFICIENCY = 0.7 # between 0 and 1
-GAS_PRIZE_FACTOR = 2.4 # Compared to Initial Value
-ELECTRICITY_PRICE_FACTOR = 1.21  #Compared to Initial Value
-CO2_EMISSION_FACTOR = 0.8
+GAS_PRIZE_FACTOR = 7.18 # Compared to Initial Value
+ELECTRICITY_PRICE_FACTOR = 3.17  #Compared to Initial Value
+CO2_EMISSION_FACTOR = 0.9
 ELECTRICITY_SUBS = 1
-HEATPUMP_SUBS = 0.55 # BEG funding 2021
+HEATPUMP_SUBS = 0.725 # BEG & KfW average funding 2021
 CO2_PRIZE_FACTOR = 6.25 # Compared to Initial Value
-Max_Sales_Growth = 0.05 # per year
+Max_Sales_Growth = 0.19 # per year
 Max_Sales_Initial = 110000 # units per year
-WORKFORCE_FACTOR = 1.05  # Compared to Initial value
+WORKFORCE_FACTOR = 1.07  # Compared to Initial value
 ZIPCODES = "^([0-9])"
 
 #Emission Prices can be either static welfare based values, or on the CO2 prices. We decided to consider more than the certificat price
