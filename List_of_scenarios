@@ -1,7 +1,6 @@
 A) The "reality" scenario // Realistic sales figures, prices and quantity of installation companies
    Q: Where are we now? What will happen in the heat pump industry if we continue as we are? Will we achieve our climate targets?
    A01: Reality with currently high electricity costs
-   A02: Reality with electricity costs of 2020
    A11: Effect of max_sales
    A12: Effect of limited workforce
 B) The "unlimited time" scenario // Increased time horizon
@@ -9,6 +8,8 @@ B) The "unlimited time" scenario // Increased time horizon
    B01: Time horizon of 5 years
    B02: Time horizon of 10 years
    B03: Time horizon of 15 years
+   B04: Time horizon of 20 years
+   B05: Time horizon of 25 years
 C) The "perfect heat pump(s)" scenario // What size of heat pump makes the most sense 
    Q: Does it make a difference if we limit ourselfes to only 3 heat pumps?
    C01: Comparing different COP with different costs
