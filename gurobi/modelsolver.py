@@ -59,7 +59,8 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     print("Adding variables")
     start = timeit.default_timer()
     print(len(P), "variables will be added")
-    # Quantity of installed heat pumps with given conditions
+    # Quantity of newly installed heat pumps with given conditions
+    
     x = {}
     for m, i, d, t in P:
         # if t >= 0:
@@ -78,26 +79,18 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     # removed because this is handled by get_configurations
 
     # Constraint 2:  Install heat pumps in AT LEAST the specified percentage of all houses
-    house_count = sum(housing[i]['quantity'] for i in housing)
+    house_count = sum(housing[i]['quantity'] for i in housing) 
 
-    model.addConstr(
-        quicksum(x[p] for p in P.select('*', '*', '*', T - 1)) >= MIN_PERCENTAGE * house_count, name="C2"
-    )
+    # model.addConstr(
+    #     quicksum(x[p] for p in P.select('*', '*', '*', T - 1)) >= MIN_PERCENTAGE * house_count, name="C2")
 
     # Constraint 3: Only install as many heatpumps in a house category as the total quantity of houses of that type
-
     for i in index_housing:
-        model.addConstr(quicksum(x[p] for p in P.select(
-            "*", i, "*", T - 1)) <= housing[i]['quantity'], name="C3")
-        # print("for i=",i,"=",P.select("*",i,"*",T-1))
+        model.addConstr(quicksum(x[p] for p in P.select("*", i, "*", "*")) <= housing[i]['quantity'], name="C3")
 
     # Constraint 4: Only install up to the current expected sales volume
     for t in range(T):
-        if t > 0:
-            model.addConstr(quicksum(x[m, i, d, t] - x[m, i, d, t - 1]
-                                     for m, i, d, _ in P.select("*", "*", "*", t)) <= max_sales[t], name="C4")
-        else:
-            model.addConstr(quicksum(x[m, i, d, t] for m, i, d, _ in P.select("*", "*", "*", t)) <= max_sales[t], name="C4")
+        model.addConstr(quicksum(x[m, i, d, t] for m, i, d, _ in P.select("*", "*", "*", t)) <= max_sales[t], name="C4")
 
     # Constraints 5: Respect the operation radius for each distributor
     # removed because this is handled by get_configurations
@@ -106,19 +99,8 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     # yearly workforce <= qty of heat pumps installed by the distributor
     for t in range(T):
         for d in index_distributor:
-              if t > 0:
-                model.addConstr(quicksum(
-                    x[m, i, d, t] - x[m, i, d, t - 1] for m, i, _, _ in P.select("*", "*", d, t)) <= distributors[d]['max_installations'] * pow(WORKFORCE_FACTOR,
-                                                                                                                        t), name="C6")
-              else:
-                model.addConstr(quicksum(
-                    x[m, i, d, t] for m, i, _, _ in P.select("*", "*", d, t)) <= distributors[d]['max_installations'] * pow(WORKFORCE_FACTOR,t), name = "C6")
+                model.addConstr(quicksum(x[m, i, d, t] for m, i, _, _ in P.select("*", "*", d, t)) <= distributors[d]['max_installations'] * pow(WORKFORCE_FACTOR,t), name = "C6")
 
-    # Constraint 7: x[p] is a cumulative value
-    for t in range(1, T):
-        for m, i, d, _ in P.select("*", "*", "*", t):
-            model.addConstr(
-                x[m, i, d, t] - x[m, i, d, t - 1] >= 0, name="C7")
 
     stop = timeit.default_timer()
     print("Time to add the constraints: ",
@@ -127,26 +109,18 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     # Add Objective
     print("Adding objective function")
     start = timeit.default_timer()
-    # TODO: add other objective function
-
+    
     """
           We calculate and sum yearly operation costs for each house and add the costs for inital
           installations of heat pumps.
     """
     # TODO: find a better cost function : lifespan of boiler/heatpumps, total cost of ownership/
-    investcost = quicksum((x[m, i, d, t] - x[m, i, d, t - 1])
-                          * heatpumps[m]['price']* 1e-6 * HEATPUMP_SUBS * (T - t) / T for m, i, d, t in P if t >= 1)
+    investcost = quicksum(x[m, i, d, t]* heatpumps[m]['price']* 1e-6 * HEATPUMP_SUBS * (T - t) / T for m, i, d, t in P)
 
-    investcost += quicksum((x[m, i, d, t])
-                           * heatpumps[m]['price'] * 1e-6 * HEATPUMP_SUBS * (T - t) / T for m, i, d, t in P.select("*", "*", "*", 0))
+    hpcost =quicksum(quicksum(x[m, i, d, t] for t in range(t)) * ((ELECTRICITY_COST_PER_UNIT * ELECTRICITY_SUBS * electr_timefactor[t] + CO2_EMISSION_EON * CO2_EMISSION_PRICE *CO2_timefactor[t] * CO2EMIS_timefactor[t]) / heatpumps[m]['cop'] * housing[i]['average heat demand'])for m,i,d,t in P)
 
-    hpcost = quicksum(
-        x[m, i, d, t] * ((ELECTRICITY_COST_PER_UNIT * ELECTRICITY_SUBS * electr_timefactor[t] + CO2_EMISSION_EON * CO2_EMISSION_PRICE *
-                          CO2_timefactor[t] * CO2EMIS_timefactor[t]) / heatpumps[m]['cop'] * housing[i]['average heat demand']) for m, i, d, t in P if t >= 0)
-
-    gascost = quicksum((house_count - x[m, i, d, t]) * ((AVERAGE_BOILER_COST_PER_UNIT * gas_timefactor[t] + CO2_EMISSION_GAS *
-                                                         CO2_EMISSION_PRICE * CO2_timefactor[t]) / BOILER_EFFICIENCY * housing[i][
-                                                            'average heat demand']) for m, i, d, t in P if t >= 0)
+    
+    gascost = quicksum((house_count - quicksum(x[m, i, d, t] for t in range(t))) * ((AVERAGE_BOILER_COST_PER_UNIT * gas_timefactor[t] + CO2_EMISSION_GAS * CO2_EMISSION_PRICE * CO2_timefactor[t]) / BOILER_EFFICIENCY * housing[i]['average heat demand']) for m, i, d, t in P)
 
     obj = investcost + hpcost + gascost
     model.setObjective(obj, GRB.MINIMIZE)
@@ -173,17 +147,3 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
 
     return model
 
-    """ For testing purposes, can be ignored
-    print("Set threshold as",MIN_PERCENTAGE)
-    k=0
-    tot= sum(I[i]["quantity"] for i in I)
-    for t in range(T):
-        val= int(sum([model.getVarByName(f'hp_type_{str(m)}_at_house_type_{str(i)}_in_year_{str(t)}').X for m in M for i in I]))
-        k=k+val
-
-        print("t=%02d "%(t,),": build", val,"houses", "with maximum houses", tot)
-    p=100*k/tot
-    print(p,"% wurde erfüllt beim Threshold ",MIN_PERCENTAGE)
-
-    return
-    """

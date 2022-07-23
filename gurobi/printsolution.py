@@ -25,8 +25,7 @@ def write_solution_csv(model, D, M, I, T, distributors, NUMBER_OF_YEARS, MIN_PER
         print("new file is created with headers")
         
         f = open(os.path.join(dirname, "solutions\solution.csv"), 'a', newline="")
-        header=["name","district", "year construct", "type of building", "modern", "HPModel", "Year","qty newly built HP", "cumul.QTY", "totalhouses", "percent of totalhouses", "heatcapacity",
-         "distributor","zipcode"]
+        header=["name","district", "year construct", "type of building", "modern", "HPModel", "Year","qty newly built HP","newpumps:percent of totalhouses", "cumulQTY", "cumul:percent of totalhouses","totalhouses","heatcapacity","distributor","zipcode"]
         writer = csv.writer(f, delimiter=";")
         writer.writerow(header)
         f.close()
@@ -43,37 +42,28 @@ def write_solution_csv(model, D, M, I, T, distributors, NUMBER_OF_YEARS, MIN_PER
     c = 0
     
     for m, i, d, t in P:
-        if t >= 0:
-            try:
-                curr = model.getVarByName(
-                    f'hp_type_{str(m)}_at_house_type_{str(i)}_by_distributor_{str(distributors[d]["name"])}_in_year_{str(t)}').X
-            except:
-                continue
+        new_installs= abs(model.getVarByName(f'hp_type_{str(m)}_at_house_type_{str(i)}_by_distributor_{str(distributors[d]["name"])}_in_year_{str(t)}').X)
+        cumulated_amount= abs(sum(model.getVarByName(f'hp_type_{str(m)}_at_house_type_{str(i)}_by_distributor_{str(distributors[d]["name"])}_in_year_{str(t)}').X for t in range(t+1)))
+        if new_installs ==0 and cumulated_amount==0:
+            continue
+        else:
+            percent_new = round(new_installs / I[i]["quantity"],2)
+            percent_cumul= round(cumulated_amount / I[i]["quantity"],2)
+            row = [name, I[i]["district"], I[i]["year of construction"], I[i]["type of building"], I[i]["modernization status"], M[m]['brand_name'], t,new_installs,percent_new,cumulated_amount, percent_cumul, I[i]["quantity"], I[i]["max_heat_demand_W/m^2"], distributors[d]['name'], I[i]["zipcode"]]
+            writer.writerow([r for r in row])
         
-            if curr != 0:
-                try: 
-                    prev = model.getVarByName(
-                        f'hp_type_{str(m)}_at_house_type_{str(i)}_by_distributor_{str(distributors[d]["name"])}_in_year_{str(t-1)}').X
-                except:
-                   prev=0 
-                newbuilds = curr-prev
-                qty = curr
-                percent = qty / I[i]["quantity"]
-                row = [name, I[i]["district"], I[i]["year of construction"], I[i]["type of building"], I[i]["modernization status"], M[m]['brand_name'], t,newbuilds,qty, I[i]["quantity"], percent, str(I[i]["max_heat_demand_W/m^2"]), distributors[d]['name'], I[i]["zipcode"]]
-                writer.writerow([str(r) for r in row])
-                
-                if c==0:
-                    f2 = open(os.path.join(dirname, "solutions\datasets.csv"), 'a', newline="")    
-                    writer2 = csv.writer(f2, delimiter=";")
-                    row = [name,
-                    NUMBER_OF_YEARS, MIN_PERCENTAGE,
-                    CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY,
-                    CO2_EMISSION_PRICE, max_sales[NUMBER_OF_YEARS -
-                    1], AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
-                    electr_timefactor[NUMBER_OF_YEARS-1], gas_timefactor[NUMBER_OF_YEARS-1], CO2_timefactor[NUMBER_OF_YEARS-1], ELECTRICITY_SUBS, HEATPUMP_SUBS]
-                    writer2.writerow(row)
-                    f2.close()
-                    c=1
+        if c==0:
+            f2 = open(os.path.join(dirname, "solutions\datasets.csv"), 'a', newline="")    
+            writer2 = csv.writer(f2, delimiter=";")
+            row = [name,
+            NUMBER_OF_YEARS, MIN_PERCENTAGE,
+            CO2_EMISSION_GAS, CO2_EMISSION_EON, BOILER_EFFICIENCY,
+            CO2_EMISSION_PRICE, max_sales[NUMBER_OF_YEARS -
+            1], AVERAGE_BOILER_COST_PER_UNIT, ELECTRICITY_COST_PER_UNIT,
+            electr_timefactor[NUMBER_OF_YEARS-1], gas_timefactor[NUMBER_OF_YEARS-1], CO2_timefactor[NUMBER_OF_YEARS-1], ELECTRICITY_SUBS, HEATPUMP_SUBS]
+            writer2.writerow(row)
+            f2.close()
+            c=1
 
     f.close()
 
