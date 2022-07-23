@@ -117,10 +117,10 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     # TODO: find a better cost function : lifespan of boiler/heatpumps, total cost of ownership/
     investcost = quicksum(x[m, i, d, t]* heatpumps[m]['price']* 1e-6 * HEATPUMP_SUBS * (T - t) / T for m, i, d, t in P)
 
-    hpcost =quicksum(quicksum(x[m, i, d, t] for t in range(t)) * ((ELECTRICITY_COST_PER_UNIT * ELECTRICITY_SUBS * electr_timefactor[t] + CO2_EMISSION_EON * CO2_EMISSION_PRICE *CO2_timefactor[t] * CO2EMIS_timefactor[t]) / heatpumps[m]['cop'] * housing[i]['average heat demand'])for m,i,d,t in P)
+    hpcost =quicksum(quicksum(x[m, i, d, t_1] for t_1 in range(t+1)) * ((ELECTRICITY_COST_PER_UNIT * ELECTRICITY_SUBS * electr_timefactor[t] + CO2_EMISSION_EON * CO2_EMISSION_PRICE *CO2_timefactor[t] * CO2EMIS_timefactor[t]) / heatpumps[m]['cop'] * housing[i]['average heat demand'])for m,i,d,t in P)
 
     
-    gascost = quicksum((house_count - quicksum(x[m, i, d, t] for t in range(t))) * ((AVERAGE_BOILER_COST_PER_UNIT * gas_timefactor[t] + CO2_EMISSION_GAS * CO2_EMISSION_PRICE * CO2_timefactor[t]) / BOILER_EFFICIENCY * housing[i]['average heat demand']) for m, i, d, t in P)
+    gascost = quicksum((house_count - quicksum(x[m, i, d, t_1] for t_1 in range(t+1))) * ((AVERAGE_BOILER_COST_PER_UNIT * gas_timefactor[t] + CO2_EMISSION_GAS * CO2_EMISSION_PRICE * CO2_timefactor[t]) / BOILER_EFFICIENCY * housing[i]['average heat demand']) for m, i, d, t in P)
 
     obj = investcost + hpcost + gascost
     model.setObjective(obj, GRB.MINIMIZE)
