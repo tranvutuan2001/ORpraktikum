@@ -47,9 +47,11 @@ def write_solution_csv(model, D, M, I, T, distributors, NUMBER_OF_YEARS, MIN_PER
         for m, i, d, t_1 in P:
             nhp = abs(model.getVarByName(f'hp_type_{str(m)}_at_house_type_{str(i)}_by_distributor_{str(distributors[d]["name"])}_in_year_{str(t_1)}').X)
             costhp += (nhp * (M[m]['price'] * HEATPUMP_SUBS + (T - t_1) * I[i]["average heat demand"] / M[m]['cop'] * (ELECTRICITY_COST_PER_UNIT * 1e+6 * electr_timefactor[T-1] + CO2_EMISSION_EON * CO2_EMISSION_PRICE * 1e+6 * CO2_timefactor[T-1] * CO2EMIS_timefactor[T-1])))/T/1e+9
-    for m, i, d, t in P:
-        costb += T* (I[i]['quantity'] - abs(model.getVarByName(f'hp_type_{str(m)}_at_house_type_{str(i)}_by_distributor_{str(distributors[d]["name"])}_in_year_{str(t)}').X)) * (AVERAGE_BOILER_COST_PER_UNIT * 1e+6 * gas_timefactor[T-1] + CO2_EMISSION_GAS * CO2_EMISSION_PRICE * 1e+6 * CO2_timefactor[T-1]) * I[i]["average heat demand"] / BOILER_EFFICIENCY/1e+9
-    
+    for i in set(i for _, i, _, _ in P):
+        nhb = sum(abs(model.getVarByName(f'hp_type_{str(m)}_at_house_type_{str(i)}_by_distributor_{str(distributors[d]["name"])}_in_year_{str(t)}').X) for m,_,d,t in P.select("*", i, "*", "*"))
+        costb += T * (I[i]['quantity'] - nhb) * (AVERAGE_BOILER_COST_PER_UNIT * 1e+6 * gas_timefactor[T-1] + CO2_EMISSION_GAS * CO2_EMISSION_PRICE * 1e+6 * CO2_timefactor[T-1]) * I[i]["average heat demand"] / BOILER_EFFICIENCY/1e+9
+    print(costb)
+    print(costhp)
     
     for m, i, d, t in P:
         new_installs= abs(model.getVarByName(f'hp_type_{str(m)}_at_house_type_{str(i)}_by_distributor_{str(distributors[d]["name"])}_in_year_{str(t)}').X)
