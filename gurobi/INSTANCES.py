@@ -10,9 +10,13 @@ CO2_EMISSION_FACTOR = 0.65
 ELECTRICITY_SUBS = 1
 HEATPUMP_SUBS = 0.725 # BEG & KfW average funding 2021
 CO2_PRIZE_FACTOR = 1.12 # Compared to Initial Value
-Max_Sales_Growth = 0.19 # per year
+Max_Sales_Growth = 6 # Final value compared to Initial value
+Max_Sales_Growth_Center = 0 # value shifts the growth to the left when increased and vise versa, but always greater than -5
 Max_Sales_Initial = 110000 # units per year
-WORKFORCE_FACTOR = 1.07  # Compared to Initial value
+Max_Sales_Growth_Steepness = 1 #linear when set very low, but then the starting and end point are not reached
+WORKFORCE_Growth = 2  # Final value compared to Initial value
+Workforce_Growth_Center = 0 # value from 0 to 1 to set the center of growth
+Workforce_Growth_Steepness = 1 #the higher it is, the more sudden the growth is
 ZIPCODES = "^([0-9])"
 
 #Emission Prices can be either static welfare based values, or on the CO2 prices. We decided to consider more than the certificat price
@@ -80,7 +84,8 @@ gas_timefactor = np.linspace(1,GAS_PRIZE_FACTOR ,NUMBER_OF_YEARS) #The second fa
 CO2_timefactor = np.linspace(1,CO2_PRIZE_FACTOR ,NUMBER_OF_YEARS) #The second factor is the multiplying factor for the final value, so the price is x times the starting price
 # The second factor is the multiplying factor for the final value, so the emission is x times the starting emission
 CO2EMIS_timefactor = np.linspace(1, CO2_EMISSION_FACTOR, NUMBER_OF_YEARS)
-max_sales = npf.fv(Max_Sales_Growth, np.linspace(0,NUMBER_OF_YEARS+1,NUMBER_OF_YEARS, dtype = int), 0, -Max_Sales_Initial) #Third value is fixed addition
+max_sales = Max_Sales_Initial*(1+(logistic(np.linspace(Max_Sales_Growth_Steepness*-5, Max_Sales_Growth_Steepness*(5+Max_Sales_Growth_Center), num=NUMBER_OF_YEARS+1)))*(Max_Sales_Growth-1)) #Third value is fixed addition
+WORKFORCE_FACTOR = 1+logistic(np.linspace(Workforce_Growth_Steepness*-5, Workforce_Growth_Steepness*(5+Workforce_Growth_Center), num=NUMBER_OF_YEARS+1))*(WORKFORCE_Growth-1)
 # get prepared data
 
 
