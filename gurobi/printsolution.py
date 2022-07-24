@@ -59,7 +59,7 @@ def write_solution_csv(model, D, M, I, T, distributors, NUMBER_OF_YEARS, MIN_PER
         else:
             percent_new = round(new_installs / I[i]["quantity"],2)
             percent_cumul= round(cumulated_amount / I[i]["quantity"],2)
-            row = [name, I[i]["district"], I[i]["year of construction"], I[i]["type of building"], I[i]["Average Heat Demand"], M[m]['brand_name'], t,new_installs,percent_new,cumulated_amount, percent_cumul, I[i]["quantity"], I[i]["Heatcapacity"], distributors[d]['name'], I[i]["zipcode"]]
+            row = [name, I[i]["district"], I[i]["year of construction"], I[i]["type of building"], I[i]["average heat demand"], M[m]['brand_name'], t,new_installs,percent_new,cumulated_amount, percent_cumul, I[i]["quantity"], I[i]["Heatcapacity"], distributors[d]['name'], I[i]["zipcode"]]
             writer.writerow([r for r in row])
         
         if c==0:
