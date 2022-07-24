@@ -41,6 +41,7 @@ import os
 from printsolution import write_solution_csv
 import sys
 from datetime import datetime
+from scipy.special import expit as logistic
 
 name=os.path.basename(__file__)+"_"+datetime.now().strftime("%m_%d-%I_%M")
 print(name)
