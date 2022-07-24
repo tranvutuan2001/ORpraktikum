@@ -21,7 +21,7 @@ D) The "saying goodbye to fossil fuels" scenario // Pure use of green electricit
 E) The "boom in heating systems" scenario // Strongly increasing production volume and large growth in the labour force in the heat pump industry
    Q: Would we install more heat pumps if the capacities and infrastructure for them were better developed?
    (PS) E01: Increase workforce from 1.07 to 1.17
-   E02: Increase workforce by 20% (Does the max_sales constraint get active here?)
+   E012: Increase workforce by 20% (Does the max_sales constraint get active here?)
    (PS) E02: Increase max_sales from 0.19 to 0.29
    (PS) E03: Increase workforce from 1.07 to 1.17 & Increase max_sales from 0.19 to 0.29
    E11: Where does the german-wide supplier travel the most? == where is the lack of workforce in comparison to the demand the biggest?
