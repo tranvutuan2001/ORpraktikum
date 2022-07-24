@@ -1,18 +1,19 @@
 A) The "reality" scenario // Realistic sales figures, prices and quantity of installation companies
    Q: Where are we now? What will happen in the heat pump industry if we continue as we are? Will we achieve our climate targets?
-   A01: Reality with currently high electricity costs
-   A11: Effect of max_sales
-   A12: Effect of limited workforce
+   (PS) A01: Reality with currently high electricity costs
+   (PS) A02: Increase maxsales Growth speed and overall maxsales growth by 33%
+   (PS) A03: Increase workforce Growth speed and overall workforce growth by 100%
+   (PS) A11: at least 500 per year starting 2024 & 6 Million until 2030 (Habeck) 
 B) The "unlimited time" scenario // Increased time horizon
    Q: When will we reach return on investment for the vast majority of German dwellings?
-   B01: Time horizon of 5 years
-   B02: Time horizon of 10 years
-   B03: Time horizon of 15 years
-   B04: Time horizon of 20 years
-   B05: Time horizon of 25 years
+   (PS) B01: Time horizon of 5 years
+   (PS) B02: Time horizon of 10 years
+   (PS) B03: Time horizon of 15 years
+   (PS) B04: Time horizon of 20 years
+   (PS) B05: Time horizon of 25 years
 C) The "perfect heat pump(s)" scenario // What size of heat pump makes the most sense 
    Q: Does it make a difference if we limit ourselfes to only 3 heat pumps?
-   C01: Comparing different COP with different costs
+   C01: Comparing different COP with different costs !! Not relevant anymore
    (PS) C11 & C12: Running the code with 15 heat pumps vs Running the code with 3 heat pumps (one with high capacity, one with average capacity, one with low capacity)
 D) The "saying goodbye to fossil fuels" scenario // Pure use of green electricity, very sharply rising gas prices and CO2 prices
    Q: Are rising prices a means to drive the electrification of the heating sector? To what extent is this the case?
@@ -20,15 +21,15 @@ D) The "saying goodbye to fossil fuels" scenario // Pure use of green electricit
    D02: CO2_Factor of 0 -> only green electricity, 100% increase in the yearly gas prices
 E) The "boom in heating systems" scenario // Strongly increasing production volume and large growth in the labour force in the heat pump industry
    Q: Would we install more heat pumps if the capacities and infrastructure for them were better developed?
-   (PS) E01: Increase workforce from 1.07 to 1.17
+   (PS) E01: Increase workforce from 1.07 to 1.17 !!E01 - E03 now A02-A03 & A11
    E012: Increase workforce by 20% (Does the max_sales constraint get active here?)
    (PS) E02: Increase max_sales from 0.19 to 0.29
    (PS) E03: Increase workforce from 1.07 to 1.17 & Increase max_sales from 0.19 to 0.29
    E11: Where does the german-wide supplier travel the most? == where is the lack of workforce in comparison to the demand the biggest?
 F) The "good use of tax money" scenario // Increase subsidies (via C02 prices, electicity subsidies and heat pump subsicies)
    Q: How does increased state funding (via C02 prices, electicity subsidies and heat pump subsicies) affect heat pump distribution
-   F01: 50% increase in CO2 prices == funding green electricity + constant reality subsidies on the investment costs
-   F02: 100% increase in CO2 prices + 80% subsidies in investment costs
+   (Kevin) F01: 50% increase in CO2 prices == funding green electricity + constant reality subsidies on the investment costs
+   (Kevin) F02: 100% increase in CO2 prices + 80% subsidies in investment costs
 G) The "unlimited money" scenario // The only restriction are the production volume and labour force -> No ROI considerd
    Q: How long does it take to install heat pumps in all existing buildings?
    G01: What Min_Percentage is possible?
