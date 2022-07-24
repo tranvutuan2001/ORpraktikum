@@ -13,15 +13,17 @@ B) The "unlimited time" scenario // Increased time horizon
 C) The "perfect heat pump(s)" scenario // What size of heat pump makes the most sense 
    Q: Does it make a difference if we limit ourselfes to only 3 heat pumps?
    C01: Comparing different COP with different costs
-   C11: Running the code with 10 heat pumps vs Running the code with 3 heat pumps (one with high capacity, one with average capacity, one with low capacity)
+   (PS) C11 & C12: Running the code with 15 heat pumps vs Running the code with 3 heat pumps (one with high capacity, one with average capacity, one with low capacity)
 D) The "saying goodbye to fossil fuels" scenario // Pure use of green electricity, very sharply rising gas prices and CO2 prices
    Q: Are rising prices a means to drive the electrification of the heating sector? To what extent is this the case?
    D01: slightly lower CO2_Factor, 50% increase in the yearly gas prices
    D02: CO2_Factor of 0 -> only green electricity, 100% increase in the yearly gas prices
 E) The "boom in heating systems" scenario // Strongly increasing production volume and large growth in the labour force in the heat pump industry
    Q: Would we install more heat pumps if the capacities and infrastructure for them were better developed?
-   E01: Increase workforce by 10%
+   (PS) E01: Increase workforce from 1.07 to 1.17
    E02: Increase workforce by 20% (Does the max_sales constraint get active here?)
+   (PS) E02: Increase max_sales from 0.19 to 0.29
+   (PS) E03: Increase workforce from 1.07 to 1.17 & Increase max_sales from 0.19 to 0.29
    E11: Where does the german-wide supplier travel the most? == where is the lack of workforce in comparison to the demand the biggest?
 F) The "good use of tax money" scenario // Increase subsidies (via C02 prices, electicity subsidies and heat pump subsicies)
    Q: How does increased state funding (via C02 prices, electicity subsidies and heat pump subsicies) affect heat pump distribution
