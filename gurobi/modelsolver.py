@@ -99,7 +99,7 @@ def solve(districts, heatpumps, housing, fitness, distributors, NUMBER_OF_YEARS,
     # yearly workforce <= qty of heat pumps installed by the distributor
     for t in range(T):
         for d in index_distributor:
-                model.addConstr(quicksum(x[m, i, d, t] for m, i, _, _ in P.select("*", "*", d, t)) <= distributors[d]['max_installations'] * pow(WORKFORCE_FACTOR,t), name = "C6")
+                model.addConstr(quicksum(x[m, i, d, t] for m, i, _, _ in P.select("*", "*", d, t)) <= distributors[d]['max_installations'] * WORKFORCE_FACTOR[t], name = "C6")
 
 
     stop = timeit.default_timer()
